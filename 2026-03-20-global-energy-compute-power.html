@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC',sans-serif; font-size: 10pt; color: #1a1a2e; line-height: 1.8; margin: 0; background: #f0f4f8; }
+  .page { max-width: 980px; margin: 0 auto; padding: 38px 50px; background: #fff; }
+
+  /* 封面 */
+  .cover { background: linear-gradient(135deg, #0d1b2a 0%, #1b3a6b 50%, #1565c0 100%); border-radius: 12px; padding: 36px 40px; color: white; margin-bottom: 28px; position: relative; overflow: hidden; }
+  .cover::before { content: '🌐'; position: absolute; right: 32px; top: 14px; font-size: 80px; opacity: 0.18; }
+  .cover .tag { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35); border-radius: 20px; padding: 3px 14px; font-size: 8.5pt; display: inline-block; margin-bottom: 10px; }
+  .cover h1 { font-size: 18pt; font-weight: 700; margin: 8px 0 6px; line-height: 1.3; }
+  .cover .subtitle { font-size: 10pt; opacity: 0.85; }
+  .cover .meta { margin-top: 16px; font-size: 8.5pt; opacity: 0.7; display: flex; gap: 20px; flex-wrap: wrap; }
+
+  /* 章节 */
+  h2 { font-size: 12.5pt; font-weight: 700; color: #0d3a6b; border-bottom: 2.5px solid #1565c0; padding-bottom: 5px; margin-top: 30px; margin-bottom: 14px; }
+  h3 { font-size: 11pt; font-weight: 600; color: #1565c0; margin-top: 18px; margin-bottom: 8px; }
+
+  /* 三市场顶部导航条 */
+  .mkt-nav { display: flex; gap: 0; margin: 18px 0; border-radius: 8px; overflow: hidden; }
+  .mkt-a { background: #d32f2f; color: white; flex: 1; text-align: center; padding: 10px; font-weight: 700; font-size: 10pt; }
+  .mkt-h { background: #1565c0; color: white; flex: 1; text-align: center; padding: 10px; font-weight: 700; font-size: 10pt; }
+  .mkt-u { background: #2e7d32; color: white; flex: 1; text-align: center; padding: 10px; font-weight: 700; font-size: 10pt; }
+  .mkt-nav .sub { font-size: 8pt; opacity: 0.85; display: block; }
+
+  /* 三列对比 */
+  .tri-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin: 14px 0; }
+  .col-a { border-top: 4px solid #d32f2f; background: #fff5f5; border-radius: 8px; padding: 14px; }
+  .col-h { border-top: 4px solid #1565c0; background: #f0f7ff; border-radius: 8px; padding: 14px; }
+  .col-u { border-top: 4px solid #2e7d32; background: #f0fff4; border-radius: 8px; padding: 14px; }
+  .col-title { font-weight: 700; font-size: 10.5pt; margin-bottom: 8px; }
+  .col-a .col-title { color: #d32f2f; }
+  .col-h .col-title { color: #1565c0; }
+  .col-u .col-title { color: #2e7d32; }
+  .col-item { font-size: 9pt; line-height: 1.7; margin: 3px 0; }
+
+  /* 表格 */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 9pt; }
+  thead tr { background: #0d3a6b; color: white; }
+  thead th { padding: 8px 10px; text-align: left; font-weight: 600; }
+  tbody tr:nth-child(even) { background: #e8f0fe; }
+  tbody tr:hover { background: #bbdefb; }
+  tbody td { padding: 7px 10px; border-bottom: 1px solid #e3f2fd; vertical-align: top; }
+
+  /* 标签 */
+  .a-badge { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; font-weight: 700; }
+  .h-badge { background: #e3f2fd; color: #0d47a1; border: 1px solid #90caf9; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; font-weight: 700; }
+  .u-badge { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; font-weight: 700; }
+  .conf-high { background: #d4edda; color: #155724; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; font-weight: 600; }
+  .conf-mid  { background: #fff3cd; color: #856404; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; font-weight: 600; }
+  .period-s { background: #ffe8cc; color: #c05c00; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; font-weight: 600; }
+  .period-m { background: #cce5ff; color: #004085; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; font-weight: 600; }
+  .period-l { background: #d4edda; color: #155724; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; font-weight: 600; }
+  .holding  { background: linear-gradient(90deg,#ff6b35,#f7c59f); color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; font-weight: 600; }
+  .buy-p  { background: #d4edda; color: #155724; border-radius: 3px; padding: 0px 5px; font-size: 8pt; }
+  .stop-l { background: #fff3cd; color: #856404; border-radius: 3px; padding: 0px 5px; font-size: 8pt; }
+
+  /* 提示框 */
+  .alert { border-radius: 8px; padding: 12px 16px; margin: 12px 0; font-size: 9.5pt; line-height: 1.7; }
+  .alert-blue   { background: #e3f2fd; border-left: 4px solid #1565c0; }
+  .alert-green  { background: #e8f5e9; border-left: 4px solid #2e7d32; }
+  .alert-yellow { background: #fff8e1; border-left: 4px solid #f9a825; }
+  .alert-red    { background: #ffebee; border-left: 4px solid #c62828; }
+
+  /* 对比矩阵 */
+  .diff-table thead tr { background: #1b3a6b; }
+
+  /* 配置建议 */
+  .alloc-box { background: linear-gradient(135deg,#0d1b2a,#1b3a6b); color: white; border-radius: 10px; padding: 18px 22px; margin: 18px 0; }
+  .alloc-box h3 { color: #90caf9; margin-top: 0; font-size: 11pt; }
+  .alloc-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.12); font-size: 9.5pt; align-items: center; }
+  .alloc-row:last-child { border: none; }
+  .alloc-pct { font-size: 14pt; font-weight: 700; color: #90caf9; }
+
+  /* 风险 */
+  .risk-box { background: #fff8f0; border: 1px solid #f4a261; border-radius: 8px; padding: 14px 16px; margin: 18px 0; }
+  .risk-title { font-weight: 700; color: #c05c00; font-size: 10.5pt; margin-bottom: 8px; }
+
+  hr.d { border: none; border-top: 1px solid #e3f2fd; margin: 22px 0; }
+
+  /* 页脚 */
+  .footer { margin-top: 32px; padding-top: 14px; border-top: 2px solid #e3f2fd; font-size: 8pt; color: #6c757d; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
+
+  /* 结论框 */
+  .conclusion { background: linear-gradient(135deg,#0d1b2a,#1976d2); color: white; border-radius: 10px; padding: 18px 22px; margin: 18px 0; }
+  .conclusion h3 { color: #90caf9; margin-top: 0; }
+  .conclusion li { margin: 7px 0; line-height: 1.65; font-size: 9.5pt; }
+  .cl { background: rgba(255,255,255,0.2); border-radius: 4px; padding: 0px 6px; font-size: 7.5pt; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- 封面 -->
+<div class="cover">
+  <div class="tag">🌐 全球三市场 | 储能 · 算力 · 电力 · v2.0</div>
+  <h1>A股 · 港股 · 美股<br>储能+算力+电力投资全景报告</h1>
+  <div class="subtitle">核心标的 · 买卖点 · 三市场异同深度对比 · 配置建议 ｜ A股算力扩充至5只</div>
+  <div class="meta">
+    <span>📅 2026-03-20 v2.0（15:30更新）</span>
+    <span>📊 来源：CNESA/东吴/中金/平安/Investing.com/GEV研报</span>
+    <span>🔒 ⚠️ 含持仓，请勿外传</span>
+  </div>
+</div>
+
+<!-- 三市场导航 -->
+<div class="mkt-nav">
+  <div class="mkt-a">🇨🇳 A股<span class="sub">政策主导·高成长·估值偏高</span></div>
+  <div class="mkt-h">🇭🇰 港股<span class="sub">折价洼地·流动性弱·政策+业绩双驱</span></div>
+  <div class="mkt-u">🇺🇸 美股<span class="sub">AI驱动·自由市场定价·全球最贵</span></div>
+</div>
+
+<!-- 宏观主线 -->
+<h2>📡 统一底层逻辑：AI算力是这一切的发动机</h2>
+<div class="alert alert-blue">
+  <strong>"算力 → 电力 → 储能"</strong>是一条不可分割的因果链：AI大模型训练和推理消耗巨量电力 → 电网无法承受瞬间峰值 → 储能成为刚需配套。三个市场在不同维度上定价这条链条，但底层逻辑完全一致。
+</div>
+
+<div class="tri-grid">
+  <div class="col-a">
+    <div class="col-title">A股的定价逻辑</div>
+    <div class="col-item">✅ 政策强力背书（十五五支柱产业）</div>
+    <div class="col-item">✅ 国内市场需求明确（203GW新增）</div>
+    <div class="col-item">✅ 企业本土运营，信息透明</div>
+    <div class="col-item">⚠️ 监管风险+退市风险相对低</div>
+    <div class="col-item">❌ 估值溢价：政策预期被提前定价</div>
+  </div>
+  <div class="col-h">
+    <div class="col-title">港股的定价逻辑</div>
+    <div class="col-item">✅ 同样企业，比A股便宜20-40%（AH溢价）</div>
+    <div class="col-item">✅ 中国政策直接受益，但在港上市</div>
+    <div class="col-item">✅ 外资参与度高，对全球AI需求更敏感</div>
+    <div class="col-item">⚠️ 流动性弱于A股，波动更大</div>
+    <div class="col-item">❌ 受港元汇率、美联储利率影响</div>
+  </div>
+  <div class="col-u">
+    <div class="col-title">美股的定价逻辑</div>
+    <div class="col-item">✅ AI需求最直接（ChatGPT/Claude/Gemini）</div>
+    <div class="col-item">✅ 自由定价，没有政策天花板也没有政策地板</div>
+    <div class="col-item">✅ 全球资本参与，流动性最好</div>
+    <div class="col-item">⚠️ 估值最贵，回撤风险大</div>
+    <div class="col-item">❌ 受美联储利率/美元强弱影响最大</div>
+  </div>
+</div>
+
+<hr class="d">
+
+<!-- 储能：三市场 -->
+<h2>🔋 板块一：储能 — 三市场标的对比</h2>
+
+<table>
+  <thead>
+    <tr><th>标的</th><th>市场</th><th>核心逻辑</th><th>买入区间</th><th>目标价</th><th>止损</th><th>周期</th><th>置信</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>宁德时代 300750</strong></td>
+      <td><span class="a-badge">A股</span></td>
+      <td>全球储能电池第一，587Ah新电芯领先行业，净利722亿。最安全的核心仓</td>
+      <td><span class="buy-p">230-240元</span></td>
+      <td>280-300元</td>
+      <td><span class="stop-l">220元</span></td>
+      <td><span class="period-l">12-18月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>阳光电源 300274</strong> <span class="holding">持仓</span></td>
+      <td><span class="a-badge">A股</span></td>
+      <td>逆变器+储能系统双龙头，中金目标38元，特斯拉100GW计划直接受益</td>
+      <td><span class="buy-p">28-30元加仓</span></td>
+      <td>38-42元</td>
+      <td><span class="stop-l">26元</span></td>
+      <td><span class="period-m">6-12月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>亿纬锂能 300014</strong></td>
+      <td><span class="a-badge">A股</span></td>
+      <td>储能电池第二梯队，估值比宁德低30%，弹性更大</td>
+      <td><span class="buy-p">38-40元</span></td>
+      <td>50-55元</td>
+      <td><span class="stop-l">35元</span></td>
+      <td><span class="period-m">6月</span></td>
+      <td><span class="conf-mid">中</span></td>
+    </tr>
+    <tr>
+      <td><strong>比亚迪 02269.HK</strong></td>
+      <td><span class="h-badge">港股</span></td>
+      <td>A股同逻辑，但港股价格比A股折价约15-20%。储能+新能源车双主线，AH价差是安全垫</td>
+      <td><span class="buy-p">280-300港元</span></td>
+      <td>360-380港元</td>
+      <td><span class="stop-l">260港元</span></td>
+      <td><span class="period-m">6-12月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>信义光能 00968.HK</strong></td>
+      <td><span class="h-badge">港股</span></td>
+      <td>全球最大光伏玻璃，配套储能光伏体系，前期大跌形成安全边际，特斯拉100GW潜在催化</td>
+      <td><span class="buy-p">4.5-5港元</span></td>
+      <td>7-8港元</td>
+      <td><span class="stop-l">4港元</span></td>
+      <td><span class="period-m">6月</span></td>
+      <td><span class="conf-mid">中</span></td>
+    </tr>
+    <tr>
+      <td><strong>Fluence Energy (FLNC)</strong></td>
+      <td><span class="u-badge">美股</span></td>
+      <td>美国最大独立储能系统集成商（西门子+AES合资），受益于美国IRA补贴+电网储能需求爆发</td>
+      <td><span class="buy-p">$12-14</span></td>
+      <td>$20-22</td>
+      <td><span class="stop-l">$10</span></td>
+      <td><span class="period-m">6-12月</span></td>
+      <td><span class="conf-mid">中</span></td>
+    </tr>
+    <tr>
+      <td><strong>Tesla Energy (TSLA储能)</strong> <span class="holding">持仓TSLA</span></td>
+      <td><span class="u-badge">美股</span></td>
+      <td>Megapack是全球最先进大型储能系统，储能业务2025年营收占比已超20%，是特斯拉价值重估核心</td>
+      <td>持有TSLA不加仓</td>
+      <td>储能主线强化</td>
+      <td><span class="stop-l">$220</span></td>
+      <td><span class="period-l">12月+</span></td>
+      <td><span class="conf-mid">中</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr class="d">
+
+<!-- 算力：三市场 -->
+<h2>🖥️ 板块二：算力 — 三市场标的对比（A股已扩充至5只）</h2>
+
+<div class="alert alert-green">
+  <strong>算力提价信号</strong>：3月18日阿里云/百度云算力服务集体涨价最高34%，这是"供需极度失衡"的市场信号。美股NVDA已充分定价，A股设备/服务器链条仍有补涨空间。
+</div>
+
+<table>
+  <thead>
+    <tr><th>标的</th><th>市场</th><th>核心逻辑</th><th>买入区间</th><th>目标价</th><th>止损</th><th>周期</th><th>置信</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>中际旭创 300308</strong></td>
+      <td><span class="a-badge">A股</span></td>
+      <td>全球光模块龙头，1.6T/3.2T绝对壁垒，东吴预测2026年净利+60%。已处高位，等回调</td>
+      <td><span class="buy-p">回调5-10%后</span></td>
+      <td>+30-40%</td>
+      <td><span class="stop-l">破5日线+3%</span></td>
+      <td><span class="period-m">6-12月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>天孚通信 300394</strong> ⭐新增</td>
+      <td><span class="a-badge">A股</span></td>
+      <td>CPO时代"命门"级标的。1.6T光引擎+FAU（光纤阵列）全球市占率超50%，从"卖铲人"进化为AI超节点核心器件商。单卡配套价值量随AI算力升级持续提升。机构预计2026年净利32-39亿元</td>
+      <td><span class="buy-p">回调至关键支撑后</span></td>
+      <td>+35-50%</td>
+      <td><span class="stop-l">破前低5%止损</span></td>
+      <td><span class="period-m">6-12月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>海光信息 688041</strong> ⭐新增</td>
+      <td><span class="a-badge">A股</span></td>
+      <td>国产GPU/DCU绝对龙头，A股算力芯片产品矩阵最完整。国产万卡集群商业化验证落地，DeepSeek等大模型对海光DCU适配加速。东吴预测2026年净利41.22亿元，国产替代大逻辑最纯粹的标的</td>
+      <td><span class="buy-p">分批建仓，不追高</span></td>
+      <td>+40-60%</td>
+      <td><span class="stop-l">跌破成本10%</span></td>
+      <td><span class="period-m">6-12月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>沪电股份 002463</strong> ⭐新增</td>
+      <td><span class="a-badge">A股</span></td>
+      <td>全球AI服务器和交换机PCB板核心供应商（英伟达供应链）。800G及1.6T交换机PCB量价齐升，36位分析师80.56%强烈推荐，机构目标价75-102元。性价比高，被市场低估的"卖铲人"</td>
+      <td><span class="buy-p">60-70元区间</span></td>
+      <td>75-102元</td>
+      <td><span class="stop-l">55元</span></td>
+      <td><span class="period-m">6-12月</span></td>
+      <td><span class="conf-high">高（36家机构80%强推）</span></td>
+    </tr>
+    <tr>
+      <td><strong>工业富联 601138</strong></td>
+      <td><span class="a-badge">A股</span></td>
+      <td>全球最大AI服务器代工，英伟达H100/B200核心组装商，估值比旭创合理，性价比更高</td>
+      <td><span class="buy-p">28-30元</span></td>
+      <td>36-40元</td>
+      <td><span class="stop-l">26元</span></td>
+      <td><span class="period-m">6月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>腾讯 00700.HK</strong></td>
+      <td><span class="h-badge">港股</span></td>
+      <td>中国算力生态最大受益者（微信AI化+云计算），但毛利率受capex压制（3/19事件），短期有压力</td>
+      <td><span class="buy-p">380-400港元</span></td>
+      <td>450-480港元</td>
+      <td><span class="stop-l">350港元</span></td>
+      <td><span class="period-m">6-12月</span></td>
+      <td><span class="conf-mid">中</span></td>
+    </tr>
+    <tr>
+      <td><strong>阿里巴巴 09988.HK</strong> <span class="holding">持仓</span></td>
+      <td><span class="h-badge">港股</span></td>
+      <td>云+36%是硬催化剂，Qwen MAU 3亿，AI算力需求受益最直接的中国互联网。今日跌5%≈125港元</td>
+      <td>持有，止损120港元</td>
+      <td>148-155港元</td>
+      <td><span class="stop-l">120港元</span></td>
+      <td><span class="period-m">6月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>NVIDIA (NVDA)</strong></td>
+      <td><span class="u-badge">美股</span></td>
+      <td>算力皇冠，H100/B200/R100全线供不应求，GTC2026光互联重大升级，全球AI基础设施核心</td>
+      <td>⚠️ 估值极高，等回调</td>
+      <td>充分定价，赔率一般</td>
+      <td><span class="stop-l">$1,000</span></td>
+      <td><span class="period-l">长线</span></td>
+      <td><span class="conf-mid">中（估值风险）</span></td>
+    </tr>
+    <tr>
+      <td><strong>Microsoft (MSFT)</strong> <span class="holding">持仓</span></td>
+      <td><span class="u-badge">美股</span></td>
+      <td>Azure云增长30%+，Copilot商业化落地，算力+SaaS双轮驱动，估值合理，是NVDA的更稳替代</td>
+      <td>持有，可逢低加仓</td>
+      <td>$520-550</td>
+      <td><span class="stop-l">$380</span></td>
+      <td><span class="period-l">12-24月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>Google (GOOGL)</strong> <span class="holding">持仓</span></td>
+      <td><span class="u-badge">美股</span></td>
+      <td>TPU自研算力+Gemini商业化，广告+云双增长，AI搜索防御战取胜概率高</td>
+      <td>持有，止损$130</td>
+      <td>$210-230</td>
+      <td><span class="stop-l">$130</span></td>
+      <td><span class="period-l">12月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr class="d">
+
+<!-- 电力：三市场 -->
+<h2>⚡ 板块三：电力 — 三市场标的对比</h2>
+
+<table>
+  <thead>
+    <tr><th>标的</th><th>市场</th><th>核心逻辑</th><th>买入区间</th><th>目标价</th><th>止损</th><th>周期</th><th>置信</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>电网ETF（515250等）</strong> <span class="holding">持仓</span></td>
+      <td><span class="a-badge">A股</span></td>
+      <td>电网投资增速80.6%，国家电网800亿储能配套，政策最确定，分散风险最优解</td>
+      <td><span class="buy-p">回调3-5%补仓</span></td>
+      <td>+20-30%</td>
+      <td><span class="stop-l">成本-8%</span></td>
+      <td><span class="period-m">6-12月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>长江电力 600900</strong></td>
+      <td><span class="a-badge">A股</span></td>
+      <td>全球最大水电，高股息4-5%，避险+成长双属性，是仓位"压舱石"</td>
+      <td><span class="buy-p">任何时候</span></td>
+      <td>股息+稳升</td>
+      <td><span class="stop-l">27元</span></td>
+      <td><span class="period-l">长线持有</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>中国核电 601985</strong> <span class="holding">持仓A3</span></td>
+      <td><span class="a-badge">A股</span></td>
+      <td>AI数据中心需要7×24小时稳定电力，核电是唯一可靠的清洁基荷电源。持仓逻辑长期成立</td>
+      <td><span class="buy-p">持有，回调加仓</span></td>
+      <td>+25-35%</td>
+      <td><span class="stop-l">跌破成本10%</span></td>
+      <td><span class="period-l">12-24月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>华润电力 00836.HK</strong></td>
+      <td><span class="h-badge">港股</span></td>
+      <td>港股最优质综合电力，火电+风电+水电多元化，受益于内地电价市场化改革，股息约5%</td>
+      <td><span class="buy-p">18-20港元</span></td>
+      <td>25-28港元</td>
+      <td><span class="stop-l">16港元</span></td>
+      <td><span class="period-m">6-12月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>中广核新能源 01811.HK</strong></td>
+      <td><span class="h-badge">港股</span></td>
+      <td>核电+风光储全链条，中国核能行业最纯粹的港股标的，估值低于A股同类</td>
+      <td><span class="buy-p">2.5-3港元</span></td>
+      <td>4-5港元</td>
+      <td><span class="stop-l">2港元</span></td>
+      <td><span class="period-l">12月</span></td>
+      <td><span class="conf-mid">中</span></td>
+    </tr>
+    <tr>
+      <td><strong>NextEra Energy (NEE)</strong></td>
+      <td><span class="u-badge">美股</span></td>
+      <td>美国最大可再生能源公司，风电+太阳能+储能全链条，AI数据中心长期电力合同签约大户</td>
+      <td><span class="buy-p">$68-72</span></td>
+      <td>$90-100</td>
+      <td><span class="stop-l">$62</span></td>
+      <td><span class="period-l">12-18月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>Vistra Corp (VST)</strong></td>
+      <td><span class="u-badge">美股</span></td>
+      <td>美国火电+核电，AI数据中心用电爆发直接受益，2025年股价翻3倍后仍在合理区间</td>
+      <td><span class="buy-p">$80-90</span></td>
+      <td>$130-150</td>
+      <td><span class="stop-l">$70</span></td>
+      <td><span class="period-m">6-12月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+    <tr>
+      <td><strong>GE Vernova (GEV)</strong></td>
+      <td><span class="u-badge">美股</span></td>
+      <td>全球电网设备/风电涡轮机龙头（从GE分拆），电网现代化和AI电力需求核心受益者，2026年订单爆发</td>
+      <td><span class="buy-p">$180-200</span></td>
+      <td>$260-280</td>
+      <td><span class="stop-l">$160</span></td>
+      <td><span class="period-m">6-12月</span></td>
+      <td><span class="conf-high">高</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr class="d">
+
+<!-- 三市场异同分析 -->
+<h2>🔍 三市场深度对比：同样的故事，不同的定价</h2>
+
+<table class="diff-table">
+  <thead>
+    <tr><th>维度</th><th>🇨🇳 A股</th><th>🇭🇰 港股</th><th>🇺🇸 美股</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>主要驱动力</strong></td>
+      <td>国家政策（十五五规划、反内卷）</td>
+      <td>内地政策溢出+外资情绪</td>
+      <td>AI商业化落地，市场自发定价</td>
+    </tr>
+    <tr>
+      <td><strong>估值水平</strong></td>
+      <td>偏贵（政策溢价已定价）</td>
+      <td>最便宜（同股折价15-40%）</td>
+      <td>最贵（AI溢价充分）</td>
+    </tr>
+    <tr>
+      <td><strong>上涨催化剂</strong></td>
+      <td>政策落地、财报超预期</td>
+      <td>北水南下、AH溢价收窄</td>
+      <td>季报EPS超预期、AI需求数据</td>
+    </tr>
+    <tr>
+      <td><strong>下跌风险</strong></td>
+      <td>政策节奏慢、监管收紧</td>
+      <td>美联储加息预期、港元弱</td>
+      <td>估值泡沫、美联储鹰派</td>
+    </tr>
+    <tr>
+      <td><strong>储能赛道特点</strong></td>
+      <td>装机规模全球第一，政策保障盈利</td>
+      <td>以A股同业港股标的为主</td>
+      <td>以系统集成商为主（Fluence/Tesla）</td>
+    </tr>
+    <tr>
+      <td><strong>算力赛道特点</strong></td>
+      <td>设备/服务器代工链条，硬件驱动</td>
+      <td>互联网大厂（阿里/腾讯），软件+云</td>
+      <td>芯片（NVDA）+云（MSFT/GOOGL），最完整</td>
+    </tr>
+    <tr>
+      <td><strong>电力赛道特点</strong></td>
+      <td>国家电网投资主导，ETF化投资最优</td>
+      <td>综合电力股，股息稳定</td>
+      <td>可再生能源+核电混合，受益AI数据中心</td>
+    </tr>
+    <tr>
+      <td><strong>适合投资者</strong></td>
+      <td>本土投资者，政策敏感型</td>
+      <td>追求折价+高股息的价值投资者</td>
+      <td>看好AI长期叙事、能承受高波动</td>
+    </tr>
+    <tr>
+      <td><strong>2026年最佳赔率</strong></td>
+      <td><strong>电力（ETF）&gt; 储能 &gt; 算力</strong></td>
+      <td><strong>阿里/华润电力 &gt; 比亚迪HK</strong></td>
+      <td><strong>GEV &gt; NEE &gt; MSFT/GOOGL</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="alert alert-yellow">
+  <strong>关键洞见：为什么港股是当前最好的切入点？</strong><br>
+  同样的中国储能/算力资产，港股比A股平均便宜20-40%。政策是一样的，业绩是一样的，但定价不同。当北水南下行情启动时，港股的AH溢价收窄会带来双重收益（业绩增长+估值修复）。当前逢低建仓港股优质标的（如华润电力、比亚迪H股）是赔率最佳的策略。
+</div>
+
+<hr class="d">
+
+<!-- 配置建议 -->
+<div class="alloc-box">
+  <h3>📊 三市场整体配置建议（新增资金参考）</h3>
+  <div class="alloc-row"><span>🇨🇳 A股（储能ETF/电网ETF为核心）</span><span class="alloc-pct">45%</span></div>
+  <div class="alloc-row"><span>🇭🇰 港股（阿里+华润电力+比亚迪H）</span><span class="alloc-pct">30%</span></div>
+  <div class="alloc-row"><span>🇺🇸 美股（MSFT/GOOGL/GEV/NEE）</span><span class="alloc-pct">25%</span></div>
+  <div style="margin-top:12px; font-size:9pt; opacity:0.85;">
+    逻辑：A股确定性高但贵，用ETF分散；港股有折价安全边际；美股持有现有仓位，GEV是当前赔率最好的新增标的。
+    你现有持仓（阳光电源+电网ETF+阿里+MSFT+GOOGL）基本覆盖核心，不需要大幅调整。
+  </div>
+</div>
+
+<!-- 你的持仓与这个主题的关联 -->
+<h2>🎯 你当前持仓与三大板块的关系</h2>
+<table>
+  <thead><tr><th>你的持仓</th><th>对应板块</th><th>评级</th><th>建议</th></tr></thead>
+  <tbody>
+    <tr><td>阳光电源 300274</td><td>储能+电力（A股）</td><td><span class="conf-high">核心持仓</span></td><td>持有，目标38-42元</td></tr>
+    <tr><td>电网ETF（A3）</td><td>电力（A股）</td><td><span class="conf-high">核心持仓</span></td><td>持有，回调补仓</td></tr>
+    <tr><td>中国核电 601985（A3）</td><td>电力（A股）</td><td><span class="conf-high">强逻辑</span></td><td>持有，长线</td></tr>
+    <tr><td>09988 阿里巴巴（港股）</td><td>算力（港股）</td><td><span class="conf-high">核心持仓</span></td><td>持有，止损120港元</td></tr>
+    <tr><td>MSFT（美股）</td><td>算力（美股）</td><td><span class="conf-high">优质核心</span></td><td>持有，逢低加仓</td></tr>
+    <tr><td>GOOGL（美股）</td><td>算力（美股）</td><td><span class="conf-high">优质核心</span></td><td>持有，止损$130</td></tr>
+    <tr><td>⭐ 建议新增：GE Vernova GEV</td><td>电力（美股）</td><td><span class="conf-high">高赔率</span></td><td>$180-200区间建仓，目标$260</td></tr>
+    <tr><td>⭐ 建议新增：宁德时代 300750</td><td>储能（A股）</td><td><span class="conf-high">安全核心</span></td><td>等回调至230-240元</td></tr>
+  </tbody>
+</table>
+
+<!-- 风险 -->
+<div class="risk-box">
+  <div class="risk-title">⚠️ 核心风险</div>
+  <ul style="margin:0; font-size:9pt; line-height:1.9;">
+    <li><strong>美联储风险（影响全球）</strong>：鹰派预期持续 → 美元走强 → 港股/美股估值承压，美股科技/电力股均受冲击</li>
+    <li><strong>AI需求低于预期</strong>：若AI大模型商业化慢于预期，算力和电力需求增速放缓，整个主题逻辑弱化</li>
+    <li><strong>中国政策落地节奏</strong>：各省储能容量补偿政策推进慢，影响储能电站建设节奏</li>
+    <li><strong>地缘政治</strong>：中美关系恶化 → 港股外资撤离 → 阿里等中概股承压</li>
+    <li><strong>当前操作时机</strong>：今日（3/20）市场整体偏弱，不宜追涨，等市场稳定后分批建仓</li>
+  </ul>
+</div>
+
+<!-- 结论 -->
+<div class="conclusion">
+  <h3>📌 芒格总结：三个市场，一个结论</h3>
+  <ol>
+    <li><strong>你的现有持仓已覆盖三大板块的核心逻辑</strong>——不需要大动，只需要在对的价格补充缺失的仓位。<span class="cl">高置信</span></li>
+    <li><strong>港股是当前最优的切入市场</strong>——华润电力（稳健型）+阿里（算力受益，你已持有）提供折价安全边际，比直接在A股追高更有赔率。<span class="cl">中高置信</span></li>
+    <li><strong>美股最值得新增的是GE Vernova（GEV）</strong>——电网现代化是AI时代最确定的需求，GEV在美股是最直接的电力基础设施受益者，$180-200区间是好价格。<span class="cl">高置信</span></li>
+  </ol>
+</div>
+
+<div class="footer">
+  <span>芒格投资研究 · 2026-03-20 14:29</span>
+  <span>来源：CNESA/东吴/中金/平安/Investing.com/GEV研报/新浪财经</span>
+  <span>⚠️ 含个人持仓，请勿外传</span>
+</div>
+
+</div>
+</body>
+</html>

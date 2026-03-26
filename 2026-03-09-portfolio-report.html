@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>投资持仓周报 2026-03-09</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-size: 11pt;
+    color: #1a1a2e;
+    background: #ffffff;
+    line-height: 1.6;
+  }
+
+  .cover {
+    page-break-after: always;
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    color: white;
+  }
+
+  .cover .logo {
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
+
+  .cover h1 {
+    font-size: 28pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    color: #e2b96f;
+  }
+
+  .cover h2 {
+    font-size: 16pt;
+    font-weight: 300;
+    color: #a8c6fa;
+    margin-bottom: 40px;
+  }
+
+  .cover .meta {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 20px 40px;
+    margin-top: 20px;
+  }
+
+  .cover .meta p {
+    font-size: 12pt;
+    color: #d0e8ff;
+    margin: 6px 0;
+  }
+
+  .cover .meta strong {
+    color: #e2b96f;
+  }
+
+  .cover .disclaimer {
+    position: absolute;
+    bottom: 30px;
+    font-size: 9pt;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .page {
+    padding: 50px 55px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    background: linear-gradient(90deg, #0f3460, #1a5276);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin: 30px 0 18px 0;
+    font-size: 14pt;
+    font-weight: 700;
+    letter-spacing: 1px;
+    page-break-after: avoid;
+  }
+
+  .section-header .icon { margin-right: 8px; }
+
+  .sub-header {
+    background: #eaf4fd;
+    border-left: 4px solid #2e86c1;
+    padding: 8px 16px;
+    margin: 20px 0 12px 0;
+    font-size: 12pt;
+    font-weight: 600;
+    color: #1a4a6e;
+    page-break-after: avoid;
+  }
+
+  /* Macro box */
+  .macro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .macro-card {
+    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1px solid #e0e8f0;
+  }
+
+  .macro-card.warning { background: #fff9e6; border-color: #f0c040; }
+  .macro-card.danger  { background: #fff0f0; border-color: #e87070; }
+  .macro-card.info    { background: #eaf4fd; border-color: #5dade2; }
+  .macro-card.neutral { background: #f4f6f7; border-color: #aab7c4; }
+
+  .macro-card .card-title {
+    font-size: 10pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    color: #555;
+  }
+
+  .macro-card .card-value {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+
+  .macro-card .card-desc {
+    font-size: 9.5pt;
+    color: #666;
+    margin-top: 4px;
+  }
+
+  /* Alert box */
+  .alert {
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 10.5pt;
+  }
+  .alert.red    { background: #fdf0f0; border-left: 4px solid #e74c3c; color: #7b241c; }
+  .alert.orange { background: #fef9e7; border-left: 4px solid #f39c12; color: #7d6608; }
+  .alert.green  { background: #eafaf1; border-left: 4px solid #27ae60; color: #1e8449; }
+  .alert.blue   { background: #eaf4fd; border-left: 4px solid #2e86c1; color: #1a4a6e; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 20px 0;
+    font-size: 10pt;
+    page-break-inside: avoid;
+  }
+
+  thead tr {
+    background: #0f3460;
+    color: white;
+  }
+
+  thead th {
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 9.5pt;
+    letter-spacing: 0.3px;
+  }
+
+  tbody tr:nth-child(even) { background: #f7f9fc; }
+  tbody tr:hover { background: #eaf0f8; }
+
+  tbody td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #e8ecf0;
+    vertical-align: middle;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 8.5pt;
+    font-weight: 600;
+  }
+  .tag.hold   { background: #d5f5e3; color: #1e8449; }
+  .tag.reduce { background: #fde8e8; color: #c0392b; }
+  .tag.add    { background: #d6eaf8; color: #1a5276; }
+  .tag.urgent { background: #fdebd0; color: #a04000; }
+  .tag.watch  { background: #fef9e7; color: #7d6608; }
+  .tag.exit   { background: #f9ebea; color: #922b21; }
+
+  .price { font-weight: 700; font-family: monospace; font-size: 10.5pt; }
+  .price.up   { color: #e74c3c; }
+  .price.down { color: #27ae60; }
+  .price.flat { color: #666; }
+
+  /* Priority table */
+  .priority-table thead tr { background: #1a2340; }
+  .priority-row-1 td { background: #fff0f0 !important; }
+  .priority-row-2 td { background: #fff9e6 !important; }
+  .priority-row-3 td { background: #eafaf1 !important; }
+
+  .fire { color: #e74c3c; font-size: 12pt; }
+  .warn { color: #f39c12; font-size: 12pt; }
+  .ok   { color: #27ae60; font-size: 12pt; }
+
+  /* Calendar */
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .cal-item {
+    background: #f7f9fc;
+    border: 1px solid #d0dce8;
+    border-radius: 8px;
+    padding: 12px 14px;
+    text-align: center;
+  }
+
+  .cal-item .cal-date {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #0f3460;
+    margin-bottom: 4px;
+  }
+
+  .cal-item .cal-event {
+    font-size: 9.5pt;
+    color: #444;
+  }
+
+  .cal-item.hot { border-color: #e74c3c; background: #fff5f5; }
+  .cal-item.hot .cal-date { color: #c0392b; }
+
+  .footer-note {
+    margin-top: 40px;
+    padding: 14px 18px;
+    background: #f4f6f7;
+    border-radius: 8px;
+    font-size: 8.5pt;
+    color: #888;
+    text-align: center;
+    border-top: 2px solid #ddd;
+  }
+
+  .page-break { page-break-before: always; }
+
+  h3 {
+    font-size: 11.5pt;
+    color: #0f3460;
+    margin: 16px 0 8px 0;
+    font-weight: 600;
+  }
+
+  p { margin-bottom: 8px; }
+
+  .summary-box {
+    background: linear-gradient(135deg, #0f3460 0%, #1a5276 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+
+  .summary-box h3 {
+    color: #e2b96f;
+    font-size: 12pt;
+    margin-bottom: 10px;
+  }
+
+  .summary-box p {
+    font-size: 10.5pt;
+    color: #d0e8ff;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER PAGE ============ -->
+<div class="cover">
+  <div class="logo">📊</div>
+  <h1>投资持仓周报</h1>
+  <h2>Weekly Portfolio Analysis Report</h2>
+  
+  <div class="meta">
+    <p><strong>报告日期：</strong>2026年3月9日（周一）</p>
+    <p><strong>报告周期：</strong>2026年3月9日 — 3月13日</p>
+    <p><strong>覆盖市场：</strong>港股 · 美股 · 杠杆ETF</p>
+    <p><strong>账户数量：</strong>2个账户（稳健型 + 激进型）</p>
+  </div>
+
+  <p class="disclaimer">本报告仅供参考，不构成投资建议。投资有风险，入市须谨慎。</p>
+</div>
+
+
+<!-- ============ PAGE 1: MACRO ============ -->
+<div class="page">
+
+  <div class="section-header">
+    <span class="icon">🌍</span> 一、宏观环境与市场背景
+  </div>
+
+  <div class="summary-box">
+    <h3>本周核心判断</h3>
+    <p>本周美股面临<strong>滞胀三重压力</strong>：非农就业意外大幅下滑、油价突破90-100美元、关税升至15%。整体策略应以<strong>防御为主</strong>，能源板块独强，科技/化工承压。港股结构性分化：AI/科技/能源强势，消费/半导体走弱。</p>
+  </div>
+
+  <div class="macro-grid">
+    <div class="macro-card danger">
+      <div class="card-title">🧾 非农就业数据</div>
+      <div class="card-value">-9.2万人</div>
+      <div class="card-desc">2月非农意外大幅减少，失业率升至4.4%，劳动力市场显著走弱</div>
+    </div>
+    <div class="macro-card warning">
+      <div class="card-title">🛢 原油价格</div>
+      <div class="card-value">$90 - $100 / 桶</div>
+      <div class="card-desc">WTI/布伦特均突破90美元，中东局势+霍尔木兹海峡风险驱动</div>
+    </div>
+    <div class="macro-card warning">
+      <div class="card-title">⚖️ 贸易关税</div>
+      <div class="card-value">全球关税 15%</div>
+      <div class="card-desc">特朗普将全球关税从10%提升至15%，大宗商品/化工/科技均受压</div>
+    </div>
+    <div class="macro-card neutral">
+      <div class="card-title">🏦 美联储动态</div>
+      <div class="card-value">沃什接任预期</div>
+      <div class="card-desc">鲍威尔任期将尽，沃什被预期推动更宽松货币政策，短期中性</div>
+    </div>
+    <div class="macro-card info">
+      <div class="card-title">📈 S&P 500</div>
+      <div class="card-value">~ 6,740 点</div>
+      <div class="card-desc">本周CPI数据（周三）是最大变数，若超预期科技股面临下行风险</div>
+    </div>
+    <div class="macro-card info">
+      <div class="card-title">🇨🇳 恒生指数</div>
+      <div class="card-value">24,000 - 25,700</div>
+      <div class="card-desc">震荡偏强，AI/科技/能源方向资金流入，南下资金累计流入162亿港元</div>
+    </div>
+  </div>
+
+  <div class="alert orange">
+    ⚠️ <strong>滞胀风险警示：</strong>高油价（通胀上升） + 弱就业（经济走弱）= 滞胀格局升温。美联储降息空间受限，高估值科技股压力最大。能源、黄金、防御型蓝筹为本周优选方向。
+  </div>
+
+  <div class="alert red">
+    🔴 <strong>地缘政治风险：</strong>中东局势升级，伊朗领导层更迭，霍尔木兹海峡航运受阻，对全球供应链构成威胁。原油、天然气、黄金、白银等大宗商品避险属性凸显。
+  </div>
+
+
+  <!-- ============ PAGE 2: ACCOUNT 1 ============ -->
+  <div class="page-break"></div>
+
+  <div class="section-header">
+    <span class="icon">🏦</span> 二、账户一：港股持仓分析（稳健型）
+  </div>
+
+  <div class="sub-header">📌 持仓明细与操作建议</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>标的</th>
+        <th>代码</th>
+        <th>参考价（HKD）</th>
+        <th>操作建议</th>
+        <th>止损位</th>
+        <th>目标价</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>智谱</strong></td>
+        <td>02513</td>
+        <td class="price flat">~532</td>
+        <td><span class="tag watch">⚡ 减仓锁利</span></td>
+        <td>490</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>钧达股份</strong></td>
+        <td>02865</td>
+        <td class="price up">38.52 (+6.94%)</td>
+        <td><span class="tag hold">✅ 持有</span></td>
+        <td>35.00</td>
+        <td>40+</td>
+      </tr>
+      <tr>
+        <td><strong>阿里巴巴-W</strong></td>
+        <td>09988</td>
+        <td class="price up">130.7 (+3.48%)</td>
+        <td><span class="tag hold">✅ 持有至业绩</span></td>
+        <td>120.00</td>
+        <td>195</td>
+      </tr>
+      <tr>
+        <td><strong>东方电气</strong></td>
+        <td>01072</td>
+        <td class="price flat">44.8 (+0.18%)</td>
+        <td><span class="tag hold">✅ 持有</span></td>
+        <td>40.00</td>
+        <td>55</td>
+      </tr>
+      <tr>
+        <td><strong>兆易创新</strong></td>
+        <td>03986</td>
+        <td class="price up">391.6 (+4.82%)</td>
+        <td><span class="tag watch">🟡 持有观察</span></td>
+        <td>370.00</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>三花智控</strong></td>
+        <td>02050</td>
+        <td class="price up">31.2 (+2.56%)</td>
+        <td><span class="tag hold">✅ 持有至年报</span></td>
+        <td>28.00</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>中国海洋石油</strong></td>
+        <td>00883</td>
+        <td class="price down">26.62 (-0.89%)</td>
+        <td><span class="tag hold">✅ 持有</span></td>
+        <td>25.00</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>中国中免</strong></td>
+        <td>01880</td>
+        <td class="price up">73.7 (+1.31%)</td>
+        <td><span class="tag reduce">🔴 建议减仓</span></td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>中国铝业</strong></td>
+        <td>2600.HK</td>
+        <td class="price flat">~13.67</td>
+        <td><span class="tag hold">✅ 持有</span></td>
+        <td>13.20</td>
+        <td>14.51</td>
+      </tr>
+      <tr>
+        <td><strong>MINIMAX-WP</strong></td>
+        <td>00100</td>
+        <td class="price up">805.5 (+0.69%)</td>
+        <td><span class="tag hold">✅ 持有</span></td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="sub-header">🔍 重点标的分析</div>
+
+  <h3>⚡ 智谱 (02513) — 减仓锁利</h3>
+  <p>AI Agent政策催化爆发，成交额超22亿港元，单日+9%创新高，股价一度触及558港元。短期涨幅过大，高位震荡回调压力强烈。建议分批减仓20-30%锁定利润，剩余持仓止损设在490以下。</p>
+
+  <h3>🟢 阿里巴巴 (09988) — 持有至3月19日业绩</h3>
+  <p>花旗/中金双双维持买入评级，目标价195港元。千问谣言已澄清，AI+云逻辑完整。<strong>3月19日公布Q3财报为重要催化</strong>，云收入增速预期35%+，持仓至业绩公布前。</p>
+
+  <h3>🟢 东方电气 (01072) — 目标55港元</h3>
+  <p>美银3月8日大幅上调目标价至55港元（前值33），AI数据中心电力设备需求强劲。短期消化获利盘，但上升趋势完整，支撑位42港元。</p>
+
+  <h3>🔴 中国中免 (01880) — 建议减仓</h3>
+  <p>失去上海机场部分免税经营权，垄断逻辑受损严重。较高点已跌超30%，春节后消费低于预期，空头情绪主导。成本在80以上的投资者建议减仓，等待止跌企稳信号。</p>
+
+
+  <!-- ============ PAGE 3: ACCOUNT 2 ============ -->
+  <div class="page-break"></div>
+
+  <div class="section-header">
+    <span class="icon">⚡</span> 三、账户二：混合持仓分析（激进型）
+  </div>
+
+  <div class="alert orange">
+    ⚠️ <strong>账户风险提示：</strong>本账户混合了杠杆ETF、加密货币相关产品、核能概念股等高风险标的，整体波动率极高。部分仓位需立即处理，请仔细阅读后文紧急操作指引。
+  </div>
+
+  <div class="sub-header">🇨🇳 港股部分</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>标的</th>
+        <th>代码</th>
+        <th>参考价（HKD）</th>
+        <th>操作建议</th>
+        <th>止损位</th>
+        <th>目标价</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>携程集团-S</strong></td>
+        <td>09961</td>
+        <td class="price down">414.6 (-0.81%)</td>
+        <td><span class="tag hold">✅ 持有</span></td>
+        <td>395</td>
+        <td>541</td>
+      </tr>
+      <tr>
+        <td><strong>心动公司</strong></td>
+        <td>02400</td>
+        <td class="price up">71.75 (+0.63%)</td>
+        <td><span class="tag hold">✅ 持有</span></td>
+        <td>67</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>京东物流</strong></td>
+        <td>02618</td>
+        <td class="price up">12.83 (+1.58%)</td>
+        <td><span class="tag watch">🟡 持有观察</span></td>
+        <td>11.5</td>
+        <td>18.7</td>
+      </tr>
+      <tr>
+        <td><strong>金风科技</strong></td>
+        <td>02208</td>
+        <td class="price up">14.50 (+0.28%)</td>
+        <td><span class="tag reduce">⚠️ 减仓50%</span></td>
+        <td>13.8</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="font-size:9.5pt;color:#666;margin-bottom:16px;">携程2025年净利润同比+95%，机构目标价541港元。心动盈喜+回购支撑。金风科技技术面出现死叉（MA5穿MA20），摩根大通下调盈利预测，建议减仓。</p>
+
+  <div class="sub-header">📈 杠杆ETF部分（每日重置，不宜长持）</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>标的</th>
+        <th>类型</th>
+        <th>参考价（USD）</th>
+        <th>操作建议</th>
+        <th>止损位</th>
+        <th>备注</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>BOIL</strong></td>
+        <td>2x做多天然气</td>
+        <td class="price up">19.85 (+11.58%)</td>
+        <td><span class="tag urgent">🔥 立即减仓70%</span></td>
+        <td>17</td>
+        <td>单日+11%必须止盈</td>
+      </tr>
+      <tr>
+        <td><strong>UGL</strong></td>
+        <td>2x做多黄金</td>
+        <td class="price up">75.59 (+2.94%)</td>
+        <td><span class="tag hold">✅ 持有</span></td>
+        <td>70</td>
+        <td>本周最稳逻辑</td>
+      </tr>
+      <tr>
+        <td><strong>AGQ</strong></td>
+        <td>2x做多白银</td>
+        <td class="price up">152.59 (+4.54%)</td>
+        <td><span class="tag hold">✅ 持有</span></td>
+        <td>140</td>
+        <td>超160可部分减仓</td>
+      </tr>
+      <tr>
+        <td><strong>MSTZ</strong></td>
+        <td>2x做空MSTR</td>
+        <td class="price up">11.51 (+9.00%)</td>
+        <td><span class="tag hold">✅ 持有</span></td>
+        <td>9.5</td>
+        <td>BTC弱势下逻辑成立</td>
+      </tr>
+      <tr>
+        <td><strong>MSTU</strong></td>
+        <td>2x做多MSTR</td>
+        <td class="price down">5.05 (-9.01%)</td>
+        <td><span class="tag exit">❌ 出清一边</span></td>
+        <td>—</td>
+        <td>⚠️ 与MSTZ同持=双向损耗</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="alert red">
+    🚨 <strong>MSTU + MSTZ 双持警告：</strong>若同时持有MSTU（2x做多MSTR）和MSTZ（2x做空MSTR），两者方向相反，每日重置机制导致双向损耗——无论MSTR涨跌，总仓位价值每天都会缩水。这相当于每日支付双倍"时间税"，<strong>长期持有必然亏损</strong>。请立即确认并出清其中一边。
+  </div>
+
+  <div class="sub-header">🇺🇸 美股个股部分</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>标的</th>
+        <th>参考价（USD）</th>
+        <th>操作建议</th>
+        <th>止损位</th>
+        <th>核心逻辑</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>INTC 英特尔</strong></td>
+        <td class="price down">43.42 (-5.51%)</td>
+        <td><span class="tag exit">❌ 立即出清</span></td>
+        <td>—</td>
+        <td>陈立武被起诉，疑贱卖Intel股权，重大利空</td>
+      </tr>
+      <tr>
+        <td><strong>SCCO 南方铜业</strong></td>
+        <td class="price down">184.97 (-3.60%)</td>
+        <td><span class="tag reduce">⚠️ 减仓50%</span></td>
+        <td>175</td>
+        <td>关税升至15%，贸易战压制工业金属需求</td>
+      </tr>
+      <tr>
+        <td><strong>SMR 核能</strong></td>
+        <td class="price down">11.67 (-4.19%)</td>
+        <td><span class="tag hold">✅ 持有</span></td>
+        <td>9</td>
+        <td>AI数据中心用电，长期逻辑，目标50</td>
+      </tr>
+      <tr>
+        <td><strong>OKLO 核能</strong></td>
+        <td class="price down">58.25 (-6.09%)</td>
+        <td><span class="tag hold">✅ 持有</span></td>
+        <td>54</td>
+        <td>小型反应堆赛道，AI用电需求长期驱动</td>
+      </tr>
+      <tr>
+        <td><strong>PLTR Palantir</strong></td>
+        <td class="price up">157.16 (+2.94%)</td>
+        <td><span class="tag hold">✅ 持有</span></td>
+        <td>145</td>
+        <td>AI政府合同，本轮AI Agent主线</td>
+      </tr>
+      <tr>
+        <td><strong>TEM Tempus AI</strong></td>
+        <td class="price down">52.26 (-1.49%)</td>
+        <td><span class="tag watch">🟡 持有观察</span></td>
+        <td>48</td>
+        <td>AI医疗数据，高估值受弱就业压制</td>
+      </tr>
+      <tr>
+        <td><strong>HOOD Robinhood</strong></td>
+        <td class="price down">77.09 (-4.31%)</td>
+        <td><span class="tag watch">🟡 持有观察</span></td>
+        <td>73</td>
+        <td>收入与加密交易量高度相关，BTC弱则HOOD弱</td>
+      </tr>
+      <tr>
+        <td><strong>CRCL Circle</strong></td>
+        <td class="price down">101.91 (-3.62%)</td>
+        <td><span class="tag watch">🟡 控仓&lt;5%</span></td>
+        <td>95</td>
+        <td>USDC发行商，BTC弱势拖累加密板块</td>
+      </tr>
+      <tr>
+        <td><strong>DOW 陶氏化学</strong></td>
+        <td class="price down">32.92 (-1.08%)</td>
+        <td><span class="tag reduce">⚠️ 建议减仓</span></td>
+        <td>—</td>
+        <td>高油价→原料成本上升，关税冲击需求双重压制</td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <!-- ============ PAGE 4: PRIORITY & CALENDAR ============ -->
+  <div class="page-break"></div>
+
+  <div class="section-header">
+    <span class="icon">🎯</span> 四、本周优先操作指引
+  </div>
+
+  <div class="alert red">
+    🔥 <strong>今日（3月9日）美股开盘前必须处理的事项：</strong>INTC出清（陈立武被起诉利空）+ MSTU/MSTZ确认只保留一边 + BOIL减仓锁利
+  </div>
+
+  <table class="priority-table">
+    <thead>
+      <tr>
+        <th>优先级</th>
+        <th>操作</th>
+        <th>标的</th>
+        <th>账户</th>
+        <th>核心原因</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="priority-row-1">
+        <td><span class="fire">🔥 立即</span></td>
+        <td><span class="tag exit">出清/减仓</span></td>
+        <td><strong>INTC</strong></td>
+        <td>账户二</td>
+        <td>陈立武被起诉，疑贱卖股权，重大利空事件</td>
+      </tr>
+      <tr class="priority-row-1">
+        <td><span class="fire">🔥 立即</span></td>
+        <td><span class="tag exit">出清一边</span></td>
+        <td><strong>MSTU or MSTZ</strong></td>
+        <td>账户二</td>
+        <td>同时持有2x做多+做空=每日双倍损耗陷阱</td>
+      </tr>
+      <tr class="priority-row-1">
+        <td><span class="fire">🔥 立即</span></td>
+        <td><span class="tag urgent">减仓70%</span></td>
+        <td><strong>BOIL</strong></td>
+        <td>账户二</td>
+        <td>单日+11.58%，杠杆ETF必须及时止盈锁利</td>
+      </tr>
+      <tr class="priority-row-2">
+        <td><span class="warn">⚠️ 本周</span></td>
+        <td><span class="tag reduce">减仓50%</span></td>
+        <td><strong>SCCO</strong></td>
+        <td>账户二</td>
+        <td>关税压制铜价，技术面弱，止损175</td>
+      </tr>
+      <tr class="priority-row-2">
+        <td><span class="warn">⚠️ 本周</span></td>
+        <td><span class="tag reduce">减仓50%</span></td>
+        <td><strong>金风科技</strong></td>
+        <td>账户二</td>
+        <td>MA5穿MA20死叉，摩根大通下调预测</td>
+      </tr>
+      <tr class="priority-row-2">
+        <td><span class="warn">⚠️ 本周</span></td>
+        <td><span class="tag reduce">建议减仓</span></td>
+        <td><strong>中国中免</strong></td>
+        <td>账户一</td>
+        <td>失去上海机场免税权，垄断逻辑破坏</td>
+      </tr>
+      <tr class="priority-row-2">
+        <td><span class="warn">⚠️ 本周</span></td>
+        <td><span class="tag watch">减仓20-30%</span></td>
+        <td><strong>智谱</strong></td>
+        <td>账户一</td>
+        <td>单日+9%，高位震荡，分批锁定利润</td>
+      </tr>
+      <tr class="priority-row-3">
+        <td><span class="ok">✅ 持有</span></td>
+        <td><span class="tag hold">不动</span></td>
+        <td>携程/心动/阿里/东方电气</td>
+        <td>两账户</td>
+        <td>基本面/业绩逻辑完整，按止损执行</td>
+      </tr>
+      <tr class="priority-row-3">
+        <td><span class="ok">✅ 持有</span></td>
+        <td><span class="tag hold">不动</span></td>
+        <td>UGL/AGQ/SMR/OKLO/PLTR</td>
+        <td>账户二</td>
+        <td>黄金白银避险+核能AI长逻辑均成立</td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="section-header" style="margin-top:30px;">
+    <span class="icon">📅</span> 五、本周重要日历
+  </div>
+
+  <div class="calendar">
+    <div class="cal-item hot">
+      <div class="cal-date">📍 3月9日（今天）</div>
+      <div class="cal-event">INTC事件处理<br>MSTU/MSTZ决策<br>BOIL止盈</div>
+    </div>
+    <div class="cal-item hot">
+      <div class="cal-date">🔴 3月11日（周三）</div>
+      <div class="cal-event"><strong>美国CPI数据公布</strong><br>本周最大变数<br>超预期→科技股大跌风险</div>
+    </div>
+    <div class="cal-item">
+      <div class="cal-date">📊 3月13日（周五）</div>
+      <div class="cal-event">美股周度收官<br>评估本周操作<br>下周布局准备</div>
+    </div>
+    <div class="cal-item hot">
+      <div class="cal-date">🔴 3月19日（下周四）</div>
+      <div class="cal-event"><strong>阿里巴巴Q3财报</strong><br>云收入预期+35%<br>持仓至业绩公布</div>
+    </div>
+    <div class="cal-item">
+      <div class="cal-date">📋 3月24日（下下周）</div>
+      <div class="cal-event"><strong>三花智控年报</strong><br>Optimus V3催化<br>持仓至年报披露</div>
+    </div>
+    <div class="cal-item">
+      <div class="cal-date">📈 全周关注</div>
+      <div class="cal-event">油价走势（破$100）<br>中东地缘动态<br>比特币价格</div>
+    </div>
+  </div>
+
+
+  <div class="footer-note">
+    <strong>⚠️ 免责声明</strong><br>
+    本报告由AI投资助手基于公开市场信息整理生成，仅供参考，不构成任何形式的投资建议或邀约。
+    投资存在风险，市场有涨有跌，过去表现不代表未来收益。
+    请投资者根据自身风险承受能力、资金状况及投资目标独立做出投资决策。<br><br>
+    报告生成时间：2026年3月9日 17:12 (GMT+8) ｜ 覆盖市场：港股 · 美股 · 杠杆ETF
+  </div>
+
+</div>
+
+</body>
+</html>

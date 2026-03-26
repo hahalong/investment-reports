@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+    font-size: 11pt;
+    color: #1a1a2e;
+    background: #fff;
+    line-height: 1.7;
+  }
+
+  /* ── 封面 ── */
+  .cover {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 60%, #0d1b2a 100%);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center; padding: 60px 40px;
+    color: #fff;
+    page-break-after: always;
+  }
+  .cover .badge {
+    background: rgba(255,200,50,0.15);
+    border: 1px solid rgba(255,200,50,0.4);
+    border-radius: 20px; padding: 6px 20px;
+    font-size: 10pt; color: #ffc832; margin-bottom: 24px;
+    letter-spacing: 1px;
+  }
+  .cover h1 { font-size: 26pt; font-weight: 700; color: #ffc832; margin-bottom: 10px; line-height: 1.3; }
+  .cover h2 { font-size: 13pt; font-weight: 300; color: #a8c6fa; margin-bottom: 32px; }
+  .cover .meta-box {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px; padding: 18px 36px; margin-top: 16px;
+  }
+  .cover .meta-box p { font-size: 11pt; color: #d0e8ff; margin: 5px 0; }
+  .cover .meta-box strong { color: #ffc832; }
+  .cover .disclaimer { margin-top: 40px; font-size: 8.5pt; color: rgba(255,255,255,0.35); }
+
+  /* ── 摘要卡片 ── */
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    margin: 18px 0;
+  }
+  .summary-card {
+    border-radius: 10px; padding: 12px 14px; text-align: center;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .summary-card .icon { font-size: 20pt; margin-bottom: 4px; }
+  .summary-card .label { font-size: 9pt; color: #666; margin-bottom: 2px; }
+  .summary-card .verdict { font-size: 10.5pt; font-weight: 700; }
+  .card-red    { background: #fff0f0; }
+  .card-green  { background: #f0fff4; }
+  .card-yellow { background: #fffbf0; }
+  .verdict-red    { color: #c0392b; }
+  .verdict-green  { color: #1a7a4a; }
+  .verdict-yellow { color: #b8860b; }
+
+  /* ── 页面布局 ── */
+  .page { padding: 42px 52px; max-width: 860px; margin: 0 auto; }
+  .page-break { page-break-before: always; }
+
+  /* ── 标题 ── */
+  h1.report-title {
+    font-size: 20pt; font-weight: 700; color: #0f3460;
+    border-bottom: 3px solid #ffc832; padding-bottom: 8px; margin-bottom: 6px;
+  }
+  .report-meta { font-size: 9pt; color: #888; margin-bottom: 28px; }
+  h2.section {
+    font-size: 14pt; font-weight: 700; color: #0f3460;
+    border-left: 4px solid #ffc832;
+    padding: 4px 0 4px 12px; margin: 28px 0 14px;
+  }
+  h3.sub { font-size: 11.5pt; font-weight: 700; color: #16213e; margin: 18px 0 8px; }
+
+  /* ── 表格 ── */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 10pt; }
+  th { background: #0f3460; color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; }
+  td { padding: 7px 10px; border-bottom: 1px solid #e8ecf0; }
+  tr:nth-child(even) td { background: #f7f9fc; }
+  tr:hover td { background: #eef3fb; }
+
+  /* ── 高亮框 ── */
+  .highlight-box {
+    border-radius: 10px; padding: 14px 18px; margin: 14px 0;
+    border-left: 5px solid;
+  }
+  .box-red    { background: #fff5f5; border-color: #e74c3c; }
+  .box-green  { background: #f0faf4; border-color: #27ae60; }
+  .box-yellow { background: #fffdf0; border-color: #f39c12; }
+  .box-blue   { background: #f0f6ff; border-color: #2980b9; }
+  .box-title  { font-weight: 700; font-size: 10.5pt; margin-bottom: 6px; }
+
+  /* ── 指标徽章 ── */
+  .badge-red    { display:inline-block; background:#fde8e8; color:#c0392b; border-radius:4px; padding:2px 8px; font-size:9.5pt; font-weight:700; }
+  .badge-green  { display:inline-block; background:#e8f8ee; color:#1a7a4a; border-radius:4px; padding:2px 8px; font-size:9.5pt; font-weight:700; }
+  .badge-yellow { display:inline-block; background:#fff8e1; color:#b8860b; border-radius:4px; padding:2px 8px; font-size:9.5pt; font-weight:700; }
+
+  /* ── 数据行 ── */
+  .data-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #f0f0f0; }
+  .data-name { color:#444; font-size:10pt; }
+  .data-val  { font-weight:700; font-size:10.5pt; }
+  .up   { color:#e74c3c; }
+  .down { color:#27ae60; }
+
+  /* ── 策略卡 ── */
+  .strategy-card {
+    background: #f8faff;
+    border: 1px solid #d0dff5;
+    border-radius: 12px; padding: 16px 20px; margin: 12px 0;
+  }
+  .strategy-card .s-title { font-size: 12pt; font-weight: 700; color: #0f3460; margin-bottom: 8px; }
+  .strategy-card ul { padding-left: 18px; }
+  .strategy-card li { margin: 4px 0; font-size: 10pt; color: #333; }
+
+  /* ── TOP3 股票 ── */
+  .top3-wrap { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:12px 0; }
+  .top3-card {
+    background: linear-gradient(135deg, #0f3460 0%, #1a4a80 100%);
+    border-radius: 10px; padding: 14px; color: #fff;
+  }
+  .top3-card .rank { font-size: 8pt; color: #ffc832; font-weight:700; margin-bottom:4px; }
+  .top3-card .name { font-size: 11pt; font-weight:700; margin-bottom:4px; }
+  .top3-card .code { font-size: 8.5pt; color: #a8c6fa; margin-bottom:6px; }
+  .top3-card .reason { font-size: 9pt; color: #d0e8ff; line-height:1.5; }
+
+  /* ── 风险表 ── */
+  .risk-row-high td:first-child { color:#c0392b; font-weight:700; }
+  .risk-row-mid  td:first-child { color:#e67e22; font-weight:700; }
+  .risk-row-low  td:first-child { color:#27ae60; font-weight:700; }
+
+  /* ── 来源 ── */
+  .source-list { font-size: 9pt; color: #888; }
+  .source-list li { margin: 3px 0; }
+
+  /* ── 免责声明 ── */
+  .disclaimer-footer {
+    background: #f7f9fc; border-radius:8px; padding:12px 16px;
+    font-size:8.5pt; color:#888; margin-top:24px;
+    border: 1px solid #e0e8f0;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ 封面 ══════════════ -->
+<div class="cover">
+  <div class="badge">📊 投资官 · 深度研究报告</div>
+  <h1>全球宏观形势<br>多市场投资策略</h1>
+  <h2>A股 · 港股 · 美股 · 黄金白银 · 比特币</h2>
+  <div class="meta-box">
+    <p>📅 报告日期：<strong>2026年3月14日（周六）</strong></p>
+    <p>⏱ 数据截止：<strong>2026-03-14 08:00 GMT+8</strong></p>
+    <p>📋 报告类型：<strong>标准版 · 宏观深度分析</strong></p>
+    <p>🎯 覆盖市场：<strong>A股 · 港股 · 美股 · 黄金 · 白银 · BTC</strong></p>
+  </div>
+  <p class="disclaimer">本报告仅供参考，不构成投资建议。市场有风险，投资须谨慎。</p>
+</div>
+
+<!-- ══════════════ 第一页：执行摘要 ══════════════ -->
+<div class="page">
+  <h1 class="report-title">📋 执行摘要</h1>
+  <p class="report-meta">先看这里 · 核心结论一览</p>
+
+  <div class="summary-grid">
+    <div class="summary-card card-yellow">
+      <div class="icon">🇨🇳</div>
+      <div class="label">A股</div>
+      <div class="verdict verdict-yellow">🟡 谨慎偏多</div>
+    </div>
+    <div class="summary-card card-green">
+      <div class="icon">🇭🇰</div>
+      <div class="label">港股</div>
+      <div class="verdict verdict-green">🟢 积极布局</div>
+    </div>
+    <div class="summary-card card-red">
+      <div class="icon">🇺🇸</div>
+      <div class="label">美股</div>
+      <div class="verdict verdict-red">🔴 防御为主</div>
+    </div>
+    <div class="summary-card card-green">
+      <div class="icon">🥇</div>
+      <div class="label">黄金</div>
+      <div class="verdict verdict-green">🟢 中长期看多</div>
+    </div>
+    <div class="summary-card card-yellow">
+      <div class="icon">🥈</div>
+      <div class="label">白银</div>
+      <div class="verdict verdict-yellow">🟡 观望为主</div>
+    </div>
+    <div class="summary-card card-yellow">
+      <div class="icon">₿</div>
+      <div class="label">比特币</div>
+      <div class="verdict verdict-yellow">🟡 震荡整固</div>
+    </div>
+    <div class="summary-card card-red">
+      <div class="icon">🌍</div>
+      <div class="label">全球宏观</div>
+      <div class="verdict verdict-red">🔴 滞胀风险高</div>
+    </div>
+    <div class="summary-card card-red">
+      <div class="icon">⚡</div>
+      <div class="label">中东局势</div>
+      <div class="verdict verdict-red">🔴 最大黑天鹅</div>
+    </div>
+  </div>
+
+  <div class="highlight-box box-blue">
+    <div class="box-title">🎯 核心判断</div>
+    <p>当前全球处于<strong>「滞胀 + 地缘风险」</strong>双重压力之下，美联储降息预期大幅推迟（最早9月），美股估值承压。相比之下，A股/港股受益于国内政策宽松与科技自主化战略，性价比优于美股。<strong>黄金是当前最确定性的避险+增值资产</strong>，当前回调是买点。</p>
+  </div>
+
+  <h2 class="section">📡 实时市场数据（已验证）</h2>
+  <table>
+    <tr><th>资产</th><th>最新价格</th><th>日涨跌</th><th>信号</th></tr>
+    <tr><td>🇺🇸 标普500</td><td>6,632.19</td><td class="down">-0.61%</td><td><span class="badge-red">⚠️ 承压</span></td></tr>
+    <tr><td>🇺🇸 纳斯达克</td><td>22,105.36</td><td class="down">-0.93%</td><td><span class="badge-red">⚠️ 承压</span></td></tr>
+    <tr><td>🇺🇸 道琼斯</td><td>46,558.47</td><td class="down">-0.26%</td><td><span class="badge-yellow">观望</span></td></tr>
+    <tr><td>🇺🇸 VIX恐慌</td><td>27.19</td><td class="down">-0.37%</td><td><span class="badge-yellow">偏高</span></td></tr>
+    <tr><td>🇨🇳 上证指数</td><td>4,095.45</td><td class="down">-0.82%</td><td><span class="badge-yellow">技术回调</span></td></tr>
+    <tr><td>🇨🇳 深证成指</td><td>14,280.78</td><td class="down">-0.65%</td><td><span class="badge-yellow">技术回调</span></td></tr>
+    <tr><td>🇭🇰 恒生指数</td><td>25,465.60</td><td class="down">-0.98%</td><td><span class="badge-green">低估值区</span></td></tr>
+    <tr><td>🥇 黄金(COMEX)</td><td>$5,023.10</td><td class="down">-1.81%</td><td><span class="badge-green">🔥 回调买点</span></td></tr>
+    <tr><td>🥈 白银(COMEX)</td><td>$80.65</td><td class="down">-4.75%</td><td><span class="badge-yellow">谨慎</span></td></tr>
+    <tr><td>🛢️ 布伦特原油</td><td>$103.86</td><td class="up">+3.38%</td><td><span class="badge-red">⚠️ 通胀压力</span></td></tr>
+    <tr><td>₿ 比特币</td><td>$70,863.58</td><td class="up">+0.53%</td><td><span class="badge-yellow">整固</span></td></tr>
+    <tr><td>💱 美元/人民币</td><td>6.8956</td><td class="up">+0.44%</td><td><span class="badge-yellow">人民币轻贬</span></td></tr>
+    <tr><td>📈 美债10Y</td><td>4.285%</td><td class="up">+0.28%</td><td><span class="badge-red">利率偏高</span></td></tr>
+  </table>
+  <p style="font-size:8.5pt;color:#999;margin-top:4px;">数据来源：yfinance · 2026-03-14 08:00 GMT+8</p>
+</div>
+
+<!-- ══════════════ 第二页：宏观分析 ══════════════ -->
+<div class="page page-break">
+  <h1 class="report-title">🌐 全球宏观形势分析</h1>
+
+  <h2 class="section">🇺🇸 美国：滞胀风险是主旋律</h2>
+
+  <div class="highlight-box box-red">
+    <div class="box-title">🔴 核心矛盾：高通胀 + 弱就业 = 典型滞胀，美联储两难</div>
+    <p>美联储1月、3月两次暂停降息；巴克莱、道明证券将下次降息推迟至<strong>9月</strong>，市场从年内降息2次缩减为1次甚至零次。</p>
+  </div>
+
+  <table>
+    <tr><th>指标</th><th>数值</th><th>说明</th></tr>
+    <tr><td>🏦 联邦基金利率</td><td><strong>3.50%–3.75%</strong></td><td>连续暂停降息</td></tr>
+    <tr><td>😟 消费者信心（密歇根）</td><td><strong>55.5</strong></td><td>年内新低，近年最差</td></tr>
+    <tr><td>📈 通胀预期（1年）</td><td><strong>3.4%</strong></td><td>远超美联储2%目标</td></tr>
+    <tr><td>👷 失业率</td><td><strong>4.4–4.5%</strong></td><td>劳动力市场疲软</td></tr>
+    <tr><td>🏭 月新增就业</td><td><strong>5–9万</strong></td><td>明显低于历史均值</td></tr>
+    <tr><td>📉 GDP预测</td><td><strong>1.5–2.6%</strong></td><td>较2025年下滑</td></tr>
+  </table>
+
+  <div class="highlight-box box-yellow">
+    <div class="box-title">⚠️ 关键变量（不确定）</div>
+    <ul style="padding-left:18px;font-size:10pt;">
+      <li>最高法院审理「对等关税是否违宪」——若违宪，通胀预期改善（正面变量）</li>
+      <li>2026年5月美联储主席换届，政策连续性存在不确定性</li>
+      <li>特朗普政府正准备启动新一轮贸易调查</li>
+    </ul>
+  </div>
+
+  <h2 class="section">🇨🇳 中国：政策发力，结构转型</h2>
+
+  <div class="highlight-box box-green">
+    <div class="box-title">🟢 政策底已非常清晰，科技自主化是中长期最强主线</div>
+    <p>两会刚刚结束，1.3万亿超长期特别国债支持科技创新；「人工智能+」升格国家核心引擎；市场处于十五五规划政策红利消化期。</p>
+  </div>
+
+  <table>
+    <tr><th>指标</th><th>数值</th><th>说明</th></tr>
+    <tr><td>🎯 GDP增长目标</td><td><strong>4.5–5.0%</strong></td><td>多年来首次下调区间（质量优先）</td></tr>
+    <tr><td>💰 超长期国债</td><td><strong>1.3万亿</strong></td><td>重点支持科技创新</td></tr>
+    <tr><td>📉 PPI</td><td><strong>连续40个月下滑</strong></td><td>通缩压力仍存，内需有待提振</td></tr>
+    <tr><td>🎯 CPI目标</td><td><strong>2.0%</strong></td><td>政府目标，当前仍偏低</td></tr>
+  </table>
+
+  <h3 class="sub">🏭 六大新兴支柱产业（十五五规划核心）</h3>
+  <table>
+    <tr><th>产业</th><th>投资机会</th><th>信号</th></tr>
+    <tr><td>💻 集成电路</td><td>国产芯片、半导体设备、材料</td><td><span class="badge-green">🟢 强烈看多</span></td></tr>
+    <tr><td>🚀 航空航天</td><td>商业航天、卫星、低空经济</td><td><span class="badge-green">🟢 看多</span></td></tr>
+    <tr><td>🧬 生物医药</td><td>创新药、医疗器械</td><td><span class="badge-yellow">🟡 谨慎看多</span></td></tr>
+    <tr><td>🚁 低空经济</td><td>eVTOL、无人机、基础设施</td><td><span class="badge-green">🟢 新兴机会</span></td></tr>
+    <tr><td>🔋 新型储能</td><td>宁德时代、阳光电源</td><td><span class="badge-green">🟢 看多</span></td></tr>
+    <tr><td>🤖 智能机器人</td><td>三花智控、Optimus供应链</td><td><span class="badge-green">🟢 看多</span></td></tr>
+  </table>
+
+  <h2 class="section">🌍 全球：能源冲击与贸易碎片化</h2>
+
+  <div class="highlight-box box-red">
+    <div class="box-title">🔴 最大黑天鹅：中东霍尔木兹海峡危机</div>
+    <p>伊朗局势导致海峡交通一度停顿，布伦特原油突破<strong>$100/桶</strong>，刷新近四年高点。多国联合释放约4亿桶战略石油储备应对。当前原油已反弹至<strong>$103.86</strong>，通胀压力仍存。</p>
+  </div>
+
+  <table>
+    <tr><th>全球指标</th><th>现状</th><th>影响</th></tr>
+    <tr><td>🌐 全球GDP增速预测</td><td>约2.7%</td><td>较2025年放缓（来源：多机构一致）</td></tr>
+    <tr><td>🛢️ 布伦特原油</td><td>$103.86（+3.38%）</td><td>通胀压力持续，能源板块短暂受益</td></tr>
+    <tr><td>🔒 贸易碎片化</td><td>持续加速</td><td>供应链重组，中国科技自主化加速</td></tr>
+    <tr><td>🏦 全球央行</td><td>多数维持高利率</td><td>流动性偏紧，压制风险资产</td></tr>
+  </table>
+</div>
+
+<!-- ══════════════ 第三页：看多/看空 ══════════════ -->
+<div class="page page-break">
+  <h1 class="report-title">📈📉 看多 / 看空方向</h1>
+
+  <h2 class="section">🟢 看多（受益方向）</h2>
+
+  <!-- AI算力 -->
+  <div class="strategy-card">
+    <div class="s-title">🤖 AI算力 / CPO / 算电协同</div>
+    <p style="font-size:10pt;color:#444;margin-bottom:8px;">两会「算电协同」写入政府报告 + 1.3万亿国债 + 国产大模型爆发，三重催化共振。AI基础设施是A股/港股未来1-3年最强主线。</p>
+    <div class="top3-wrap">
+      <div class="top3-card">
+        <div class="rank">🥇 TOP1 · A股/港股</div>
+        <div class="name">东方电气</div>
+        <div class="code">01072.HK / 600875.SH</div>
+        <div class="reason">算力电力基础设施龙头，两会政策直接受益，目标价55，42-43是理想买点</div>
+      </div>
+      <div class="top3-card">
+        <div class="rank">🥈 TOP2 · A股</div>
+        <div class="name">中际旭创</div>
+        <div class="code">300308.SZ</div>
+        <div class="reason">全球AI算力光模块龙头，CPO核心受益者，前期回调已消化，主线逻辑完好</div>
+      </div>
+      <div class="top3-card">
+        <div class="rank">🥉 TOP3 · A股</div>
+        <div class="name">光迅科技</div>
+        <div class="code">002281.SZ</div>
+        <div class="reason">CPO/光模块国产替代加速，3月10日涨停验证主线，有望持续</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 半导体 -->
+  <div class="strategy-card">
+    <div class="s-title">💻 国产半导体 / 芯片国产化</div>
+    <p style="font-size:10pt;color:#444;margin-bottom:8px;">中美科技脱钩持续，芯片国产化是国家战略，五年规划核心支柱，政策确定性极高。</p>
+    <div class="top3-wrap">
+      <div class="top3-card">
+        <div class="rank">🥇 TOP1 · 港股</div>
+        <div class="name">中芯国际</div>
+        <div class="code">0981.HK / 688981.SH</div>
+        <div class="reason">国产晶圆代工唯一选择，国产化率提升确定性最高，近期+5.51%</div>
+      </div>
+      <div class="top3-card">
+        <div class="rank">🥈 TOP2 · A股</div>
+        <div class="name">北方华创</div>
+        <div class="code">002371.SZ</div>
+        <div class="reason">半导体设备国产化龙头，刻蚀机/PVD等核心设备，进口替代空间巨大</div>
+      </div>
+      <div class="top3-card">
+        <div class="rank">🥉 TOP3 · A股</div>
+        <div class="name">芯片ETF</div>
+        <div class="code">516920.SH</div>
+        <div class="reason">分散板块风险，持仓已有，科技主线涨时均可受益</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 港股科技 -->
+  <div class="strategy-card">
+    <div class="s-title">🇭🇰 港股科技（阿里/腾讯）</div>
+    <p style="font-size:10pt;color:#444;margin-bottom:8px;">低估值 + 国内AI应用加速 + 外资回流，性价比优于美股同类。3月19日阿里财报是近期最大催化。</p>
+    <div class="top3-wrap">
+      <div class="top3-card">
+        <div class="rank">🥇 TOP1 · 港股</div>
+        <div class="name">阿里巴巴</div>
+        <div class="code">09988.HK</div>
+        <div class="reason">3月19日Q3财报，云收入预期增速35%+，目标价195，持有不动</div>
+      </div>
+      <div class="top3-card">
+        <div class="rank">🥈 TOP2 · 港股</div>
+        <div class="name">腾讯控股</div>
+        <div class="code">00700.HK</div>
+        <div class="reason">微信AI化 + 6G生态布局，本周+7.27%验证资金认可</div>
+      </div>
+      <div class="top3-card">
+        <div class="rank">🥉 TOP3 · 港股</div>
+        <div class="name">商汤科技</div>
+        <div class="code">00020.HK</div>
+        <div class="reason">AI应用落地加速，大模型赛道估值修复，高风险高弹性</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 黄金 -->
+  <div class="strategy-card">
+    <div class="s-title">🥇 黄金——当前最确定性资产</div>
+    <p style="font-size:10pt;color:#444;margin-bottom:8px;"><strong>三重驱动：去美元化 + 全球央行购金 + 滞胀避险</strong>。当前-1.81%回调是中期买点，非顶部信号。</p>
+    <div class="top3-wrap">
+      <div class="top3-card">
+        <div class="rank">🥇 TOP1 · A股</div>
+        <div class="name">黄金ETF</div>
+        <div class="code">518880 / 159937</div>
+        <div class="reason">最便捷的黄金配置工具，流动性好，跟踪误差小</div>
+      </div>
+      <div class="top3-card">
+        <div class="rank">🥈 TOP2 · 美股</div>
+        <div class="name">UGL (2x黄金)</div>
+        <div class="code">UGL.US</div>
+        <div class="reason">已持有，回调是加仓机会，中长期目标$130+（⚠️ 杠杆产品高风险）</div>
+      </div>
+      <div class="top3-card">
+        <div class="rank">🥉 TOP3 · 全球</div>
+        <div class="name">实物黄金</div>
+        <div class="code">底仓配置</div>
+        <div class="reason">长期配置底仓，不建议短期交易，持有比例建议5-10%</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section">🔴 看空（受损方向）</h2>
+  <table>
+    <tr><th>方向</th><th>核心逻辑</th><th>信号</th><th>持仓建议</th></tr>
+    <tr><td>🛢️ 传统能源（短期）</td><td>战略石油储备释放压制；若中东缓和，油价重回$90以下</td><td><span class="badge-red">🔴 空</span></td><td>继续减仓（油气ETF已减，中海油待处理）</td></tr>
+    <tr><td>🇺🇸 美国消费股/零售</td><td>消费信心55.5新低；关税推高商品价格；实际收入下降</td><td><span class="badge-red">🔴 空</span></td><td>回避（持仓中无）</td></tr>
+    <tr><td>🥈 白银（短期）</td><td>全球制造业PMI走弱；工业需求下降；跌幅已超黄金</td><td><span class="badge-yellow">🟡 观望</span></td><td>AGQ注意止损位，暂不加仓</td></tr>
+    <tr><td>✈️ 航空/航运</td><td>油价高位压成本；中东风险影响航线</td><td><span class="badge-red">🔴 空</span></td><td>回避（已回避）</td></tr>
+    <tr><td>🧪 化工（DOW等）</td><td>关税推高原料成本；全球需求放缓</td><td><span class="badge-red">🔴 空</span></td><td>持仓建议继续减仓</td></tr>
+    <tr><td>📱 美国高估值科技（非AI）</td><td>滞胀压制估值；降息推迟；VIX居高</td><td><span class="badge-yellow">🟡 谨慎</span></td><td>精选AI主线，回避泛科技</td></tr>
+  </table>
+</div>
+
+<!-- ══════════════ 第四页：投资策略 ══════════════ -->
+<div class="page page-break">
+  <h1 class="report-title">🎯 下周及中长期投资策略</h1>
+
+  <!-- A股 -->
+  <h2 class="section">🇨🇳 A股策略</h2>
+  <div class="highlight-box box-yellow">
+    <div class="box-title">📅 下周（3月16–20日）操作基调：谨慎偏多，高抛低吸，不追涨</div>
+    <p>重点跟踪：<strong>成交量是否恢复至2.5万亿以上</strong>（量能是多头持续的关键信号）。电网/算力方向逢回调买入。</p>
+  </div>
+  <div class="top3-wrap">
+    <div class="top3-card">
+      <div class="rank">🥇 A股重点关注 TOP1</div>
+      <div class="name">东方电气</div>
+      <div class="code">600875.SH</div>
+      <div class="reason">算电协同直接受益，两会政策催化持续，42-43回调即加仓，中期目标55</div>
+    </div>
+    <div class="top3-card">
+      <div class="rank">🥈 A股重点关注 TOP2</div>
+      <div class="name">中际旭创</div>
+      <div class="code">300308.SZ</div>
+      <div class="reason">CPO板块龙头，前期回调已消化，AI需求逻辑完好，技术上支撑位明显</div>
+    </div>
+    <div class="top3-card">
+      <div class="rank">🥉 A股重点关注 TOP3</div>
+      <div class="name">宁德时代</div>
+      <div class="code">300750.SZ</div>
+      <div class="reason">年报净利+42%超预期，关注「利好出尽」后是否有连续性资金流入</div>
+    </div>
+  </div>
+  <table>
+    <tr><th>持仓</th><th>建议</th><th>逻辑</th></tr>
+    <tr><td>电网设备ETF(159320)</td><td><span class="badge-green">持有/加仓</span></td><td>两会政策持续兑现</td></tr>
+    <tr><td>特变电工(600089)</td><td><span class="badge-green">持有/加仓</span></td><td>特高压龙头，算电协同受益</td></tr>
+    <tr><td>芯片ETF(516920)</td><td><span class="badge-green">持有</span></td><td>科技主线未破，继续持有</td></tr>
+    <tr><td>油气ETF(561760)</td><td><span class="badge-red">继续减仓</span></td><td>原油若缓和继续承压</td></tr>
+    <tr><td>万华化学(600309)</td><td><span class="badge-red">已减/观望</span></td><td>化工需求疲软</td></tr>
+  </table>
+
+  <!-- 港股 -->
+  <h2 class="section">🇭🇰 港股策略</h2>
+  <div class="highlight-box box-green">
+    <div class="box-title">📅 下周操作基调：积极布局，优先科技映射标的</div>
+    <p>港股处于历史低估值区域，外资回流趋势确立（南水+北水双向加持）。<strong>3月19日阿里财报是近期最大催化事件</strong>，若云收入超预期将带动整个港股科技板块。</p>
+  </div>
+  <div class="top3-wrap">
+    <div class="top3-card">
+      <div class="rank">🥇 港股重点关注 TOP1</div>
+      <div class="name">阿里巴巴</div>
+      <div class="code">09988.HK</div>
+      <div class="reason">3月19日Q3财报催化，云收入35%+预期，目标价195，财报前持有不动</div>
+    </div>
+    <div class="top3-card">
+      <div class="rank">🥈 港股重点关注 TOP2</div>
+      <div class="name">中芯国际</div>
+      <div class="code">0981.HK</div>
+      <div class="reason">半导体国产化确定性最高，近期+5.51%验证主线，估值仍有修复空间</div>
+    </div>
+    <div class="top3-card">
+      <div class="rank">🥉 港股重点关注 TOP3</div>
+      <div class="name">东方电气</div>
+      <div class="code">01072.HK</div>
+      <div class="reason">港A两地算力电力双主线，目标价55，逢回调42-43加仓</div>
+    </div>
+  </div>
+  <div class="highlight-box box-yellow">
+    <div class="box-title">⚠️ 中海油(00883)：止损条件已触发</div>
+    <p>计划写明「油价跌破$95减仓」，当前油价<strong>$103.86</strong>反弹（此前曾跌至$87）。需评估：若油价再度下行是否执行减仓；若中东局势持续紧张则可暂缓，但止损位需上调至$95。</p>
+  </div>
+
+  <!-- 美股 -->
+  <h2 class="section">🇺🇸 美股策略</h2>
+  <div class="highlight-box box-red">
+    <div class="box-title">📅 下周操作基调：防御为主，精选AI基础设施，回避高估值消费科技</div>
+    <p>VIX 27附近，市场恐慌情绪偏高。关注美联储3月会议声明措辞是否出现鹰派信号。</p>
+  </div>
+  <div class="top3-wrap">
+    <div class="top3-card">
+      <div class="rank">🥇 美股重点关注 TOP1</div>
+      <div class="name">PLTR (Palantir)</div>
+      <div class="code">PLTR.US</div>
+      <div class="reason">AI+国防双主线，持有中（止损145），政府AI采购受益者，逻辑中长期成立</div>
+    </div>
+    <div class="top3-card">
+      <div class="rank">🥈 美股重点关注 TOP2</div>
+      <div class="name">SMR / OKLO</div>
+      <div class="code">SMR / OKLO.US</div>
+      <div class="reason">核能+数据中心电力需求，持有中（SMR目标50，OKLO止损54），AI算力电力需求长期支撑</div>
+    </div>
+    <div class="top3-card">
+      <div class="rank">🥉 美股重点关注 TOP3</div>
+      <div class="name">HOOD (Robinhood)</div>
+      <div class="code">HOOD.US</div>
+      <div class="reason">加密合规化受益，散户投资平台，BTC机构化趋势下业务增长确定，止损73</div>
+    </div>
+  </div>
+
+  <!-- 黄金白银BTC -->
+  <h2 class="section">🏅 黄金 / 白银 / BTC 策略</h2>
+  <table>
+    <tr><th>资产</th><th>下周操作</th><th>中长期方向</th><th>止损/目标参考</th></tr>
+    <tr>
+      <td>🥇 黄金</td>
+      <td><span class="badge-green">逢低买入</span>（-1.81%回调是买点）</td>
+      <td>🟢 强烈看多</td>
+      <td>目标$5,500–6,000（12个月）⚠️方向性</td>
+    </tr>
+    <tr>
+      <td>🥈 白银</td>
+      <td><span class="badge-yellow">观望</span>（AGQ注意止损）</td>
+      <td>🟡 跟随黄金，弹性更大</td>
+      <td>止损位参考AGQ $140，谨慎持有</td>
+    </tr>
+    <tr>
+      <td>₿ 比特币</td>
+      <td><span class="badge-yellow">$70,000整固，谨慎持有</span></td>
+      <td>🟡 中长期看多</td>
+      <td>目标$80k–$100k（12个月）⚠️高不确定</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ══════════════ 第五页：风险+来源 ══════════════ -->
+<div class="page page-break">
+  <h1 class="report-title">⚠️ 关键风险 · 数据来源</h1>
+
+  <h2 class="section">⚠️ 风险矩阵</h2>
+  <table>
+    <tr><th>风险事件</th><th>级别</th><th>影响说明</th><th>应对策略</th></tr>
+    <tr class="risk-row-high">
+      <td>🔥 中东局势再度升级（霍尔木兹二次封锁）</td>
+      <td><span class="badge-red">🔴 极高</span></td>
+      <td>油价重上$110+，全球通胀失控，美股大跌</td>
+      <td>持有黄金/油气ETF对冲</td>
+    </tr>
+    <tr class="risk-row-high">
+      <td>🏦 美联储意外鹰派（年内零降息）</td>
+      <td><span class="badge-red">🔴 高</span></td>
+      <td>美股下跌10-15%，加密崩盘，美元走强压A股</td>
+      <td>降低美股仓位，增加黄金比例</td>
+    </tr>
+    <tr class="risk-row-mid">
+      <td>📦 中美贸易关税进一步升级</td>
+      <td><span class="badge-yellow">🟡 中高</span></td>
+      <td>A股/港股出口链承压，科技股估值受压</td>
+      <td>回避出口链，聚焦内需科技</td>
+    </tr>
+    <tr class="risk-row-mid">
+      <td>📊 阿里财报不及预期（3月19日）</td>
+      <td><span class="badge-yellow">🟡 中</span></td>
+      <td>港股科技短期调整5-10%</td>
+      <td>财报后根据数据调整持仓</td>
+    </tr>
+    <tr class="risk-row-low">
+      <td>⚖️ 最高法院裁定关税违宪</td>
+      <td><span class="badge-green">🟢 正面变量</span></td>
+      <td>美国通胀预期改善，降息预期提前</td>
+      <td>增加美股/科技敞口</td>
+    </tr>
+    <tr class="risk-row-mid">
+      <td>🏦 美联储主席换届（5月）政策转向</td>
+      <td><span class="badge-yellow">🟡 不确定</span></td>
+      <td>政策连续性存疑，市场波动加剧</td>
+      <td>持续关注，换届前后减少杠杆</td>
+    </tr>
+  </table>
+
+  <h2 class="section">📌 关键日历（下周及近期）</h2>
+  <table>
+    <tr><th>日期</th><th>事件</th><th>重要性</th><th>影响方向</th></tr>
+    <tr><td>3月16日（周一）</td><td>A股港股开盘，量能观察</td><td><span class="badge-yellow">🟡 重要</span></td><td>量能恢复→多头信号</td></tr>
+    <tr><td>3月19日（周四）</td><td>🔥 阿里巴巴Q3财报</td><td><span class="badge-red">🔴 关键</span></td><td>云收入超预期→港股科技大涨</td></tr>
+    <tr><td>3月19日（周四）</td><td>美联储FOMC利率决议</td><td><span class="badge-red">🔴 关键</span></td><td>鹰派→美股下跌；偏鸽→反弹</td></tr>
+    <tr><td>3月24日（周一）</td><td>三花智控年报</td><td><span class="badge-yellow">🟡 关注</span></td><td>Optimus供应链进展</td></tr>
+    <tr><td>持续跟踪</td><td>中东局势 / 油价走势</td><td><span class="badge-red">🔴 持续关注</span></td><td>影响全球通胀预期</td></tr>
+  </table>
+
+  <h2 class="section">📚 数据来源与置信度</h2>
+  <table>
+    <tr><th>数据类型</th><th>来源</th><th>置信度</th></tr>
+    <tr><td>市场价格数据</td><td>yfinance实时获取（2026-03-14 08:00）</td><td><span class="badge-green">✅ 高</span></td></tr>
+    <tr><td>美国宏观数据</td><td>纽约联储威廉姆斯演讲、密歇根大学经济预测、RBC Economics、巴克莱</td><td><span class="badge-green">✅ 高（多源验证）</span></td></tr>
+    <tr><td>中国宏观数据</td><td>两会政府工作报告、GlobalTimes、KraneShares</td><td><span class="badge-green">✅ 高</span></td></tr>
+    <tr><td>全球经济预测</td><td>Allianz GI、IC Markets、安联投资2026展望</td><td><span class="badge-green">✅ 中高</span></td></tr>
+    <tr><td>中长期目标价</td><td>投资官综合研判</td><td><span class="badge-yellow">⚠️ 方向性参考</span></td></tr>
+    <tr><td>个股基本面数据</td><td>公司公告、市场新闻综合</td><td><span class="badge-yellow">⚠️ 建议交叉验证</span></td></tr>
+  </table>
+
+  <div class="disclaimer-footer">
+    <strong>⚠️ 免责声明</strong>：本报告由投资官自动生成，仅供参考，不构成任何投资建议。市场有风险，投资须谨慎。标注「⚠️」的内容为不确定信息，请结合个人情况自行判断。中长期目标价均为方向性研判，实际结果可能与预测存在重大差异。<br><br>
+    <strong>📅 报告日期</strong>：2026年3月14日 08:30 GMT+8 ｜ <strong>下次更新</strong>：2026年3月16日（下周一早盘前）
+  </div>
+</div>
+
+</body>
+</html>

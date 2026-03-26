@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  body {
+    font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+    font-size: 10.5pt;
+    color: #1a1a2e;
+    line-height: 1.8;
+    margin: 0;
+    background: #f4f6f9;
+  }
+  .page { max-width: 960px; margin: 0 auto; padding: 40px 52px; background: #fff; }
+
+  /* 封面 */
+  .cover {
+    background: linear-gradient(135deg, #0d3a6b 0%, #1565c0 60%, #1976d2 100%);
+    border-radius: 12px;
+    padding: 36px 40px;
+    color: white;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '⚡';
+    position: absolute;
+    right: 36px;
+    top: 16px;
+    font-size: 72px;
+    opacity: 0.2;
+  }
+  .cover .tag { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 20px; padding: 3px 14px; font-size: 9pt; display: inline-block; margin-bottom: 12px; }
+  .cover h1 { font-size: 19pt; font-weight: 700; margin: 8px 0; line-height: 1.3; }
+  .cover .subtitle { font-size: 10.5pt; opacity: 0.85; margin-top: 6px; }
+  .cover .meta { margin-top: 18px; font-size: 9pt; opacity: 0.75; display: flex; gap: 24px; flex-wrap: wrap; }
+
+  /* 宏观数字卡片 */
+  .macro-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 16px 0 28px;
+  }
+  .macro-card {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .macro-card .num { font-size: 18pt; font-weight: 700; color: #0d3a6b; line-height: 1.2; }
+  .macro-card .label { font-size: 8.5pt; color: #455a64; margin-top: 4px; }
+  .macro-card .trend { font-size: 9pt; color: #388e3c; font-weight: 600; }
+
+  /* 章节标题 */
+  h2 { font-size: 13pt; font-weight: 700; color: #0d3a6b; border-bottom: 2.5px solid #1565c0; padding-bottom: 6px; margin-top: 32px; margin-bottom: 16px; }
+  h3 { font-size: 11pt; font-weight: 600; color: #1565c0; margin-top: 20px; margin-bottom: 10px; }
+
+  /* 表格 */
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 9.5pt; }
+  thead tr { background: #0d3a6b; color: white; }
+  thead th { padding: 9px 12px; text-align: left; font-weight: 600; }
+  tbody tr:nth-child(even) { background: #e3f2fd; }
+  tbody tr:hover { background: #bbdefb; }
+  tbody td { padding: 8px 12px; border-bottom: 1px solid #e3f2fd; vertical-align: top; }
+
+  /* 标签 */
+  .conf-high { background: #d4edda; color: #155724; border-radius: 4px; padding: 1px 7px; font-size: 8pt; font-weight: 600; }
+  .conf-mid  { background: #fff3cd; color: #856404; border-radius: 4px; padding: 1px 7px; font-size: 8pt; font-weight: 600; }
+  .conf-low  { background: #f8d7da; color: #721c24; border-radius: 4px; padding: 1px 7px; font-size: 8pt; font-weight: 600; }
+  .period-short { background: #ffe8cc; color: #c05c00; border-radius: 4px; padding: 1px 8px; font-size: 8.5pt; font-weight: 600; }
+  .period-mid   { background: #cce5ff; color: #004085; border-radius: 4px; padding: 1px 8px; font-size: 8.5pt; font-weight: 600; }
+  .period-long  { background: #d4edda; color: #155724; border-radius: 4px; padding: 1px 8px; font-size: 8.5pt; font-weight: 600; }
+  .holding-badge { background: linear-gradient(90deg, #ff6b35, #f7c59f); color: white; border-radius: 4px; padding: 1px 8px; font-size: 8pt; font-weight: 600; }
+  .buy-point  { background: #d4edda; color: #155724; border-radius: 4px; padding: 1px 6px; font-size: 8pt; }
+  .sell-point { background: #f8d7da; color: #721c24; border-radius: 4px; padding: 1px 6px; font-size: 8pt; }
+  .stop-loss  { background: #fff3cd; color: #856404; border-radius: 4px; padding: 1px 6px; font-size: 8pt; }
+
+  /* 提示框 */
+  .alert { border-radius: 8px; padding: 14px 18px; margin: 14px 0; font-size: 9.5pt; line-height: 1.7; }
+  .alert-green  { background: #d4edda; border-left: 4px solid #28a745; }
+  .alert-yellow { background: #fff3cd; border-left: 4px solid #ffc107; }
+  .alert-blue   { background: #cce5ff; border-left: 4px solid #007bff; }
+  .alert-red    { background: #f8d7da; border-left: 4px solid #dc3545; }
+
+  /* 个股分析卡片 */
+  .stock-card {
+    border: 1px solid #bbdefb;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin: 14px 0;
+    background: #f8fbff;
+  }
+  .stock-card .sc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .stock-card .sc-title { font-size: 12pt; font-weight: 700; color: #0d3a6b; }
+  .stock-card .sc-code  { font-size: 9pt; color: #6c757d; }
+  .stock-card .sc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    font-size: 9pt;
+  }
+  .sc-item { background: #e3f2fd; border-radius: 6px; padding: 6px 10px; }
+  .sc-item .sc-item-label { color: #546e7a; font-size: 8pt; }
+  .sc-item .sc-item-val   { font-weight: 600; color: #0d3a6b; }
+
+  /* 配置建议 */
+  .alloc-box {
+    background: linear-gradient(135deg, #0d3a6b, #1976d2);
+    color: white;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .alloc-box h3 { color: #90caf9; margin-top: 0; font-size: 11.5pt; }
+  .alloc-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.15); font-size: 9.5pt; }
+  .alloc-row:last-child { border: none; }
+  .alloc-pct { font-size: 14pt; font-weight: 700; color: #90caf9; }
+
+  /* 风险 */
+  .risk-box { background: #fff8f0; border: 1px solid #f4a261; border-radius: 8px; padding: 16px 18px; margin: 20px 0; }
+  .risk-title { font-weight: 700; color: #c05c00; font-size: 11pt; margin-bottom: 8px; }
+
+  /* 页脚 */
+  .footer { margin-top: 36px; padding-top: 16px; border-top: 2px solid #e3f2fd; font-size: 8.5pt; color: #6c757d; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
+
+  hr.divider { border: none; border-top: 1px solid #e3f2fd; margin: 24px 0; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- 封面 -->
+  <div class="cover">
+    <div class="tag">🔋 主题研究 | A股三大主线</div>
+    <h1>储能 + 算力 + 电力<br>A股核心投资标的深度分析</h1>
+    <div class="subtitle">宏观 · 基本面 · 技术面三维框架 · 含买卖点建议</div>
+    <div class="meta">
+      <span>📅 2026-03-20</span>
+      <span>📊 来源：CNESA / 东吴/中金/平安研报 / 新浪财经</span>
+      <span>🔒 ⚠️ 含个人持仓，请勿外传</span>
+    </div>
+  </div>
+
+  <!-- 宏观背景 -->
+  <h2>📡 宏观背景："算电协同"大时代</h2>
+
+  <div class="alert alert-blue">
+    <strong>核心主线</strong>：AI算力爆发 → 电力需求激增（"算力的尽头是电力"） → 储能配套必须跟上。三个板块不是独立的，是同一条产业链的上中下游，互相强化。
+  </div>
+
+  <div class="macro-grid">
+    <div class="macro-card">
+      <div class="num">203GW</div>
+      <div class="label">2026年储能新增装机预测</div>
+      <div class="trend">↑ 同比+60%</div>
+    </div>
+    <div class="macro-card">
+      <div class="num">800亿</div>
+      <div class="label">国家电网2026储能配套投资</div>
+      <div class="trend">↑ 超预期</div>
+    </div>
+    <div class="macro-card">
+      <div class="num">80.6%</div>
+      <div class="label">1-2月电网固定资产投资增速</div>
+      <div class="trend">↑ 历史高位</div>
+    </div>
+    <div class="macro-card">
+      <div class="num">34%</div>
+      <div class="label">阿里云/百度云算力提价幅度</div>
+      <div class="trend">↑ 3月18日宣布</div>
+    </div>
+  </div>
+
+  <p><strong>政策催化三连击（2025-2026年）</strong>：</p>
+  <ul>
+    <li>「136号文」取消强制配储要求 → 独立储能主动套利时代开启，IRR提升至10-15%</li>
+    <li>四部委「反内卷」组合拳 → 低价竞争受限，头部企业利润空间修复</li>
+    <li>国家「十五五」规划 → 新型储能列为六大新兴支柱产业，政策背书最高级别</li>
+  </ul>
+
+  <hr class="divider">
+
+  <!-- 储能板块 -->
+  <h2>🔋 板块一：储能</h2>
+  <p>储能是三个板块中<strong>基本面最确定、政策支撑最强</strong>的。2026年是储能从"配套品"转变为"独立盈利主体"的元年，商业模式根本性升级。</p>
+
+  <!-- 宁德时代 -->
+  <div class="stock-card">
+    <div class="sc-header">
+      <div>
+        <div class="sc-title">宁德时代 300750</div>
+        <div class="sc-code">储能电池绝对龙头 · 全球市占率第一</div>
+      </div>
+      <div><span class="conf-high">高置信</span> <span class="period-long">中长线 6-18个月</span></div>
+    </div>
+    <p style="font-size:9.5pt; margin:0 0 12px;">2025年净利润722亿元（+36%）。2026年3月推出587Ah大电芯，循环寿命15000次，度电成本低行业15%——技术代差在扩大。储能业务占比持续提升，北美市场即将受益于特斯拉产能扩张。</p>
+    <div class="sc-grid">
+      <div class="sc-item"><div class="sc-item-label">买入区间</div><div class="sc-item-val"><span class="buy-point">前期回调至230-240元</span></div></div>
+      <div class="sc-item"><div class="sc-item-label">目标价（12个月）</div><div class="sc-item-val">280-300元（PE 30x估值）</div></div>
+      <div class="sc-item"><div class="sc-item-label">止损线</div><div class="sc-item-val"><span class="stop-loss">跌破220元（关键支撑）</span></div></div>
+      <div class="sc-item"><div class="sc-item-label">机构评级</div><div class="sc-item-val">强烈推荐（平安/招商证券）</div></div>
+    </div>
+    <div style="margin-top:10px; font-size:9pt; color:#546e7a;">⚠️ 技术面：当前价格偏高，等回调再买；不追高</div>
+  </div>
+
+  <!-- 阳光电源 -->
+  <div class="stock-card">
+    <div class="sc-header">
+      <div>
+        <div class="sc-title">阳光电源 300274 <span class="holding-badge">你已持仓</span></div>
+        <div class="sc-code">逆变器+储能系统双龙头 · 全球第一</div>
+      </div>
+      <div><span class="conf-high">高置信</span> <span class="period-mid">中线 6-12个月</span></div>
+    </div>
+    <p style="font-size:9.5pt; margin:0 0 12px;">净利率18%，全球第一逆变器，海外高价订单持续交付，北美市场领先。中金公司目标价上调至38元，2026年受益于特斯拉100GW太阳能采购（逆变器+储能配套）。今天新闻是持仓逻辑的强化验证。</p>
+    <div class="sc-grid">
+      <div class="sc-item"><div class="sc-item-label">加仓区间</div><div class="sc-item-val"><span class="buy-point">回调至28-30元（技术支撑）</span></div></div>
+      <div class="sc-item"><div class="sc-item-label">目标价（12个月）</div><div class="sc-item-val">38-42元（中金目标38元）</div></div>
+      <div class="sc-item"><div class="sc-item-label">止损线</div><div class="sc-item-val"><span class="stop-loss">跌破26元（前低支撑）</span></div></div>
+      <div class="sc-item"><div class="sc-item-label">操作建议</div><div class="sc-item-val">持有，回调加仓，止损不变</div></div>
+    </div>
+  </div>
+
+  <!-- 亿纬锂能 -->
+  <div class="stock-card">
+    <div class="sc-header">
+      <div>
+        <div class="sc-title">亿纬锂能 300014</div>
+        <div class="sc-code">储能电池第二梯队龙头 · 大容量长时储能</div>
+      </div>
+      <div><span class="conf-mid">中置信</span> <span class="period-mid">中线 6个月</span></div>
+    </div>
+    <p style="font-size:9.5pt; margin:0 0 12px;">储能出货48.4GWh（2025前三季度+35%），大容量电池市场份额提升，估值比宁德时代低20-30%，弹性更大。</p>
+    <div class="sc-grid">
+      <div class="sc-item"><div class="sc-item-label">买入区间</div><div class="sc-item-val"><span class="buy-point">回调至38-40元</span></div></div>
+      <div class="sc-item"><div class="sc-item-label">目标价</div><div class="sc-item-val">50-55元</div></div>
+      <div class="sc-item"><div class="sc-item-label">止损线</div><div class="sc-item-val"><span class="stop-loss">跌破35元</span></div></div>
+      <div class="sc-item"><div class="sc-item-label">相对宁德</div><div class="sc-item-val">弹性更大，风险也更大</div></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 算力板块 -->
+  <h2>🖥️ 板块二：算力</h2>
+  <p>算力板块是<strong>三个板块中短期弹性最大</strong>的，但也是最贵的。3月18日阿里云/百度云集体涨价34%，意味着算力供不应求已到顶级。</p>
+
+  <div class="alert alert-green">
+    <strong>关键信号</strong>：算力服务价格提价34% = 供需极度紧张 = 所有算力基础设施标的的业绩预测要上调。这是教科书级别的量价齐升信号。
+  </div>
+
+  <!-- 中际旭创 -->
+  <div class="stock-card">
+    <div class="sc-header">
+      <div>
+        <div class="sc-title">中际旭创 300308</div>
+        <div class="sc-code">全球光模块龙头 · 1.6T/3.2T绝对壁垒</div>
+      </div>
+      <div><span class="conf-high">高置信</span> <span class="period-mid">中线 6-12个月</span></div>
+    </div>
+    <p style="font-size:9.5pt; margin:0 0 12px;">英伟达GTC 2026大会光互联需求爆发，旭创是全球1.6T光模块最大供应商，3.2T已量产。机构预测2026年净利润增速60%+。注意：股价已在高位，需要等回调。</p>
+    <div class="sc-grid">
+      <div class="sc-item"><div class="sc-item-label">买入区间</div><div class="sc-item-val"><span class="buy-point">回调5-10%后介入</span></div></div>
+      <div class="sc-item"><div class="sc-item-label">目标价（12个月）</div><div class="sc-item-val">⚠️ 待验证当前价格</div></div>
+      <div class="sc-item"><div class="sc-item-label">止损线</div><div class="sc-item-val"><span class="stop-loss">跌破5日均线+3%确认止损</span></div></div>
+      <div class="sc-item"><div class="sc-item-label">机构评级</div><div class="sc-item-val">买入（中金/东吴证券）</div></div>
+    </div>
+    <div style="margin-top:10px; font-size:9pt; color:#546e7a;">⚠️ 注意：股价已处阶段高位，估值偏贵，控制仓位，不超过5%</div>
+  </div>
+
+  <!-- 工业富联 -->
+  <div class="stock-card">
+    <div class="sc-header">
+      <div>
+        <div class="sc-title">工业富联 601138</div>
+        <div class="sc-code">AI服务器代工龙头 · 富士康旗下</div>
+      </div>
+      <div><span class="conf-mid">中置信</span> <span class="period-mid">中线 6个月</span></div>
+    </div>
+    <p style="font-size:9.5pt; margin:0 0 12px;">AI服务器是最直接的算力基础设施，工业富联是全球最大AI服务器代工厂，英伟达H100/B200服务器组装核心供应商。估值合理，相比旭创性价比更高。</p>
+    <div class="sc-grid">
+      <div class="sc-item"><div class="sc-item-label">买入区间</div><div class="sc-item-val"><span class="buy-point">28-30元区间</span></div></div>
+      <div class="sc-item"><div class="sc-item-label">目标价</div><div class="sc-item-val">36-40元</div></div>
+      <div class="sc-item"><div class="sc-item-label">止损线</div><div class="sc-item-val"><span class="stop-loss">跌破26元</span></div></div>
+      <div class="sc-item"><div class="sc-item-label">机构评级</div><div class="sc-item-val">买入（国金证券）</div></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 电力板块 -->
+  <h2>⚡ 板块三：电力</h2>
+  <p>电力板块分两类：<strong>成长型（电网设备/核电）</strong>和<strong>防守型（水电高股息）</strong>。当前市场波动大，两种配置都有价值。</p>
+
+  <!-- 电网ETF -->
+  <div class="stock-card">
+    <div class="sc-header">
+      <div>
+        <div class="sc-title">电网ETF / 国家电网产业链 <span class="holding-badge">你已持仓电网ETF</span></div>
+        <div class="sc-code">电网设备系统：许继电气/南瑞集团/平高电气</div>
+      </div>
+      <div><span class="conf-high">高置信</span> <span class="period-mid">中线 6-12个月</span></div>
+    </div>
+    <p style="font-size:9.5pt; margin:0 0 12px;">1-2月电网投资增速80.6%，国家电网2026年储能配套投资800亿元，电网设备是政策最确定的受益方。你持仓的电网ETF逻辑清晰，是三个板块中<strong>性价比最高的配置</strong>。</p>
+    <div class="sc-grid">
+      <div class="sc-item"><div class="sc-item-label">操作建议</div><div class="sc-item-val">持有，回调可补仓</div></div>
+      <div class="sc-item"><div class="sc-item-label">目标空间</div><div class="sc-item-val">+20-30%（12个月）</div></div>
+      <div class="sc-item"><div class="sc-item-label">止损线</div><div class="sc-item-val"><span class="stop-loss">跌破成本价-8%</span></div></div>
+      <div class="sc-item"><div class="sc-item-label">优势</div><div class="sc-item-val">分散风险，政策直接受益</div></div>
+    </div>
+  </div>
+
+  <!-- 长江电力 -->
+  <div class="stock-card">
+    <div class="sc-header">
+      <div>
+        <div class="sc-title">长江电力 600900</div>
+        <div class="sc-code">全球水电龙头 · 高股息防守标的</div>
+      </div>
+      <div><span class="conf-high">高置信</span> <span class="period-long">长线持有型</span></div>
+    </div>
+    <p style="font-size:9.5pt; margin:0 0 12px;">稳定高股息（约4-5%），是机构避险资金的核心配置。不追求短期爆发，但在当前市场波动环境下提供"压舱石"作用。适合仓位里的防守性配置。</p>
+    <div class="sc-grid">
+      <div class="sc-item"><div class="sc-item-label">买入逻辑</div><div class="sc-item-val">高股息+水电稳定现金流</div></div>
+      <div class="sc-item"><div class="sc-item-label">适合场景</div><div class="sc-item-val">作为整体仓位的压舱石</div></div>
+      <div class="sc-item"><div class="sc-item-label">预期收益</div><div class="sc-item-val">股息4-5% + 股价稳步提升</div></div>
+      <div class="sc-item"><div class="sc-item-label">止损线</div><div class="sc-item-val"><span class="stop-loss">跌破27元（股息率破6%警戒）</span></div></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 整体配置建议 -->
+  <div class="alloc-box">
+    <h3>📊 三大板块配置建议（新增资金参考比例）</h3>
+    <div class="alloc-row">
+      <span>🔋 <strong>储能板块</strong>（阳光电源+宁德时代/亿纬）</span>
+      <span class="alloc-pct">40%</span>
+    </div>
+    <div class="alloc-row">
+      <span>⚡ <strong>电力板块</strong>（电网ETF+长江电力）</span>
+      <span class="alloc-pct">35%</span>
+    </div>
+    <div class="alloc-row">
+      <span>🖥️ <strong>算力板块</strong>（工业富联+中际旭创）</span>
+      <span class="alloc-pct">25%</span>
+    </div>
+    <div style="margin-top: 12px; font-size: 9pt; opacity: 0.85;">
+      逻辑：储能+电力是确定性高、长线逻辑强的核心仓；算力是弹性仓，估值偏高控制比例。你已持有阳光电源和电网ETF，核心仓已建立，算力可逢回调补充。
+    </div>
+  </div>
+
+  <!-- 买卖点总表 -->
+  <h2>🎯 买卖点汇总表</h2>
+  <table>
+    <thead>
+      <tr><th>标的</th><th>现状</th><th>买入区间</th><th>目标价</th><th>止损线</th><th>周期</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>阳光电源 300274</strong> <span class="holding-badge">持仓</span></td>
+        <td>持有中，逻辑强化</td>
+        <td><span class="buy-point">28-30元加仓</span></td>
+        <td>38-42元</td>
+        <td><span class="stop-loss">26元</span></td>
+        <td><span class="period-mid">6-12月</span></td>
+      </tr>
+      <tr>
+        <td><strong>电网ETF</strong> <span class="holding-badge">持仓</span></td>
+        <td>持有中，政策最确定</td>
+        <td><span class="buy-point">回调3-5%补仓</span></td>
+        <td>+20-30%</td>
+        <td><span class="stop-loss">成本-8%</span></td>
+        <td><span class="period-mid">6-12月</span></td>
+      </tr>
+      <tr>
+        <td><strong>宁德时代 300750</strong></td>
+        <td>高位，等回调</td>
+        <td><span class="buy-point">230-240元</span></td>
+        <td>280-300元</td>
+        <td><span class="stop-loss">220元</span></td>
+        <td><span class="period-long">12-18月</span></td>
+      </tr>
+      <tr>
+        <td><strong>亿纬锂能 300014</strong></td>
+        <td>中等仓位机会</td>
+        <td><span class="buy-point">38-40元</span></td>
+        <td>50-55元</td>
+        <td><span class="stop-loss">35元</span></td>
+        <td><span class="period-mid">6个月</span></td>
+      </tr>
+      <tr>
+        <td><strong>工业富联 601138</strong></td>
+        <td>性价比优于旭创</td>
+        <td><span class="buy-point">28-30元</span></td>
+        <td>36-40元</td>
+        <td><span class="stop-loss">26元</span></td>
+        <td><span class="period-mid">6个月</span></td>
+      </tr>
+      <tr>
+        <td><strong>中际旭创 300308</strong></td>
+        <td>已高位，控仓</td>
+        <td><span class="buy-point">回调5-10%后</span></td>
+        <td>⚠️待确认</td>
+        <td><span class="stop-loss">破5日线+3%</span></td>
+        <td><span class="period-mid">6-12月</span></td>
+      </tr>
+      <tr>
+        <td><strong>长江电力 600900</strong></td>
+        <td>防守型，高股息</td>
+        <td><span class="buy-point">任何时候都可建仓</span></td>
+        <td>股息4-5%+稳升</td>
+        <td><span class="stop-loss">27元</span></td>
+        <td><span class="period-long">长线持有</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 风险提示 -->
+  <div class="risk-box">
+    <div class="risk-title">⚠️ 主要风险</div>
+    <ul style="margin:0; font-size:9.5pt; line-height:1.9;">
+      <li><strong>估值风险</strong>：算力板块（旭创等）估值已偏高，若AI景气度不及预期，估值压缩风险大</li>
+      <li><strong>竞争风险</strong>：储能电池价格战虽有"反内卷"政策，但落地慢于预期；毛利率仍有压力</li>
+      <li><strong>政策落地风险</strong>：各省容量电价补偿政策推进速度可能低于预期</li>
+      <li><strong>宏观风险</strong>：FOMC鹰派 + 美元走强 → 全球风险资产承压，A股整体受到情绪拖累</li>
+      <li><strong>当前时机</strong>：今日（3/20）A股受港股下跌拖累，市场情绪偏弱，不宜今日追涨</li>
+    </ul>
+  </div>
+
+  <!-- 结论 -->
+  <div style="background: linear-gradient(135deg, #0d3a6b, #1565c0); color: white; border-radius: 10px; padding: 20px 24px; margin: 20px 0;">
+    <h3 style="color: #90caf9; margin-top: 0;">📌 芒格结论：三句话</h3>
+    <ol style="margin: 0; line-height: 2; font-size: 9.5pt;">
+      <li><strong>你持仓的阳光电源+电网ETF恰好命中这个主题的核心</strong>——这两个仓位是对的，持有逻辑清晰，不要被短期波动动摇。<span style="background:rgba(255,255,255,0.2); border-radius:4px; padding:1px 7px; font-size:8pt;">高置信</span></li>
+      <li><strong>宁德时代是这个板块最值得中长线持有的标的</strong>——但当前价格偏贵，等回调至230-240区间再建仓，不追高。<span style="background:rgba(255,255,255,0.2); border-radius:4px; padding:1px 7px; font-size:8pt;">高置信</span></li>
+      <li><strong>算力是高弹性仓</strong>——工业富联性价比优于旭创，算力提价34%是极强信号，但控制仓位在25%以内，不押注。<span style="background:rgba(255,255,255,0.2); border-radius:4px; padding:1px 7px; font-size:8pt;">中置信</span></li>
+    </ol>
+  </div>
+
+  <div class="footer">
+    <span>芒格投资研究 · 2026-03-20 14:18</span>
+    <span>数据：CNESA / 东吴/中金/平安证券研报 / 新浪财经 / 同花顺</span>
+    <span>⚠️ 含个人持仓，请勿外传</span>
+  </div>
+
+</div>
+</body>
+</html>

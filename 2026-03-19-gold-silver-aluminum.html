@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'PingFang SC', sans-serif;
+         font-size: 10.5pt; color: #1a1a2e; line-height: 1.75; background: #f5f6fa; }
+  .page { max-width: 960px; margin: 0 auto; padding: 36px 48px; background: #fff; }
+
+  .report-header { background: linear-gradient(135deg, #4a1942 0%, #7b2d8b 60%, #9c4daa 100%);
+                   color: #fff; padding: 32px 40px; border-radius: 14px; margin-bottom: 32px; }
+  .report-header h1 { font-size: 19pt; font-weight: 700; letter-spacing: 1px; }
+  .report-header .subtitle { font-size: 11pt; color: #e0b3e8; margin-top: 8px; }
+  .report-header .meta { font-size: 9pt; color: #cc99d6; margin-top: 10px; }
+  .report-header .tags { margin-top: 14px; }
+  .report-header .tag-chip { display: inline-block; background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3); border-radius: 20px;
+    padding: 3px 12px; font-size: 8.5pt; color: #f0d6f5; margin-right: 8px; }
+
+  h2 { font-size: 14pt; font-weight: 700; color: #4a1942; border-left: 5px solid #9c4daa;
+       padding-left: 12px; margin: 28px 0 14px; }
+  h3 { font-size: 11.5pt; font-weight: 600; color: #7b2d8b; margin: 18px 0 10px;
+       padding-bottom: 4px; border-bottom: 1px solid #e8d0f0; }
+
+  .alert-box { border-radius: 8px; padding: 12px 18px; margin: 12px 0; font-size: 9.5pt; }
+  .alert-green  { background: #e8f8ee; border-left: 4px solid #1a7a4a; color: #0e4d2b; }
+  .alert-yellow { background: #fff8e1; border-left: 4px solid #f39c12; color: #7d5a00; }
+  .alert-blue   { background: #e8f0fe; border-left: 4px solid #1565c0; color: #0d3a6b; }
+  .alert-red    { background: #fde8e8; border-left: 4px solid #c0392b; color: #7b1c1c; }
+  .alert-purple { background: #f3e8ff; border-left: 4px solid #7b1fa2; color: #4a0072; }
+  .alert-orange { background: #fff3e0; border-left: 4px solid #e65100; color: #7a3500; }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 20px; font-size: 9.5pt; }
+  th { background: #4a1942; color: #fff; padding: 9px 11px; font-weight: 600; text-align: left; }
+  td { padding: 8px 11px; border-bottom: 1px solid #eaeff5; vertical-align: top; }
+  tr:nth-child(even) td { background: #faf5fc; }
+
+  .up   { color: #c0392b; font-weight: 600; }
+  .dn   { color: #1a7a4a; font-weight: 600; }
+  .warn { color: #b8860b; font-weight: 600; }
+  .critical { color: #c0392b; font-weight: 700; }
+
+  .tag { display: inline-block; border-radius: 4px; padding: 2px 8px; font-size: 8.5pt; font-weight: 600; }
+  .tag-hold   { background: #e8f0fe; color: #1565c0; }
+  .tag-reduce { background: #fff8e1; color: #b8860b; }
+  .tag-sell   { background: #fde8e8; color: #c0392b; }
+  .tag-watch  { background: #f0f0f0; color: #555; }
+
+  .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 16px 0 24px; }
+  .price-card { border-radius: 10px; padding: 18px 20px; }
+  .card-gold   { background: #fff8e1; border: 2px solid #f39c12; }
+  .card-silver { background: #f3f3f3; border: 2px solid #888; }
+  .card-title { font-size: 12pt; font-weight: 700; margin-bottom: 12px; }
+  .card-gold .card-title   { color: #b8860b; }
+  .card-silver .card-title { color: #555; }
+  .card-price { font-size: 18pt; font-weight: 700; }
+  .card-gold .card-price   { color: #e65100; }
+  .card-silver .card-price { color: #c0392b; }
+  .card-change { font-size: 10pt; font-weight: 600; color: #c0392b; margin: 4px 0; }
+  .card-item { font-size: 9pt; color: #555; margin-top: 4px; }
+
+  .support-table-container { margin: 12px 0; }
+
+  .op-scenario { border: 1px solid #e0d0f0; border-radius: 8px; padding: 14px 18px; margin: 10px 0; }
+  .op-scenario-title { font-size: 10.5pt; font-weight: 700; margin-bottom: 8px; }
+  .op-down   { border-color: #fca5a5; background: #fff5f5; }
+  .op-flat   { border-color: #fde68a; background: #fffbeb; }
+  .op-up     { border-color: #86efac; background: #f0fdf4; }
+  .op-down .op-scenario-title   { color: #c0392b; }
+  .op-flat .op-scenario-title   { color: #b8860b; }
+  .op-up .op-scenario-title     { color: #1a7a4a; }
+
+  .conclusion-box { background: linear-gradient(135deg, #4a1942 0%, #7b2d8b 100%);
+    color: #fff; border-radius: 12px; padding: 22px 28px; margin: 24px 0; }
+  .conclusion-box h3 { color: #f0d6f5; border-bottom: 1px solid rgba(255,255,255,0.2); }
+  .conclusion-box p, .conclusion-box li { color: #e8d0f0; font-size: 9.5pt; }
+
+  hr { border: none; border-top: 1px solid #e0d0f0; margin: 24px 0; }
+
+  .footer { font-size: 8pt; color: #aaa; margin-top: 32px; padding-top: 14px;
+            border-top: 1px solid #eee; text-align: center; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- 标题 -->
+<div class="report-header">
+  <h1>黄金白银暴跌分析 + 中国铝业明日操作建议</h1>
+  <div class="subtitle">贵金属断崖式下跌原因剖析、关键支撑位判断，及有色金属联动操作策略</div>
+  <div class="meta">分析日期：2026年3月19日 20:53 GMT+8 &nbsp;·&nbsp; 背景：FOMC鹰派+中东冲突+美元走强</div>
+  <div class="tags">
+    <span class="tag-chip">黄金 XAU/USD</span>
+    <span class="tag-chip">白银 XAG/USD</span>
+    <span class="tag-chip">沪金 沪银</span>
+    <span class="tag-chip">中国铝业 02600.HK</span>
+    <span class="tag-chip">有色金属联动</span>
+  </div>
+</div>
+
+<!-- 一、今日暴跌数据速览 -->
+<h2>📊 一、今日暴跌数据速览</h2>
+
+<div class="price-grid">
+  <div class="price-card card-gold">
+    <div class="card-title">🥇 现货黄金 XAU/USD</div>
+    <div class="card-price">$4,696</div>
+    <div class="card-change">日内最低 / 较近期高点累计跌近$300</div>
+    <div class="card-item">国内沪金：跌幅超 -4%</div>
+    <div class="card-item">2月初以来最低水平</div>
+    <div class="card-item">RSI(14) = 18.26 → 严重超卖</div>
+    <div class="card-item">MACD 信号线下行，动能疲软</div>
+  </div>
+  <div class="price-card card-silver">
+    <div class="card-title">🥈 现货白银 XAG/USD</div>
+    <div class="card-price">$71.14</div>
+    <div class="card-change">日内暴跌 -8%（国内沪银跌停 -11%）</div>
+    <div class="card-item">白银跌幅远超黄金（兼具工业属性）</div>
+    <div class="card-item">跌破 EMA50，技术形态恶化</div>
+    <div class="card-item">金银比扩大至 63 以上</div>
+    <div class="card-item">工业需求（太阳能/EV）预期转弱</div>
+  </div>
+</div>
+
+<div class="alert-box alert-red">
+  <b>⚠️ 极端情况提示：</b>沪银今日封死跌停板（-11%），说明国内市场流动性踩踏已发生。此类跌停通常意味着空头情绪高度集中，短期反弹概率上升——但也意味着持仓风险极高。
+</div>
+
+<!-- 二、暴跌原因分析 -->
+<h2>🔍 二、暴跌四大原因</h2>
+
+<table>
+  <tr><th>#</th><th>原因</th><th>具体内容</th><th>对贵金属的影响</th></tr>
+  <tr>
+    <td><b>1</b></td>
+    <td><b>FOMC鹰派超预期</b></td>
+    <td>美联储维持利率3.5%-3.75%，鲍威尔暗示2026年仅降息1次（市场此前预期3次），不排除加息</td>
+    <td class="critical">最核心打击：实际利率上升→持有黄金机会成本上升→多头出逃</td>
+  </tr>
+  <tr>
+    <td><b>2</b></td>
+    <td><b>美元大幅走强</b></td>
+    <td>避险资金流向美债与美元资产，而非黄金（"黄金失去避险功能"）</td>
+    <td class="up">美元强→以美元计价的黄金/白银价格承压</td>
+  </tr>
+  <tr>
+    <td><b>3</b></td>
+    <td><b>流动性踩踏</b></td>
+    <td>机构卖出黄金/白银头寸，补充股票暴跌产生的保证金缺口</td>
+    <td class="up">被动抛售放大跌幅，与黄金基本面无关</td>
+  </tr>
+  <tr>
+    <td><b>4</b></td>
+    <td><b>技术破位触发程序化卖盘</b></td>
+    <td>黄金跌破$4,900、$4,800等多个支撑位，白银跌破趋势线，CTA策略自动做空</td>
+    <td class="up">技术止损单集中触发，跌幅被机械性放大</td>
+  </tr>
+</table>
+
+<div class="alert-box alert-yellow">
+  <b>💡 关键认知：</b>今日金银暴跌的核心逻辑不是"黄金基本面变坏"，而是<b>利率预期突变+美元走强+流动性踩踏</b>三者叠加。中东冲突油价飙升本应利多黄金，但资金选择了流动性更强的美元，说明这一轮是利率主导周期，不是通胀主导周期。
+</div>
+
+<!-- 三、关键支撑位分析 -->
+<h2>📍 三、关键支撑位与止跌判断</h2>
+
+<h3>3.1 黄金支撑位分析</h3>
+
+<table>
+  <tr><th>支撑级别</th><th>价位区间</th><th>性质</th><th>止跌概率</th></tr>
+  <tr>
+    <td><b>第一支撑 ★★★</b></td>
+    <td><b>$4,650–$4,654</b></td>
+    <td>斐波那契1.382扩展位 + 整数关口</td>
+    <td class="warn">⚠️ 最近防线，RSI严重超卖（18），大概率会出现技术反弹</td>
+  </tr>
+  <tr>
+    <td><b>第二支撑 ★★</b></td>
+    <td><b>$4,500–$4,554</b></td>
+    <td>心理整数关口 + 去年重要前高区域</td>
+    <td>若$4,650失守则下探，是中期多头防线</td>
+  </tr>
+  <tr>
+    <td><b>强支撑 ★</b></td>
+    <td><b>$4,400</b></td>
+    <td>本轮牛市起点区域</td>
+    <td>跌至此处意味着牛市节奏被打断，需重新评估</td>
+  </tr>
+</table>
+
+<div class="alert-box alert-purple">
+  <b>🎯 我的判断（置信度：中）：</b>$4,650附近是短期止跌概率最大的区域。RSI=18极度超卖+整数关口支撑，预计会有技术性反弹至$4,800-4,815区间。但反弹后遇强阻力，趋势性反转需等待美联储政策转向信号（最早4月CPI数据）。
+</div>
+
+<h3>3.2 白银支撑位分析</h3>
+
+<table>
+  <tr><th>支撑级别</th><th>价位区间</th><th>说明</th></tr>
+  <tr>
+    <td><b>第一支撑 ★★★</b></td>
+    <td><b>$70.00–$70.96</b></td>
+    <td>关键心理整数关口，$70是多方最后一道防线，分析师共识</td>
+  </tr>
+  <tr>
+    <td><b>第二支撑 ★★</b></td>
+    <td><b>$67.48–$68.08</b></td>
+    <td>技术支撑位 + 前低区域，若$70失守则下探</td>
+  </tr>
+</table>
+
+<div class="alert-box alert-orange">
+  <b>⚠️ 白银特别提示：</b>白银今日跌幅（-8%）远大于黄金（-4%），原因是白银60%是工业用途。油价走高→滞胀担忧→工业活动减速预期→白银工业需求预期下滑，是<b>双重打压</b>。白银比黄金更难反弹，建议等$70支撑确认后再考虑操作。
+</div>
+
+<!-- 四、中国铝业操作建议 -->
+<h2>🏭 四、中国铝业（02600.HK）明日操作建议</h2>
+
+<h3>4.1 今日持仓状态</h3>
+
+<table>
+  <tr><th>项目</th><th>数据</th></tr>
+  <tr><td><b>成本价</b></td><td>12.739港元</td></tr>
+  <tr><td><b>今日收盘约</b></td><td>约11.49港元</td></tr>
+  <tr><td><b>浮亏</b></td><td>约 -9.8%（今日由+6.25%浮盈转为亏损）</td></tr>
+  <tr><td><b>止损线</b></td><td>11.00港元</td></tr>
+</table>
+
+<h3>4.2 金属联动逻辑</h3>
+
+<div class="alert-box alert-blue">
+  <b>黄金暴跌 → 美元走强 → 铝价承压的传导链：</b>
+  <br>FOMC鹰派 → 美元指数走强 → 以美元计价的有色金属（铝/铜/锌）全线承压 → 中国铝业股价跟随铝价下行
+  <br><br>
+  这与黄金下跌是<b>同一宏观驱动力</b>（美元走强），不是独立事件。只要美元维持强势，有色金属板块短期持续承压。美元走强通常在FOMC鹰派后持续1-2周。
+</div>
+
+<h3>4.3 明日操作方案（三情景应对）</h3>
+
+<div class="op-scenario op-down">
+  <div class="op-scenario-title">🔴 情景A：开盘跌 &gt;1%（开盘价 &lt;11.40港元）</div>
+  <b>操作：直接市价减仓50%，不等反弹</b>
+  <br>理由：方向明确向下，不宜恋战；止损线11.00港元已近在咫尺（距离不足4%）
+  <br>执行：开盘后5分钟内，市价单减仓，不设限价
+</div>
+
+<div class="op-scenario op-flat">
+  <div class="op-scenario-title">🟡 情景B：开盘平至微跌（11.40–11.60港元）</div>
+  <b>操作：挂限价单减仓50%，目标价11.5–11.6，当日完成</b>
+  <br>理由：短暂企稳≠趋势反转，利用反弹出货
+  <br>执行：挂11.55卖出，若当日未成交则调整为市价执行
+</div>
+
+<div class="op-scenario op-up">
+  <div class="op-scenario-title">🟢 情景C：开盘反弹 &gt;2%（开盘价 &gt;11.70港元）</div>
+  <b>操作：减仓70%，把握难得出货窗口</b>
+  <br>理由：有色金属在当前宏观环境下的反弹是"死猫跳"，应珍惜出货机会
+  <br>执行：开盘冲高时分批出货，不追涨
+</div>
+
+<div class="alert-box alert-red">
+  <b>⚠️ 无论哪种情景，明日都必须减仓！</b>
+  <br>理由：① 美元走强是FOMC鹰派后的阶段性趋势，1-2周内有色金属持续承压
+  <br>② 今日浮盈+6.25%已变为浮亏-9.8%，方向彻底逆转，不能再等
+  <br>③ 止损线11.00港元距现价不足4%，主动减仓优于被动止损
+</div>
+
+<h3>4.4 减仓后管理方案</h3>
+
+<table>
+  <tr><th>项目</th><th>方案</th></tr>
+  <tr><td><b>剩余仓位</b></td><td>减仓后保留30-50%，作为博反弹的底仓</td></tr>
+  <tr><td><b>止损线</b></td><td>11.00港元（无论减仓后剩余多少，此线不变）</td></tr>
+  <tr><td><b>重新建仓条件</b></td><td>美联储政策转向信号出现（如4月CPI低于预期）OR 铝价技术企稳（周线收阳）</td></tr>
+  <tr><td><b>目标价</b></td><td>若宏观好转，目标12.5-13.0港元区间</td></tr>
+</table>
+
+<!-- 五、综合结论 -->
+<div class="conclusion-box">
+  <h3>📋 综合结论与操作清单</h3>
+  <br>
+  <b style="color:#f0d6f5">黄金/白银止跌位：</b>
+  <p>• 黄金第一支撑 $4,650–$4,654（RSI严重超卖，技术反弹概率高）</p>
+  <p>• 白银关键防线 $70.00（心理整数位）</p>
+  <p>• 趋势性反转需等待：4月CPI数据 / 美联储政策转向信号</p>
+  <br>
+  <b style="color:#f0d6f5">中国铝业明日必做：</b>
+  <p>• 无论开盘价如何，必须减仓50%-70%</p>
+  <p>• 跌&gt;1% → 市价减50%；平盘 → 限价11.55减50%；反弹&gt;2% → 减70%</p>
+  <p>• 剩余仓位止损11.00港元不动摇</p>
+  <br>
+  <b style="color:#f0d6f5">核心逻辑：</b>
+  <p>今日黄金/白银/铝同跌，根源都是美元走强，这是FOMC鹰派后的阶段性主导逻辑，短期1-2周内不会消退。在此期间，贵金属和有色金属均不适合重仓持有。</p>
+</div>
+
+<hr>
+<div class="footer">
+  本报告为2026年3月19日黄金白银暴跌专项分析及中国铝业操作建议，仅供参考，不构成投资建议<br>
+  数据来源：investing.com、金投网、FX168财经网、cnfol.com 综合整理（交叉验证）<br>
+  报告生成时间：2026年3月19日 20:55 GMT+8<br>
+  ⚠️ 投资有风险，操作须谨慎 &nbsp;·&nbsp; 个人持仓数据已包含，请勿外传
+</div>
+
+</div>
+</body>
+</html>

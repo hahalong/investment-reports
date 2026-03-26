@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif; font-size: 8.5pt; color: #1a1a2e; line-height: 1.7; margin: 0; }
+  .page { max-width: 980px; margin: 0 auto; padding: 22px 36px; background: #fff; }
+
+  .cover { background: linear-gradient(135deg, #0d1b2a 0%, #1b3a5c 40%, #2563a8 75%, #1e88e5 100%); border-radius: 12px; padding: 28px 36px; color: white; margin-bottom: 20px; position: relative; overflow: hidden; }
+  .cover::before { content: '🔭'; position: absolute; right: 20px; top: 10px; font-size: 110px; opacity: 0.07; }
+  .cover h1 { font-size: 20pt; font-weight: 900; margin: 0 0 6px; letter-spacing: 1px; }
+  .cover .sub { font-size: 10pt; opacity: 0.85; margin: 4px 0; }
+  .cover .tags { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .cover .tag { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 3px 12px; font-size: 8pt; }
+  .cover .verdict { margin-top: 14px; background: rgba(255,255,255,0.12); border-radius: 8px; padding: 10px 16px; font-size: 9pt; border-left: 4px solid #ffeb3b; }
+
+  h2 { font-size: 13pt; color: #0d3a6b; border-left: 5px solid #1976d2; padding-left: 12px; margin: 22px 0 10px; }
+  h3 { font-size: 10.5pt; color: #1565c0; margin: 16px 0 8px; }
+  h4 { font-size: 9.5pt; color: #1976d2; margin: 12px 0 6px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 8pt; }
+  th { background: #1565c0; color: white; padding: 6px 8px; text-align: left; font-weight: 600; }
+  td { padding: 5px 8px; border-bottom: 1px solid #e3eaf5; vertical-align: top; }
+  tr:nth-child(even) td { background: #f5f8ff; }
+  tr:hover td { background: #e8f0fe; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .col-box { background: #f0f4ff; border-radius: 8px; padding: 14px; border: 1px solid #c5d8f8; font-size: 8pt; }
+  .col-red { background: #fff0f0; border-color: #ffcdd2; }
+  .col-green { background: #f0fff4; border-color: #c8e6c9; }
+  .col-yellow { background: #fffde7; border-color: #fff59d; }
+  .col-orange { background: #fff3e0; border-color: #ffcc80; }
+
+  .alert { border-radius: 8px; padding: 10px 14px; margin: 10px 0; font-size: 8.5pt; }
+  .alert-blue { background: #e3f2fd; border-left: 4px solid #1976d2; }
+  .alert-green { background: #e8f5e9; border-left: 4px solid #388e3c; }
+  .alert-red { background: #ffebee; border-left: 4px solid #c62828; }
+  .alert-yellow { background: #fffde7; border-left: 4px solid #f9a825; }
+  .alert-orange { background: #fff3e0; border-left: 4px solid #e65100; }
+
+  .price-box { background: linear-gradient(135deg, #1565c0, #1e88e5); color: white; border-radius: 10px; padding: 14px 20px; margin: 10px 0; display: inline-block; min-width: 200px; }
+  .price-box .label { font-size: 8pt; opacity: 0.8; }
+  .price-box .price { font-size: 20pt; font-weight: 900; }
+  .price-box .chg { font-size: 9pt; margin-top: 2px; }
+
+  .verdict-box { border-radius: 10px; padding: 16px 20px; margin: 14px 0; }
+  .verdict-buy { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border: 2px solid #4caf50; }
+  .verdict-hold { background: linear-gradient(135deg, #e3f2fd, #bbdefb); border: 2px solid #1976d2; }
+  .verdict-wait { background: linear-gradient(135deg, #fffde7, #fff59d); border: 2px solid #f9a825; }
+  .verdict-sell { background: linear-gradient(135deg, #ffebee, #ffcdd2); border: 2px solid #c62828; }
+
+  .verdict-box h3 { margin: 0 0 8px; font-size: 11pt; }
+  .verdict-box .action { font-size: 13pt; font-weight: 900; margin: 8px 0; }
+
+  .conf-h { background: #1b5e20; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+  .conf-m { background: #e65100; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+  .conf-l { background: #b71c1c; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+
+  .p-up { color: #c62828; font-weight: 700; }
+  .p-down { color: #1b5e20; font-weight: 700; }
+
+  .mkt-hk { background: #c62828; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+  .mkt-us { background: #1565c0; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+
+  .timeline { border-left: 3px solid #1976d2; padding-left: 16px; margin: 12px 0; }
+  .timeline-item { margin-bottom: 12px; position: relative; }
+  .timeline-item::before { content: '●'; position: absolute; left: -21px; color: #1976d2; font-size: 10pt; }
+  .timeline-item .date { color: #1976d2; font-weight: 700; font-size: 8pt; }
+
+  .risk-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px dashed #e0e0e0; }
+  .risk-label { background: #c62828; color: white; border-radius: 4px; padding: 1px 8px; font-size: 7.5pt; white-space: nowrap; min-width: 40px; text-align: center; }
+  .risk-label.med { background: #e65100; }
+  .risk-label.low { background: #388e3c; }
+
+  .divider { border: none; border-top: 2px solid #e3eaf5; margin: 20px 0; }
+
+  .footer { display: flex; justify-content: space-between; font-size: 7pt; color: #888; margin-top: 20px; padding-top: 10px; border-top: 1px solid #e0e0e0; }
+
+  .highlight { background: #fff9c4; padding: 1px 4px; border-radius: 3px; }
+  .bold-red { color: #c62828; font-weight: 800; }
+  .bold-green { color: #1b5e20; font-weight: 800; }
+  .bold-blue { color: #0d3a6b; font-weight: 800; }
+
+  .tag-p1 { background: #c62828; color: white; border-radius: 4px; padding: 2px 8px; font-size: 7.5pt; font-weight: 700; }
+  .tag-p2 { background: #e65100; color: white; border-radius: 4px; padding: 2px 8px; font-size: 7.5pt; }
+  .tag-hold { background: #1565c0; color: white; border-radius: 4px; padding: 2px 8px; font-size: 7.5pt; }
+  .tag-wait { background: #6a1b9a; color: white; border-radius: 4px; padding: 2px 8px; font-size: 7.5pt; }
+  .tag-avoid { background: #37474f; color: white; border-radius: 4px; padding: 2px 8px; font-size: 7.5pt; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- 封面 -->
+<div class="cover">
+  <div class="sub">芒格投资研究 · 光通信深度报告 · 2026-03-25</div>
+  <h1>长飞光纤 06869 & Lumentum LITE<br>深度投资研究报告</h1>
+  <div class="sub">✦ 光纤龙头 + 光源垄断商 — 两只AI光通信核心标的全面解析</div>
+  <div class="tags">
+    <span class="tag">📡 AI光通信</span>
+    <span class="tag">🔭 空芯光纤</span>
+    <span class="tag">💡 CPO/OCS</span>
+    <span class="tag">🌐 港股+美股</span>
+    <span class="tag">📊 yfinance实时验证</span>
+  </div>
+  <div class="verdict">
+    <strong>⚡ 核心结论：</strong>两只都是当前AI光通信主线最确定标的，基本面无懈可击，但均已大幅上涨。
+    <strong>不卖出，但短线不追高。</strong>长飞等回调150-165港元，LITE等回调$720-750。
+    3月27日长飞业绩发布是最近最大催化剂。
+  </div>
+</div>
+
+<!-- ===== 第一部分：长飞光纤 ===== -->
+<h2>一、长飞光纤（06869.HK）— 中国光纤产业的隐形冠军</h2>
+
+<h3>① 实时价格数据（Phase Zero验证）</h3>
+<div class="three-col">
+  <div class="price-box">
+    <div class="label">今日收盘 (3/25)</div>
+    <div class="price">185.00</div>
+    <div class="chg">港元 | <span style="color:#ffeb3b">+12.12% 今日</span></div>
+  </div>
+  <div class="col-box">
+    <strong>技术指标</strong><br>
+    52周高：<strong>206.80港元</strong><br>
+    52周低：<strong>12.22港元</strong><br>
+    较年内低涨幅：<span class="p-up">+1,417%</span><br>
+    20日均价：154.72港元<br>
+    今日已超均线+20%
+  </div>
+  <div class="col-box">
+    <strong>估值</strong><br>
+    市值：~2,508亿港元<br>
+    PE（TTM）：<strong>207.86x</strong><br>
+    PB：<strong>10.33x</strong><br>
+    今日成交量：38,484,399股<br>
+    vs 20日均量：31,225,852（+23%）
+  </div>
+</div>
+
+<div class="alert alert-orange">
+  <strong>⚠️ 重要时间节点：</strong>长飞光纤预计于 <strong>2026年3月27日（后天）</strong> 正式公布2025年全年业绩。这是近期最大催化剂，业绩超预期可能推动股价冲击历史新高206港元；若不及预期，短期存在大幅回调风险。
+</div>
+
+<h3>② 为什么涨了这么多仍有逻辑？三重驱动</h3>
+
+<div class="two-col">
+  <div>
+    <h4>驱动一：光纤价格暴涨 — 量价齐升</h4>
+    <table>
+      <thead><tr><th>时期</th><th>G.652D光纤价格</th><th>同比</th></tr></thead>
+      <tbody>
+        <tr><td>2025年中</td><td>17-18元/芯公里</td><td>—</td></tr>
+        <tr><td>2026年1月</td><td>突破30元/芯公里</td><td>+67%</td></tr>
+        <tr><td>2026年3月（现货）</td><td><strong>40+元/芯公里</strong></td><td><span class="p-up">+130%+</span></td></tr>
+      </tbody>
+    </table>
+    <div class="alert alert-blue">
+      <strong>关键洞察：</strong>由于价格传导有滞后性，2025年年底以来的涨价红利<strong>在2026年Q1才开始体现在财报里</strong>。市场在提前定价未来几个季度的业绩爆发。
+    </div>
+  </div>
+  <div>
+    <h4>驱动二：AI数据中心创造结构性新需求</h4>
+    <table>
+      <thead><tr><th>指标</th><th>数据</th></tr></thead>
+      <tbody>
+        <tr><td>DCI光纤需求占比（2024）</td><td>5%</td></tr>
+        <tr><td>DCI光纤需求占比（2027预）</td><td><strong>35%</strong></td></tr>
+        <tr><td>AI数据中心光纤增速</td><td>同比+150%+</td></tr>
+        <tr><td>高端光纤（G.654.E/OM5）溢价</td><td>普通光纤3-5倍</td></tr>
+        <tr><td>海外收入占比</td><td>已提升至<strong>42%+</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h4>驱动三：空芯光纤（HCF）— 技术质变，毛利率革命</h4>
+<div class="two-col">
+  <div class="col-box col-green">
+    <strong>✅ 技术领先优势</strong><br><br>
+    OFC 2026展示：衰减仅 <strong>0.04dB/km</strong>（全球最低，硅光纤约0.2dB/km）<br><br>
+    已助力中国移动建成首条商用空芯光纤线路（深港跨境证券交易）：<br>
+    • 时延降至 <strong>1毫秒</strong><br>
+    • 损耗 <strong>0.09dB/km</strong>（商用纪录）<br><br>
+    空芯光纤是AI集群传输的下一代基础设施，传统光纤的颠覆者。
+  </div>
+  <div class="col-box col-yellow">
+    <strong>💰 商业价值</strong><br><br>
+    普通光纤毛利率：约20-25%<br>
+    空芯光纤毛利率预计：<strong>60%以上</strong><br><br>
+    → 若空芯光纤规模化，长飞利润率将质变<br><br>
+    2026年净利润预测：<strong>16亿元人民币</strong>（第一上海）<br>
+    vs 2025年预计9.2-10亿元<br>
+    <span class="p-up">同比增速+60-75%</span>
+  </div>
+</div>
+
+<h3>③ 机构目标价 vs 当前价格</h3>
+<table>
+  <thead><tr><th>机构</th><th>研报日期</th><th>H股目标价</th><th>评级</th><th>核心逻辑</th><th>备注</th></tr></thead>
+  <tbody>
+    <tr><td><strong>第一上海</strong></td><td>2026-01-23</td><td>HK$65</td><td>买入</td><td>行业上行周期，净利润翻倍至16亿</td><td>⚠️ 当前185已远超</td></tr>
+    <tr><td><strong>瑞银 UBS</strong></td><td>2026-01-29</td><td><strong>HK$100</strong></td><td>买入</td><td>全球数据中心扩建，高端产品溢价</td><td>⚠️ 当前185已超</td></tr>
+    <tr><td><strong>股市渔夫</strong></td><td>2026年初</td><td>HK$110</td><td>买入</td><td>空芯光纤技术稀缺性</td><td>⚠️ 当前185已超</td></tr>
+    <tr><td><strong>国泰海通</strong></td><td>2026-03-05</td><td>A股293.87元</td><td>增持</td><td>AI算力需求爆发</td><td>H股对应约100港元</td></tr>
+    <tr><td colspan="6" style="background:#fff3e0;font-weight:700">⚠️ 当前185港元已超过所有已知机构目标价。这意味着市场在提前定价2026年Q1-Q4业绩爆发，甚至部分2027年预期。机构需要上调目标价。</td></tr>
+  </tbody>
+</table>
+
+<h3>④ 财务数据</h3>
+<table>
+  <thead><tr><th>指标</th><th>2025前三季度</th><th>2025全年预测</th><th>2026全年预测</th></tr></thead>
+  <tbody>
+    <tr><td>营收</td><td>102.75亿元（+18.2%）</td><td>~144亿元</td><td>~180亿元（第一上海）</td></tr>
+    <tr><td>归母净利润</td><td>4.7亿元（-18%）</td><td>9.2-10亿元</td><td><strong>~16亿元（+65%）</strong></td></tr>
+    <tr><td>利润下滑原因</td><td colspan="3">上半年海外低毛利订单+研发投入增加。下半年光纤价格回升后已改善。</td></tr>
+    <tr><td>海外收入占比</td><td colspan="3">已提升至42%+（不依赖国内运营商集采，抗周期能力增强）</td></tr>
+  </tbody>
+</table>
+
+<h3>⑤ 技术分析</h3>
+<div class="two-col">
+  <div class="col-box">
+    <strong>📈 近5日收盘（港元）</strong><br><br>
+    145.80 → 153.80 → 145.90 → 165.00 → <strong>185.00</strong><br><br>
+    5日涨幅：+26.9%<br>
+    今日涨幅：+12.1%，已触及近期强阻力区<br><br>
+    <strong>关键支撑位：</strong><br>
+    • 165港元（近期密集成交区）<br>
+    • 154港元（20日均线）<br>
+    • 140港元（技术支撑下沿）
+  </div>
+  <div class="col-box col-yellow">
+    <strong>⚠️ 短线风险：超买信号</strong><br><br>
+    当前185港元较20日均线溢价：+19.6%<br>
+    连续多日大涨后，RSI超买<br>
+    今日成交量高于均量23%，换手加速<br><br>
+    <strong>可能的回调路径：</strong><br>
+    • 轻微回调：165-170港元（-8 to -11%）<br>
+    • 业绩不及预期：140-150港元（-19 to -24%）<br>
+    • 52周高：206.80港元（上方阻力）
+  </div>
+</div>
+
+<h3>⑥ 风险清单</h3>
+<div class="risk-item"><span class="risk-label">高</span><div>3月27日业绩不及预期：若2025年利润低于预期或2026年指引保守，股价可能单日回调15-25%</div></div>
+<div class="risk-item"><span class="risk-label">高</span><div>2027年光棒产能释放：行业扩产后光纤价格可能再次下行，当前价格已提前定价涨价红利</div></div>
+<div class="risk-item"><span class="risk-label med">中</span><div>运营商长协价稀释：大部分收入来自运营商集采长协价，现货涨价红利可能只有20-30%的收入受益</div></div>
+<div class="risk-item"><span class="risk-label med">中</span><div>空芯光纤商业化进度不及预期：目前商用案例仍少，若规模化时间推迟，高估值难以维持</div></div>
+<div class="risk-item"><span class="risk-label low">低</span><div>港股整体风险：若美联储超鹰or地缘冲突，港股整体调整会带动长飞下跌</div></div>
+
+<h3>⑦ 投资决策</h3>
+<div class="verdict-box verdict-wait">
+  <h3>🟡 等待回调后建仓 / 持有不卖</h3>
+  <table>
+    <thead><tr><th>场景</th><th>操作</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td><strong>当前持有</strong></td><td><span class="tag-hold">继续持有</span></td><td>止损165港元，基本面驱动未结束</td></tr>
+      <tr><td><strong>想新买入</strong></td><td><span class="tag-wait">等回调150-165买入</span></td><td>不追现价185，性价比低</td></tr>
+      <tr><td><strong>3/27业绩超预期</strong></td><td><span class="tag-hold">持有，目标200-220</span></td><td>业绩兑现+指引乐观=冲高</td></tr>
+      <tr><td><strong>3/27业绩不及预期</strong></td><td><span class="tag-p1">减仓50%（若跌破160）</span></td><td>获利了结，等再次低位回买</td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:10px">
+    <strong>止损线：</strong> 跌破140港元 → 减仓50%<br>
+    <strong>中期目标：</strong> 200-220港元（对应前高区间，业绩+AI催化）<br>
+    <strong>长期目标：</strong> 250港元+（空芯光纤规模商用后）<br>
+    <strong>置信度：</strong> <span class="conf-m">中高</span>（基本面强，但短线技术超买+业绩风险）
+  </div>
+</div>
+
+<hr class="d">
+
+<!-- ===== 第二部分：LITE Lumentum ===== -->
+<h2>二、Lumentum Holdings（LITE / NASDAQ）— AI光源垄断商</h2>
+
+<h3>① 实时价格数据（Phase Zero验证）</h3>
+<div class="three-col">
+  <div class="price-box">
+    <div class="label">今日收盘 (3/25)</div>
+    <div class="price">$801.99</div>
+    <div class="chg">USD | <span style="color:#ffeb3b">+10.02% 今日</span></div>
+  </div>
+  <div class="col-box">
+    <strong>技术指标</strong><br>
+    52周高：<strong>$803.58</strong>（今日触及）<br>
+    52周低：<strong>$45.65</strong><br>
+    较年内低涨幅：<span class="p-up">+1,655%</span><br>
+    20日均价：$683.85<br>
+    当前较均线溢价：+17.3%
+  </div>
+  <div class="col-box">
+    <strong>估值</strong><br>
+    市值：~$572亿<br>
+    PE（TTM）：<strong>232.46x</strong><br>
+    PB：<strong>67.64x</strong><br>
+    今日成交量：6,939,587股<br>
+    vs 20日均量：7,637,509（略低，非恐慌性冲高）
+  </div>
+</div>
+
+<div class="alert alert-blue">
+  <strong>📍 定位：</strong>Lumentum是光通信领域的"<strong>ASML</strong>"——AI算力基础设施里，EML（电吸收调制激光器）和UHP（超高功率）激光器技术壁垒极高，CPO时代里没有替代者。NVDA的GPU要工作，必须有LITE的激光器。
+</div>
+
+<h3>② 为什么涨了1,655%还有理由持有？</h3>
+
+<h4>爆炸性业绩数据（确认级别）</h4>
+<table>
+  <thead><tr><th>指标</th><th>FY2Q26实际</th><th>去年同期</th><th>同比</th><th>FY3Q26指引</th></tr></thead>
+  <tbody>
+    <tr><td>营收</td><td><strong>$6.65亿</strong></td><td>$4.03亿</td><td><span class="p-up">+65%</span></td><td>$7.8-8.3亿</td></tr>
+    <tr><td>非GAAP EPS</td><td><strong>$1.67</strong></td><td>$0.42</td><td><span class="p-up">+298%</span></td><td>$2.15-2.35</td></tr>
+    <tr><td>3Q26指引营收增速</td><td colspan="4">同比<span class="p-up">+85%+</span>（大幅超分析师预期20%）</td></tr>
+    <tr><td>长期营收目标</td><td colspan="4">OFC 2026披露：<strong>季度$20亿</strong>目标（当前$6-8亿，3倍成长空间）</td></tr>
+  </tbody>
+</table>
+
+<div class="two-col">
+  <div>
+    <h4>OCS — 短期最大驱动</h4>
+    <div class="col-box col-green">
+      <strong>光路交换（OCS）订单积压：$4亿+</strong><br><br>
+      大部分订单计划于<strong>2026年下半年</strong>集中发货<br>
+      → 2026年下半年业绩将再次爆发式增长<br><br>
+      OCS的价值：AI数据中心规模扩大后，传统电交换效率不够，光路直接交换延迟更低，LITE是少数能量产的供应商。
+    </div>
+  </div>
+  <div>
+    <h4>CPO — 长期最大驱动</h4>
+    <div class="col-box col-green">
+      <strong>共封装光学（CPO）价值数亿美元订单</strong><br><br>
+      预计<strong>2027年上半年</strong>交付<br>
+      核心产品：UHP激光器（最难造，LITE独家）<br><br>
+      CPO是GPU与光模块整合的下一代架构，届时每片GPU都需要LITE的激光器作为光源。这是5年内最大的单项业务机会。
+    </div>
+  </div>
+</div>
+
+<h3>③ 分析师目标价 vs 当前价格</h3>
+<table>
+  <thead><tr><th>机构</th><th>目标价</th><th>评级</th><th>备注</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Rosenblatt</strong></td><td><strong>$900</strong></td><td>买入</td><td>2026年3月最新，最激进</td></tr>
+    <tr><td><strong>Stifel</strong></td><td>$800</td><td>买入</td><td>当前价格已触及此目标</td></tr>
+    <tr><td>TD Cowen</td><td>$675</td><td>买入（初始）</td><td>偏保守</td></tr>
+    <tr><td>Morgan Stanley</td><td>$595（上调后）</td><td>—</td><td>从$520上调</td></tr>
+    <tr><td>多平台共识均值</td><td>$573-575</td><td>—</td><td>滞后反映新业绩</td></tr>
+    <tr style="background:#e8f5e9"><td colspan="4"><strong>结论：当前$802 = Stifel目标价，距Rosenblatt目标$900还有+12%空间。但共识均值仅$575，机构普遍需要上调。</strong></td></tr>
+  </tbody>
+</table>
+
+<h3>④ 技术分析</h3>
+<div class="two-col">
+  <div class="col-box">
+    <strong>近5日收盘（美元）</strong><br><br>
+    $700.81 → $772.13 → $706.35 → $728.95 → <strong>$801.99</strong><br><br>
+    今日已触及52周高点$803.58，价格在历史最高位附近<br><br>
+    <strong>关键支撑位：</strong><br>
+    • $750-760（近期整理区间顶）<br>
+    • $720（短期重要支撑）<br>
+    • $683（20日均线）
+  </div>
+  <div class="col-box col-yellow">
+    <strong>⚠️ 短线风险信号</strong><br><br>
+    今日触及52周高点+回调至$802（盘中高达$803.58），典型"冲高回落"信号<br><br>
+    成交量6.9M，低于均量7.6M——量能不足，高位上涨动力可能减弱<br><br>
+    <strong>可能的回调路径：</strong><br>
+    • 正常整理：$740-760（-5 to -8%）<br>
+    • 较深回调：$680-720（-10 to -15%）<br>
+    • 重要阻力：$803.58（52周高，突破可看$900）
+  </div>
+</div>
+
+<h3>⑤ 风险清单</h3>
+<div class="risk-item"><span class="risk-label">高</span><div>技术高位风险：今日触及52周高，PE 232x属历史极值，若大盘回调LITE将放大跌幅（高Beta）</div></div>
+<div class="risk-item"><span class="risk-label">高</span><div>美股大盘系统性风险：S&P已跌破200日均线，VIX 26.78，LITE是高成长股，大盘下跌时跌幅会更大</div></div>
+<div class="risk-item"><span class="risk-label med">中</span><div>OCS发货延迟：若$4亿积压订单因供应链或客户推迟无法在2H26如期发货，业绩将不及指引</div></div>
+<div class="risk-item"><span class="risk-label med">中</span><div>CPO市场竞争：博通/英特尔也在推CPO方案，LITE的激光器垄断地位在2027-2028年可能面临挑战</div></div>
+<div class="risk-item"><span class="risk-label low">低</span><div>客户集中度：前5大客户可能占60%+收入，单一大客户调整采购计划会造成较大影响</div></div>
+
+<h3>⑥ 投资决策</h3>
+<div class="verdict-box verdict-wait">
+  <h3>🟡 等回调建仓 / 持有不止盈</h3>
+  <table>
+    <thead><tr><th>场景</th><th>操作</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td><strong>当前持有</strong></td><td><span class="tag-hold">继续持有</span></td><td>止损$680（20日均线），OCS下半年发货是主要支撑</td></tr>
+      <tr><td><strong>想新买入</strong></td><td><span class="tag-wait">等回调$720-750买入</span></td><td>不追$800触及52周高，性价比差</td></tr>
+      <tr><td><strong>突破$803历史高</strong></td><td><span class="tag-hold">持有，看$850-900</span></td><td>OCS发货兑现+指引上调将突破</td></tr>
+      <tr><td><strong>大盘大跌拖累</strong></td><td><span class="tag-p1">$680以下减仓50%</span></td><td>大盘系统风险下，高Beta股需降仓</td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:10px">
+    <strong>止损线：</strong> 跌破$680（20日均线）→ 减仓50%<br>
+    <strong>中期目标（3-6月）：</strong> $850-900（OCS发货+3Q26财报超预期）<br>
+    <strong>长期目标（12-18月）：</strong> $1,200+（CPO大规模商用，对应季度营收$15亿+）<br>
+    <strong>置信度：</strong> <span class="conf-h">高</span>（业绩驱动清晰，催化剂时间表明确）
+  </div>
+</div>
+
+<hr class="d">
+
+<!-- ===== 第三部分：对比 ===== -->
+<h2>三、两只标的横向对比 — 如何选择？</h2>
+
+<table>
+  <thead><tr><th>维度</th><th>长飞光纤 06869</th><th>LITE Lumentum</th></tr></thead>
+  <tbody>
+    <tr><td><strong>市场</strong></td><td><span class="mkt-hk">港股</span> + A股601869</td><td><span class="mkt-us">美股 NASDAQ</span></td></tr>
+    <tr><td><strong>当前价</strong></td><td>185.00港元（+12.1%）</td><td>$801.99（+10.0%）</td></tr>
+    <tr><td><strong>52周涨幅（从低点）</strong></td><td><span class="p-up">+1,417%</span></td><td><span class="p-up">+1,655%</span></td></tr>
+    <tr><td><strong>产品位置</strong></td><td>光纤光缆（传输介质，上游原材料）</td><td>激光器/光模块器件（光源，核心零部件）</td></tr>
+    <tr><td><strong>护城河</strong></td><td>全球最大光纤+光棒垂直整合；空芯光纤专利</td><td>EML/UHP激光器技术壁垒；CPO唯一量产供应商</td></tr>
+    <tr><td><strong>业绩驱动</strong></td><td>光纤涨价（130%）+海外扩张+AI需求</td><td>OCS积压$4亿+CPO大单（2027H1）</td></tr>
+    <tr><td><strong>近期催化剂</strong></td><td>⭐ 3月27日年报发布（后天！）</td><td>OCS下半年发货 + 3Q26财报（4-5月）</td></tr>
+    <tr><td><strong>目标价 vs 当前</strong></td><td>超过所有机构目标价（最高$110港元）</td><td>在$800（Stifel目标），距$900（Rosenblatt）+12%</td></tr>
+    <tr><td><strong>PE</strong></td><td>207x</td><td>232x</td></tr>
+    <tr><td><strong>成长确定性</strong></td><td>高（光纤涨价已发生，AI需求实物可见）</td><td>极高（OCS积压订单实物可见，CPO已有大单）</td></tr>
+    <tr><td><strong>主要风险</strong></td><td>业绩不及预期（3/27）；2027产能过剩</td><td>大盘系统风险；OCS发货延迟</td></tr>
+    <tr><td><strong>止损线</strong></td><td><strong>140港元</strong></td><td><strong>$680</strong></td></tr>
+    <tr><td><strong>中期目标</strong></td><td>200-220港元</td><td>$850-900</td></tr>
+    <tr><td><strong>操作建议</strong></td><td><span class="tag-wait">等回调150-165建仓</span></td><td><span class="tag-wait">等回调$720-750建仓</span></td></tr>
+    <tr><td><strong>置信度</strong></td><td><span class="conf-m">中高</span></td><td><span class="conf-h">高</span></td></tr>
+  </tbody>
+</table>
+
+<div class="alert alert-green">
+  <strong>综合判断：</strong><br>
+  如果二选一优先布局：<strong>LITE优先于长飞</strong>——业绩驱动更清晰（有明确订单积压可见性），距机构最高目标价$900还有空间，且已连续多季度超预期。<br><br>
+  长飞的逻辑同样强，但目前股价已大幅超越所有机构目标价，需等业绩验证后机构上调目标价，再判断是否有新的入场点。<strong>3月27日年报是最大催化剂，也是最大风险</strong>——买入应在业绩公布之后。
+</div>
+
+<h2>四、操作时间表</h2>
+<div class="timeline">
+  <div class="timeline-item">
+    <div class="date">2026-03-27（后天）</div>
+    <strong>长飞年报发布</strong> — 最关键时间节点<br>
+    若超预期：冲击200港元，买入信号确认<br>
+    若不及预期：可能回落至150以下，是买入机会
+  </div>
+  <div class="timeline-item">
+    <div class="date">2026年4-5月</div>
+    <strong>LITE 3Q26财报</strong> — 验证$7.8-8.3亿指引是否实现<br>
+    若OCS发货如期，EPS大幅超预期，目标看$900
+  </div>
+  <div class="timeline-item">
+    <div class="date">2026年下半年</div>
+    <strong>LITE OCS $4亿积压订单集中发货</strong> — 可见性最高的业绩驱动<br>
+    同期长飞Q2/Q3业绩将完整体现光纤涨价红利
+  </div>
+  <div class="timeline-item">
+    <div class="date">2027年上半年</div>
+    <strong>LITE CPO大单开始交付</strong> — 从"订单"到"收入"的质变<br>
+    长飞空芯光纤商用线路数量若显著增加，是新一轮估值重估起点
+  </div>
+</div>
+
+<div class="footer">
+  <span>芒格投资研究 · 光通信深度报告 · 2026-03-25</span>
+  <span>数据来源：yfinance实时验证 | 国泰海通/第一上海/瑞银/Stifel/Rosenblatt/Morgan Stanley | OFC 2026/证券时报</span>
+  <span>⚠️ 本报告不含个人持仓信息，可公开分享 | 投资有风险</span>
+</div>
+
+</div>
+</body>
+</html>

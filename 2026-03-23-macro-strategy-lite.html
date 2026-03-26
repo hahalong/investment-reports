@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif; font-size: 10pt; color: #1a1a2e; line-height: 1.8; margin: 0; background: #f0f4f8; }
+  .page { max-width: 940px; margin: 0 auto; padding: 36px 48px; background: #fff; }
+
+  /* 封面 */
+  .cover { background: linear-gradient(135deg, #0a0e1a 0%, #0d3a6b 50%, #1a237e 100%); border-radius: 14px; padding: 32px 40px; color: white; margin-bottom: 28px; position: relative; overflow: hidden; }
+  .cover::before { content: '🌐'; position: absolute; right: 20px; top: 0; font-size: 120px; opacity: 0.1; }
+  .cover .badge { background: rgba(255,200,0,0.25); border: 1px solid rgba(255,200,0,0.5); border-radius: 20px; padding: 3px 14px; font-size: 8.5pt; display: inline-block; margin-bottom: 10px; color: #ffe082; }
+  .cover h1 { font-size: 17pt; font-weight: 800; margin: 8px 0 8px; line-height: 1.3; }
+  .cover .sub { font-size: 9.5pt; opacity: 0.8; }
+  .cover .meta { margin-top: 16px; font-size: 8.5pt; opacity: 0.65; display: flex; gap: 20px; flex-wrap: wrap; }
+
+  /* 总结框 */
+  .summary-box { background: linear-gradient(135deg,#1a237e,#283593); color: white; border-radius: 12px; padding: 20px 26px; margin: 20px 0; }
+  .summary-box h2 { color: #ffe082; font-size: 12pt; margin: 0 0 12px; border: none; padding: 0; }
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .sg-item { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 12px 14px; }
+  .sg-item .label { font-size: 8pt; opacity: 0.7; margin-bottom: 4px; }
+  .sg-item .value { font-size: 10.5pt; font-weight: 700; }
+  .bull { color: #a5d6a7; }
+  .bear { color: #ef9a9a; }
+  .neutral { color: #ffe082; }
+
+  h2 { font-size: 12pt; font-weight: 700; color: #0d3a6b; border-bottom: 2.5px solid #1565c0; padding-bottom: 5px; margin-top: 28px; margin-bottom: 12px; }
+  h3 { font-size: 10.5pt; font-weight: 700; color: #1565c0; margin-top: 16px; margin-bottom: 6px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 9pt; }
+  thead tr { background: #0d3a6b; color: white; }
+  thead th { padding: 8px 10px; text-align: left; font-weight: 600; }
+  tbody tr:nth-child(even) { background: #f0f4ff; }
+  tbody td { padding: 7px 10px; border-bottom: 1px solid #e3f2fd; vertical-align: top; }
+
+  .bull-tag { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; border-radius: 4px; padding: 2px 8px; font-size: 8pt; font-weight: 700; white-space: nowrap; }
+  .bear-tag { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; border-radius: 4px; padding: 2px 8px; font-size: 8pt; font-weight: 700; white-space: nowrap; }
+  .neut-tag { background: #fff8e1; color: #856404; border: 1px solid #ffe082; border-radius: 4px; padding: 2px 8px; font-size: 8pt; font-weight: 700; white-space: nowrap; }
+
+  .conf-h { background: #c8e6c9; color: #1b5e20; border-radius: 3px; padding: 1px 6px; font-size: 7.5pt; font-weight: 700; }
+  .conf-m { background: #fff9c4; color: #856404; border-radius: 3px; padding: 1px 6px; font-size: 7.5pt; font-weight: 700; }
+  .conf-l { background: #ffccbc; color: #bf360c; border-radius: 3px; padding: 1px 6px; font-size: 7.5pt; font-weight: 700; }
+  .unk { background: #eeeeee; color: #616161; border-radius: 3px; padding: 1px 6px; font-size: 7.5pt; }
+
+  .alert { border-radius: 8px; padding: 12px 16px; margin: 10px 0; font-size: 9.5pt; line-height: 1.7; }
+  .alert-red    { background: #ffebee; border-left: 4px solid #c62828; }
+  .alert-green  { background: #e8f5e9; border-left: 4px solid #2e7d32; }
+  .alert-blue   { background: #e3f2fd; border-left: 4px solid #1565c0; }
+  .alert-yellow { background: #fff8e1; border-left: 4px solid #f9a825; }
+  .alert-purple { background: #f3e5f5; border-left: 4px solid #7b1fa2; }
+
+  .stock-card { border: 1.5px solid #e3f2fd; border-radius: 10px; padding: 14px 18px; margin: 10px 0; background: #fafcff; }
+  .stock-card .sc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .stock-card .sc-name { font-size: 11pt; font-weight: 700; color: #0d3a6b; }
+  .stock-card .sc-price { font-size: 9pt; color: #546e7a; }
+
+  .mkt-data { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 12px 0; }
+  .mkt-item { background: #f5f7ff; border: 1px solid #e3f2fd; border-radius: 8px; padding: 10px 12px; text-align: center; }
+  .mkt-item .mi-label { font-size: 8pt; color: #546e7a; }
+  .mkt-item .mi-val { font-size: 11pt; font-weight: 700; color: #0d3a6b; margin: 2px 0; }
+  .mi-up { color: #c62828 !important; }
+  .mi-dn { color: #2e7d32 !important; }
+
+  hr.d { border: none; border-top: 1px solid #e3f2fd; margin: 22px 0; }
+  .footer { margin-top: 28px; padding-top: 12px; border-top: 2px solid #e3f2fd; font-size: 8pt; color: #6c757d; display: flex; justify-content: space-between; flex-wrap: wrap; }
+  .src { font-size: 7.5pt; color: #9e9e9e; }
+  .warn-small { font-size: 8pt; color: #e65100; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- 封面 -->
+<div class="cover">
+  <div class="badge">📊 宏观策略 | 全球三市场 | Lite版</div>
+  <h1>2026年3月 全球宏观投资策略<br>A股 · 港股 · 美股 · 黄金 · 比特币</h1>
+  <div class="sub">基于实时市场数据 + 宏观研究，标注置信度 | 不确定信息已标注</div>
+  <div class="meta">
+    <span>📅 2026-03-23 09:30 GMT+8</span>
+    <span>📊 数据：yfinance实时查询（3/20-3/23）</span>
+    <span>🔍 来源：FOMC声明 / IMF报告 / 新华社 / 观察者网</span>
+  </div>
+</div>
+
+<!-- 实时市场数据 -->
+<h2>📈 最新市场数据（yfinance实时）</h2>
+<div class="mkt-data">
+  <div class="mkt-item"><div class="mi-label">标普500 (SPY)</div><div class="mi-val mi-dn">648.57</div><div class="mi-label mi-dn">-1.43%</div></div>
+  <div class="mkt-item"><div class="mi-label">纳斯达克 (QQQ)</div><div class="mi-val mi-dn">582.06</div><div class="mi-label mi-dn">-1.85%</div></div>
+  <div class="mkt-item"><div class="mi-label">VIX 恐慌指数</div><div class="mi-val mi-up">26.78</div><div class="mi-label mi-up">+11.3% ⚠️</div></div>
+  <div class="mkt-item"><div class="mi-label">恒生指数</div><div class="mi-val mi-dn">25,277</div><div class="mi-label mi-dn">-0.88%</div></div>
+  <div class="mkt-item"><div class="mi-label">上证指数</div><div class="mi-val mi-dn">3,957</div><div class="mi-label mi-dn">-1.24%</div></div>
+  <div class="mkt-item"><div class="mi-label">创业板指</div><div class="mi-val">3,352</div><div class="mi-label">持平</div></div>
+  <div class="mkt-item"><div class="mi-label">黄金 (GC=F)</div><div class="mi-val mi-dn">$4,425</div><div class="mi-label mi-dn">-3.18%</div></div>
+  <div class="mkt-item"><div class="mi-label">白银 (SI=F)</div><div class="mi-val mi-dn">$67.51</div><div class="mi-label mi-dn">-2.66%</div></div>
+  <div class="mkt-item"><div class="mi-label">比特币 (BTC)</div><div class="mi-val">$68,088</div><div class="mi-label mi-dn">-0.91%</div></div>
+  <div class="mkt-item"><div class="mi-label">原油 (CL=F)</div><div class="mi-val">$98.22</div><div class="mi-label mi-dn">-0.10%</div></div>
+  <div class="mkt-item"><div class="mi-label">美元指数 (DXY)</div><div class="mi-val">99.57</div><div class="mi-label mi-dn">-0.08%</div></div>
+  <div class="mkt-item"><div class="mi-label">10年美债收益率</div><div class="mi-val">4.39%</div><div class="mi-label mi-up">+2.57%</div></div>
+</div>
+
+<!-- 执行摘要 -->
+<div class="summary-box">
+  <h2>⚡ 执行摘要（先看这里）</h2>
+  <div class="summary-grid">
+    <div class="sg-item">
+      <div class="label">本周核心判断</div>
+      <div class="value neutral">全球进入"滞胀交易"模式<br>风险资产承压，防御/能源/AI分化</div>
+    </div>
+    <div class="sg-item">
+      <div class="label">最大风险</div>
+      <div class="value bear">霍尔木兹封锁 + 美联储暗示全年仅降息1次<br>→ 高利率持续 + 大宗商品价格飙升</div>
+    </div>
+    <div class="sg-item">
+      <div class="label">A股 / 港股判断</div>
+      <div class="value bull">结构性机会 > 系统性风险<br>AI算力 / 核电 / 储能 三条主线维持</div>
+    </div>
+    <div class="sg-item">
+      <div class="label">美股判断</div>
+      <div class="value bear">技术面破位（标普跌破200日均线）<br>谨慎持股，不加仓，等待稳定</div>
+    </div>
+  </div>
+</div>
+
+<hr class="d">
+
+<!-- 第一部分：宏观形势 -->
+<h2>🌐 一、全球宏观形势（3月最新）</h2>
+
+<h3>1.1 美国：高利率 + 滞胀压力</h3>
+<table>
+  <thead><tr><th>维度</th><th>现状</th><th>影响</th><th>置信度</th></tr></thead>
+  <tbody>
+    <tr><td><strong>联邦基准利率</strong></td><td>3.50%-3.75%（3月FOMC维持不变）</td><td>高利率压制估值，特别是科技股</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td><strong>点阵图信号</strong></td><td>2026年全年仅降息1次（25bp）</td><td>市场年初期待4次降息落空，已回调</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td><strong>核心PCE预期</strong></td><td>2026年末上调至2.7%</td><td>通胀顽固，降息空间受限</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td><strong>美股技术面</strong></td><td>标普跌破200日均线（6,506，均线约6,619）</td><td>技术破位信号，中短期偏空</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td><strong>VIX</strong></td><td>26.78（上周五+11.3%）</td><td>恐慌情绪上升，非极端恐慌（<30）</td><td><span class="conf-h">高</span></td></tr>
+  </tbody>
+</table>
+
+<h3>1.2 中国：政策宽松 + 贸易压力</h3>
+<table>
+  <thead><tr><th>维度</th><th>现状</th><th>影响</th><th>置信度</th></tr></thead>
+  <tbody>
+    <tr><td><strong>货币政策</strong></td><td>适度宽松，央行维持流动性充裕</td><td>A股流动性支撑，利好成长股</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td><strong>中美关税</strong></td><td>10%基准关税 + 301调查新威胁（EV/电池）</td><td>出口链承压；国内替代加速</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td><strong>中美磋商</strong></td><td>巴黎第六轮磋商达成初步共识，但摩擦未消</td><td>关系趋于管控，极端恶化概率降低</td><td><span class="conf-m">中</span></td></tr>
+    <tr><td><strong>出口结构</strong></td><td>中间品出口+9%，对东南亚/新兴市场增长</td><td>贸易多元化进展，减少对美依赖</td><td><span class="conf-m">中</span></td></tr>
+  </tbody>
+</table>
+
+<h3>1.3 地缘政治：霍尔木兹风险</h3>
+<div class="alert alert-red">
+  <strong>⚠️ 关键风险</strong>：霍尔木兹海峡封锁已持续第三周（3/4至今），全球约20%石油供应过境受阻。美军已增兵2,500，但特朗普已发出"winding down"信号。<br>
+  · 原油维持$95-100区间，通胀二次反弹压力真实存在<br>
+  · 一旦局势缓和（特朗普停火），市场可能单日反弹5-10%<br>
+  · <span class="warn-small">⚠️ 具体停火时间点不确定，不能以此为仓位管理依据</span>
+</div>
+
+<hr class="d">
+
+<!-- 第二部分：各市场行情与多空 -->
+<h2>📊 二、各市场行情与多空判断</h2>
+
+<h3>2.1 A股（上证3,957 | 深证13,866 | 创业板3,352）</h3>
+<table>
+  <thead><tr><th>子板块</th><th>方向</th><th>逻辑</th><th>置信度</th></tr></thead>
+  <tbody>
+    <tr><td>AI算力（光模块/算力服务器/PCB）</td><td><span class="bull-tag">🟢 看多</span></td><td>DeepSeek效应持续，云厂商Capex加速，国产替代加速</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td>核电（中国核电/中国核建）</td><td><span class="bull-tag">🟢 看多</span></td><td>能源危机背景下核电审批加速，2026年10台+新机组</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td>电网/储能（电网ETF/阳光电源）</td><td><span class="bull-tag">🟢 看多</span></td><td>AI用电需求爆发，国家电网投资提速，特斯拉储能订单</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td>化工周期（龙佰/化工基金）</td><td><span class="bull-tag">🟢 看多（中期）</span></td><td>2026年化工周期反转年，供给出清+需求回暖，Q2信号</td><td><span class="conf-m">中</span></td></tr>
+    <tr><td>消费/地产</td><td><span class="bear-tag">🔴 看空</span></td><td>居民杠杆率高，地产去库存压力大，消费复苏慢</td><td><span class="conf-m">中</span></td></tr>
+    <tr><td>出口链（家电/纺织）</td><td><span class="bear-tag">🔴 看空</span></td><td>美国301调查覆盖EV/电池/关键制造，出口增速承压</td><td><span class="conf-m">中</span></td></tr>
+    <tr><td>传统能源（火电/煤炭）</td><td><span class="neut-tag">🟡 中性</span></td><td>受益油价但政策方向是新能源替代，上行空间有限</td><td><span class="conf-m">中</span></td></tr>
+  </tbody>
+</table>
+
+<h3>2.2 港股（恒指25,277）</h3>
+<table>
+  <thead><tr><th>子板块</th><th>方向</th><th>逻辑</th><th>置信度</th></tr></thead>
+  <tbody>
+    <tr><td>互联网科技（阿里/腾讯/小米）</td><td><span class="bull-tag">🟢 看多</span></td><td>AI云+广告回暖，阿里云+36%，港股估值仍低于美股同类</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td>恒生科技ETF</td><td><span class="neut-tag">🟡 谨慎</span></td><td>短期已超买后回调，等确认后再加仓</td><td><span class="conf-m">中</span></td></tr>
+    <tr><td>港股地产/金融</td><td><span class="bear-tag">🔴 看空</span></td><td>高利率环境压制估值，香港楼市仍弱</td><td><span class="conf-m">中</span></td></tr>
+  </tbody>
+</table>
+
+<h3>2.3 美股（标普6,506 | 纳指21,648）</h3>
+<table>
+  <thead><tr><th>子板块</th><th>方向</th><th>逻辑</th><th>置信度</th></tr></thead>
+  <tbody>
+    <tr><td>AI基础设施（MSFT/GOOGL/ORCL）</td><td><span class="bull-tag">🟢 中长期看多</span></td><td>Azure+30%/谷歌云加速，AI变现已验证</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td>能源（埃克森/雪佛龙）</td><td><span class="bull-tag">🟢 看多（短期）</span></td><td>原油$98，地缘风险溢价，霍尔木兹封锁利好</td><td><span class="conf-m">中</span></td></tr>
+    <tr><td>黄金矿企（NEM/GOLD）</td><td><span class="bull-tag">🟢 看多</span></td><td>黄金$4,425仍高位，矿企利润率高弹性</td><td><span class="conf-m">中</span></td></tr>
+    <tr><td>传统科技/估值敏感股</td><td><span class="bear-tag">🔴 看空</span></td><td>技术破位+高利率，估值压缩，PE压缩风险</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td>化工/工业（DOW/LYB）</td><td><span class="neut-tag">🟡 观察</span></td><td>等Q1财报验证，Q2可能迎来化工周期回暖</td><td><span class="conf-l">低</span></td></tr>
+  </tbody>
+</table>
+
+<h3>2.4 黄金与白银</h3>
+<table>
+  <thead><tr><th>资产</th><th>现价</th><th>方向</th><th>逻辑</th></tr></thead>
+  <tbody>
+    <tr><td><strong>黄金 (GC=F)</strong></td><td>$4,425 (-3.18%)</td><td><span class="neut-tag">🟡 谨慎持有</span></td><td>回调中，$4,400支撑。若跌破$4,200，看空。中长期通胀+地缘依然支撑</td></tr>
+    <tr><td><strong>白银 (SI=F)</strong></td><td>$67.51 (-2.66%)</td><td><span class="neut-tag">🟡 谨慎</span></td><td>工业属性强，经济预期走弱拖累；关注$62支撑</td></tr>
+  </tbody>
+</table>
+<div class="alert alert-yellow">
+  <strong>黄金操作提醒</strong>：金价已从$4,700高点回落至$4,425，-6%。目前黄金9999持仓成本10.656，现价9.870，已亏7.4%。若金价不能重回$4,600以上，建议按计划清仓。
+</div>
+
+<h3>2.5 比特币</h3>
+<table>
+  <thead><tr><th>资产</th><th>现价</th><th>方向</th><th>逻辑</th></tr></thead>
+  <tbody>
+    <tr><td><strong>比特币 (BTC-USD)</strong></td><td>$68,088 (-0.91%)</td><td><span class="neut-tag">🟡 中性</span></td><td>$65,000-72,000横盘区间；ETF资金流入放缓；宏观利率压制风险资产；不建议大幅加仓 <span class="unk">⚠️ 不确定</span></td></tr>
+  </tbody>
+</table>
+
+<hr class="d">
+
+<!-- 第三部分：投资策略 -->
+<h2>🎯 三、投资策略（下周 + 中长期）</h2>
+
+<h3>3.1 下周操作策略（3/24-3/28）</h3>
+<div class="alert alert-blue">
+  <strong>核心原则：减仓降压 + 守住核心逻辑仓位 + 等待地缘缓和信号</strong>
+</div>
+
+<table>
+  <thead><tr><th>市场</th><th>下周策略</th><th>具体行动</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A股</strong></td><td>执行已定减仓计划</td><td>P1：黄金清仓，农业ETF清仓；P2：华建集团降到10-12%；等上证反弹4,000再执行P2挂单</td></tr>
+    <tr><td><strong>港股</strong></td><td>守住止损，不加仓</td><td>07226剩余50%周一清仓；02600 11.00止损线严守；09988阿里止损120港元</td></tr>
+    <tr><td><strong>美股</strong></td><td>不加仓，观察</td><td>MSFT/GOOGL持有，止损$270-275；DOW等Q1财报</td></tr>
+    <tr><td><strong>黄金</strong></td><td>准备清仓</td><td>若金价本周无法站稳$4,500，执行清仓</td></tr>
+    <tr><td><strong>比特币</strong></td><td>不操作</td><td>无持仓，等跌破$60,000再看</td></tr>
+  </tbody>
+</table>
+
+<h3>3.2 中长期策略（3-6个月）</h3>
+<table>
+  <thead><tr><th>市场</th><th>方向</th><th>核心主线</th><th>入场条件</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A股</strong></td><td><span class="bull-tag">🟢 逢低布局</span></td><td>AI算力 / 核电 / 储能 / 化工周期</td><td>上证跌到3,800-3,900时加仓AI算力；宁德时代230-240元；工业富联28-30元</td></tr>
+    <tr><td><strong>港股</strong></td><td><span class="bull-tag">🟢 持有核心</span></td><td>互联网大厂（阿里/腾讯）AI逻辑</td><td>恒指跌到24,000以下可分批加仓；阿里止损120港元守住</td></tr>
+    <tr><td><strong>美股</strong></td><td><span class="neut-tag">🟡 等待确认</span></td><td>AI云/算力（MSFT/GOOGL/ORCL）</td><td>标普守稳200日均线（6,619）后才考虑加仓；GEV（GE Vernova）等$180-200</td></tr>
+    <tr><td><strong>黄金</strong></td><td><span class="neut-tag">🟡 观望为主</span></td><td>通胀对冲 / 地缘风险</td><td>金价重返$4,700以上再考虑持有；目前建议清仓止损</td></tr>
+    <tr><td><strong>比特币</strong></td><td><span class="neut-tag">🟡 长期看好，短期谨慎</span></td><td>机构ETF持续流入，减半效应</td><td>$60,000以下分批建仓（≤5%仓位）；不建议现价追入</td></tr>
+  </tbody>
+</table>
+
+<hr class="d">
+
+<!-- 第四部分：重点关注股票 -->
+<h2>🔍 四、重点关注股票 Top3（分市场）</h2>
+
+<h3>A股 Top 3</h3>
+
+<div class="stock-card">
+  <div class="sc-header">
+    <div class="sc-name">🥇 工业富联 601138 <span class="bull-tag">强烈关注</span></div>
+    <div class="sc-price">当前价 ~29-30元区间 | 买入区间：28-30元</div>
+  </div>
+  <strong>逻辑</strong>：AI服务器代工龙头，NVIDIA核心供应商；2026年AI服务器出货量预计增长50%+；台积电CoWoS封装产能释放将拉动PCB/连接器需求。<br>
+  <strong>目标价</strong>：36-40元（+20-35%）| <strong>止损</strong>：25元 | <strong>风险收益比</strong>：≈3:1 ✅<br>
+  <strong>入场时机</strong>：现价已在买入区间下沿，可分批建仓 | <span class="conf-h">置信度：高</span>
+</div>
+
+<div class="stock-card">
+  <div class="sc-header">
+    <div class="sc-name">🥈 阳光电源 300274 <span class="bull-tag">持有加强</span></div>
+    <div class="sc-price">当前价 173.60元 | 成本 172.568元（已持有）</div>
+  </div>
+  <strong>逻辑</strong>：全球储能逆变器龙头；特斯拉100GW太阳能计划关键供应商；2026H2储能出货量预计同比+60%；中东地缘→全球去碳化加速。<br>
+  <strong>目标价</strong>：220-240元（+27-38%）| <strong>止损</strong>：155元 | <strong>周期</strong>：6-12个月<br>
+  <span class="conf-h">置信度：高</span>
+</div>
+
+<div class="stock-card">
+  <div class="sc-header">
+    <div class="sc-name">🥉 中际旭创 300308 <span class="bull-tag">新增关注</span></div>
+    <div class="sc-price">⚠️ 需实时查价后再给出止损 | 建议不超过5%仓位</div>
+  </div>
+  <strong>逻辑</strong>：800G/1.6T光模块龙头，AI数据中心升级核心受益；谷歌/微软/亚马逊数据中心Capex大幅增加；光模块单价提升+ASP改善。<br>
+  <strong>操作</strong>：回调10-15%时分批建仓；注意AI算力题材波动大，严格止损 | <span class="conf-m">置信度：中</span>
+</div>
+
+<h3>港股 Top 3</h3>
+
+<div class="stock-card">
+  <div class="sc-header">
+    <div class="sc-name">🥇 阿里巴巴 9988.HK <span class="bull-tag">持有</span></div>
+    <div class="sc-price">当前价 123.70港元 | 止损 120港元</div>
+  </div>
+  <strong>逻辑</strong>：云计算+36% Q3，AI收入10连季三位数增长；电商EBITA利润改善；港股估值明显低于美股同类（市盈率约15x vs MSFT 35x）。<br>
+  <strong>目标价</strong>：148-155港元（6个月）| <strong>风险</strong>：中美关税301调查波及电商物流 | <span class="conf-h">置信度：高</span>
+</div>
+
+<div class="stock-card">
+  <div class="sc-header">
+    <div class="sc-name">🥈 小米集团 1810.HK <span class="neut-tag">观察</span></div>
+    <div class="sc-price">当前价 33.20港元 | 当前已持有</div>
+  </div>
+  <strong>逻辑</strong>：电动车+AIoT双轮驱动；SU7 Ultra发布拉升品牌溢价；海外市场高速扩张；AI手机换机周期。<br>
+  <strong>操作</strong>：持有，止损28港元；不急于加仓，等Q1交付数据验证 | <span class="conf-m">置信度：中</span>
+</div>
+
+<div class="stock-card">
+  <div class="sc-header">
+    <div class="sc-name">🥉 三花智控 2050.HK <span class="neut-tag">关注年报</span></div>
+    <div class="sc-price">当前价 29.86港元 | ⚠️ 3/24有年报发布</div>
+  </div>
+  <strong>逻辑</strong>：热管理核心零部件，EV+储能+商用空调三线受益；技术壁垒高，客户黏性强。<br>
+  <strong>操作</strong>：等3/24年报数据，若业绩符合预期或超预期，可考虑继续持有 | <span class="conf-m">置信度：中</span>
+</div>
+
+<h3>美股 Top 3</h3>
+
+<div class="stock-card">
+  <div class="sc-header">
+    <div class="sc-name">🥇 谷歌 GOOGL <span class="bull-tag">持有</span></div>
+    <div class="sc-price">当前价 $301.00 | 止损 $270-275</div>
+  </div>
+  <strong>逻辑</strong>：谷歌云加速增长，AI搜索广告变现，YouTube Premium增长；市盈率约20x，低于科技同类。<br>
+  <strong>目标价</strong>：$350-380（12个月）| 风险收益比 ≈2.5:1 ✅ | <span class="conf-h">置信度：高</span>
+</div>
+
+<div class="stock-card">
+  <div class="sc-header">
+    <div class="sc-name">🥈 GE Vernova GEV <span class="bull-tag">新增机会</span></div>
+    <div class="sc-price">⚠️ 需实时查价 | 目标买入区间：$180-200</div>
+  </div>
+  <strong>逻辑</strong>：电网设备+风电龙头，AI数据中心用电激增→电网升级超级受益；美国IRA补贴红利；订单积压创历史高位。<br>
+  <strong>操作</strong>：若回调至$180-200区间，建仓5-8% | <span class="conf-m">置信度：中</span>
+</div>
+
+<div class="stock-card">
+  <div class="sc-header">
+    <div class="sc-name">🥉 微软 MSFT <span class="bull-tag">持有</span></div>
+    <div class="sc-price">当前价 $381.87 | 止损 $340</div>
+  </div>
+  <strong>逻辑</strong>：Azure AI增长30%，Copilot企业端渗透加速，云+AI变现最确定的标的之一。<br>
+  <strong>目标价</strong>：$440-460（12个月）| <span class="conf-h">置信度：高</span>
+</div>
+
+<hr class="d">
+
+<!-- 风险提示 -->
+<h2>⚠️ 五、主要风险与不确定因素</h2>
+
+<table>
+  <thead><tr><th>风险</th><th>可能性</th><th>影响</th><th>应对</th></tr></thead>
+  <tbody>
+    <tr><td>霍尔木兹封锁升级/美伊开战</td><td>中</td><td>油价飙升$120+，通胀二次反弹，全球市场大跌</td><td>控制总仓位≤60%，持有部分防御资产</td></tr>
+    <tr><td>美联储超鹰（年内不降息）</td><td>低-中</td><td>美股再跌10-15%，高估值成长股首当其冲</td><td>不加仓美股科技，等标普守稳200日均线</td></tr>
+    <tr><td>中美贸易升级（301调查落地）</td><td>中</td><td>A股/港股互联网/制造出口链承压</td><td>仓位偏向内需/核电/储能等内循环板块</td></tr>
+    <tr><td>AI估值泡沫</td><td>低</td><td>云收入+30-36%，变现已验证，非2000年互联网泡沫</td><td>持有但设止损；不用杠杆</td></tr>
+    <tr><td>⚠️ 不确定：地缘停火时点</td><td>未知</td><td>若停火，市场单日+5-10%</td><td>不因此All-in；保持一定现金等待信号</td></tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  <span>芒格投资研究 · 2026-03-23 09:30 GMT+8 · Lite版</span>
+  <span class="src">数据：yfinance | 来源：FOMC声明、IMF、新华社、观察者网、EBC金融</span>
+  <span class="warn-small">⚠️ 仅供参考，不构成投资建议，据此操作风险自担</span>
+</div>
+
+</div>
+</body>
+</html>

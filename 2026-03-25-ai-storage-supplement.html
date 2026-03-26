@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif; font-size: 8.5pt; color: #1a1a2e; line-height: 1.75; margin: 0; }
+  .page { max-width: 980px; margin: 0 auto; padding: 22px 36px; background: #fff; }
+
+  .cover { background: linear-gradient(135deg, #0d1b3e 0%, #0a3d62 40%, #1a5276 70%, #1f618d 100%); border-radius: 12px; padding: 28px 36px; color: white; margin-bottom: 20px; position: relative; overflow: hidden; }
+  .cover::before { content: '💾'; position: absolute; right: 20px; top: 0px; font-size: 120px; opacity: 0.1; }
+  .cover h1 { font-size: 18pt; font-weight: 900; margin: 0 0 6px; }
+  .cover .sub { font-size: 9.5pt; opacity: 0.85; margin: 4px 0; }
+  .cover .tags { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .cover .tag { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 3px 12px; font-size: 8pt; }
+  .cover .verdict { margin-top: 14px; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 16px; font-size: 9pt; border-left: 4px solid #5dade2; }
+
+  h2 { font-size: 12.5pt; color: #1a5276; border-left: 5px solid #2e86c1; padding-left: 12px; margin: 22px 0 10px; }
+  h3 { font-size: 10.5pt; color: #1f618d; margin: 16px 0 8px; }
+  h4 { font-size: 9.5pt; color: #2980b9; margin: 12px 0 6px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 8pt; }
+  th { background: #1a5276; color: white; padding: 7px 9px; text-align: left; font-weight: 600; }
+  td { padding: 5px 8px; border-bottom: 1px solid #d6eaf8; vertical-align: top; }
+  tr:nth-child(even) td { background: #eaf4fb; }
+  tr:hover td { background: #d6eaf8; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .four-col { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .col-box { background: #eaf4fb; border-radius: 8px; padding: 12px; border: 1px solid #aed6f1; font-size: 8pt; }
+  .col-green { background: #eafaf1; border-color: #a9dfbf; }
+  .col-yellow { background: #fefde7; border-color: #f9e79f; }
+  .col-red { background: #fdf2f8; border-color: #f1948a; }
+  .col-purple { background: #f5eef8; border-color: #c39bd3; }
+
+  .alert { border-radius: 8px; padding: 10px 14px; margin: 10px 0; font-size: 8.5pt; }
+  .alert-blue { background: #d6eaf8; border-left: 4px solid #2e86c1; }
+  .alert-green { background: #d5f5e3; border-left: 4px solid #1e8449; }
+  .alert-red { background: #fdedec; border-left: 4px solid #cb4335; }
+  .alert-yellow { background: #fef9e7; border-left: 4px solid #d4ac0d; }
+  .alert-orange { background: #fef5e7; border-left: 4px solid #ca6f1e; }
+
+  .stock-card { background: white; border: 1.5px solid #aed6f1; border-radius: 10px; padding: 12px 16px; margin: 10px 0; box-shadow: 0 1px 4px rgba(30,130,180,0.08); }
+  .stock-card .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .stock-card .name { font-weight: 800; font-size: 11pt; color: #1a5276; }
+  .stock-card .badges { display: flex; gap: 6px; align-items: center; }
+
+  .tag-p1 { background: #c0392b; color: white; border-radius: 4px; padding: 2px 9px; font-size: 7.5pt; font-weight: 700; }
+  .tag-p2 { background: #e67e22; color: white; border-radius: 4px; padding: 2px 9px; font-size: 7.5pt; }
+  .tag-hold { background: #1565c0; color: white; border-radius: 4px; padding: 2px 9px; font-size: 7.5pt; }
+  .tag-watch { background: #7d3c98; color: white; border-radius: 4px; padding: 2px 9px; font-size: 7.5pt; }
+  .tag-new { background: #1a7a4a; color: white; border-radius: 4px; padding: 2px 9px; font-size: 7.5pt; }
+  .tag-err { background: #616a6b; color: white; border-radius: 4px; padding: 2px 9px; font-size: 7.5pt; }
+
+  .mkt-a { background: #c0392b; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+  .mkt-hk { background: #1565c0; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+  .mkt-us { background: #1e8449; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+  .mkt-ah { background: #7d3c98; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+
+  .conf-h { background: #1b5e20; color: white; border-radius: 4px; padding: 1px 7px; font-size: 7.5pt; }
+  .conf-m { background: #e65100; color: white; border-radius: 4px; padding: 1px 7px; font-size: 7.5pt; }
+  .conf-l { background: #b71c1c; color: white; border-radius: 4px; padding: 1px 7px; font-size: 7.5pt; }
+
+  .p-up { color: #c0392b; font-weight: 700; }
+  .p-down { color: #1e8449; font-weight: 700; }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
+  .kpi { background: #eaf4fb; border-radius: 8px; padding: 8px 12px; text-align: center; border: 1px solid #aed6f1; }
+  .kpi .val { font-size: 13pt; font-weight: 900; color: #1a5276; }
+  .kpi .lbl { font-size: 7pt; color: #5d6d7e; margin-top: 2px; }
+
+  .compare-header { background: linear-gradient(90deg, #1a5276, #2e86c1); color: white; padding: 10px 16px; border-radius: 8px 8px 0 0; font-weight: 700; font-size: 11pt; }
+  .compare-body { border: 2px solid #2e86c1; border-top: none; border-radius: 0 0 8px 8px; overflow: hidden; }
+
+  .inst-tag { background: #2874a6; color: white; border-radius: 4px; padding: 1px 7px; font-size: 7.5pt; white-space: nowrap; }
+  .buy-tag { background: #1a7a4a; color: white; border-radius: 4px; padding: 1px 7px; font-size: 7.5pt; }
+  .ow-tag { background: #7d3c98; color: white; border-radius: 4px; padding: 1px 7px; font-size: 7.5pt; }
+
+  .winner { background: linear-gradient(135deg, #d5f5e3, #a9dfbf); border: 2px solid #1e8449; border-radius: 8px; padding: 12px 16px; margin: 8px 0; }
+  .divider { border: none; border-top: 2px solid #d6eaf8; margin: 20px 0; }
+
+  .position-badge { background: #e67e22; color: white; border-radius: 4px; padding: 1px 8px; font-size: 7.5pt; }
+
+  .rank-1 { background: #fff9c4; border-left: 4px solid #f9a825; }
+  .rank-2 { background: #e8f5e9; border-left: 4px solid #43a047; }
+  .rank-3 { background: #e3f2fd; border-left: 4px solid #1976d2; }
+
+  .footer { display: flex; justify-content: space-between; font-size: 7pt; color: #888; margin-top: 20px; padding-top: 10px; border-top: 1px solid #e0e0e0; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- 封面 -->
+<div class="cover">
+  <div class="sub">芒格投资研究 · AI存储板块深度补充报告 · 2026-03-25</div>
+  <h1>💾 AI存储板块三标的对比<br>佰维存储 × 兆易创新 × 澜起科技</h1>
+  <div class="sub">对AI产业链报告的遗漏补充 — yfinance实时验证 · 机构研报交叉核实</div>
+  <div class="tags">
+    <span class="tag">佰维存储 688525 A股</span>
+    <span class="tag">兆易创新 603986 A股</span>
+    <span class="tag">澜起科技 06809 港股</span>
+    <span class="tag">MU 美光对比参照</span>
+    <span class="tag">HBM · DDR5 · CXL</span>
+  </div>
+  <div class="verdict">
+    <strong>⚡ 核心结论：</strong>
+    澜起科技（已持有）是存储板块最优质标的，估值合理、机构高密度覆盖、AI逻辑最直接；
+    佰维存储是最大惊喜——业绩爆炸（净利润+1000%）但今日+9.4%追高需等回调；
+    兆易创新AI逻辑间接，作为补充配置。<br>
+    <strong>报告遗漏承认：佰维存储/兆易创新应出现在AI产业链报告存储板块，已纳入本报告。</strong>
+  </div>
+</div>
+
+<!-- ===== 为什么这两家应该出现在原报告 ===== -->
+<h2>一、为什么原报告遗漏了这两家？</h2>
+
+<div class="alert alert-yellow">
+  <strong>直接原因：</strong>原报告存储板块聚焦于<strong>HBM/DRAM型存储（MU美光）和内存接口芯片（澜起）</strong>，对<strong>存储模组封测（佰维存储）</strong>和<strong>NOR Flash/MCU（兆易创新）</strong>这两个细分赛道的覆盖不足。这是报告结构性遗漏，不是主动排除。
+</div>
+
+<div class="three-col">
+  <div class="col-box">
+    <strong>🔵 原报告存储层（已覆盖）</strong><br><br>
+    • MU美光 — DRAM/HBM美股龙头<br>
+    • 澜起科技06809 — DDR5 RCD内存接口芯片<br>
+    • SNDK SanDisk — NAND闪存<br><br>
+    涵盖：芯片制造 + 接口控制芯片
+  </div>
+  <div class="col-red col-box">
+    <strong>🔴 遗漏的细分赛道</strong><br><br>
+    • 佰维存储688525 — <strong>存储封测/模组</strong><br>
+    &nbsp;&nbsp;（ePOP/LPDDR5/HBM封装）<br>
+    • 兆易创新603986 — <strong>NOR Flash/MCU</strong><br>
+    &nbsp;&nbsp;（AI终端/IoT/汽车存储）<br><br>
+    ⚠️ 这是真实遗漏，现补充完整
+  </div>
+  <div class="col-green col-box">
+    <strong>🟢 完整存储产业链图谱</strong><br><br>
+    晶圆制造（三星/海力士/美光）<br>
+    ↓<br>
+    内存接口芯片（<strong>澜起</strong>）<br>
+    ↓<br>
+    封装测试（<strong>佰维</strong>）<br>
+    ↓<br>
+    模组整合 → AI服务器/AI眼镜/AI手机<br><br>
+    NOR Flash独立分支：<strong>兆易</strong>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ===== 澜起科技深度分析 ===== -->
+<h2>二、澜起科技 06809.HK — 已持有，深度复盘</h2>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">澜起科技 06809.HK <span class="position-badge">已持有</span></span>
+    <div class="badges">
+      <span class="mkt-ah">A+H</span>
+      <span class="tag-hold">持有核心</span>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="val p-up">182.00</div><div class="lbl">今日收盘（港元）</div></div>
+    <div class="kpi"><div class="val p-up">+4.60%</div><div class="lbl">今日涨幅</div></div>
+    <div class="kpi"><div class="val">88.78x</div><div class="lbl">PE（合理）</div></div>
+    <div class="kpi"><div class="val">2,240亿</div><div class="lbl">市值（港元）</div></div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <strong>📊 技术面</strong><br>
+      今日收盘：182.00港元（+4.6%）<br>
+      60日区间：156.00 ~ 229.80港元<br>
+      20日均价：179.37港元<br>
+      当前位置：高于均线 +1.5%（健康）<br>
+      52周高点：229.80港元（下行空间27%至低点）<br>
+      <strong>技术结论：</strong>处于均线上方，趋势向上
+    </div>
+    <div>
+      <strong>📈 2026年业绩预期（机构一致预期）</strong><br>
+      营收：74-78亿元（+33%-40%）<br>
+      净利润：29-34亿元（+35%-45%）<br>
+      毛利率：61%-65%（持续高位）<br>
+      2025年净利润预告：21.5-23.5亿元<br>
+      DDR5渗透率：2026年突破80%（大趋势）
+    </div>
+  </div>
+
+  <div style="margin-top:10px">
+    <strong>🚀 核心增长引擎（2026年）：</strong>
+    <table style="margin-top:6px">
+      <thead><tr><th>产品线</th><th>逻辑</th><th>2026预期</th></tr></thead>
+      <tbody>
+        <tr><td><strong>DDR5 RCD（第4/5子代）</strong></td><td>服务器DDR5渗透率80%+ → RCD芯片需求爆发</td><td>规模出货，贡献最大收入</td></tr>
+        <tr><td><strong>CKD芯片</strong></td><td>AI PC渗透率60%+ → 时钟驱动芯片爆发</td><td>2026年渗透主力年，毛利贡献显著</td></tr>
+        <tr><td><strong>CXL 3.1 MXC芯片</strong></td><td>全球首发，存算分离架构核心</td><td>市场份额50%-90%</td></tr>
+        <tr><td><strong>PCIe 5.0/6.0 Retimer</strong></td><td>已切入OpenAI + 头部CSP AI服务器</td><td>收入翻倍</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:10px">
+    <strong>🏦 机构目标价（A股参考，港股折算约8折）：</strong>
+    <table style="margin-top:6px">
+      <thead><tr><th>机构</th><th>评级</th><th>A股目标价</th><th>核心观点</th></tr></thead>
+      <tbody>
+        <tr><td>高盛</td><td><span class="ow-tag">增持</span></td><td>200-205元</td><td>CXL芯片商业化超预期，已转型为AI全互连平台</td></tr>
+        <tr><td>中泰证券</td><td><span class="buy-tag">买入</span></td><td>220元</td><td>DDR5迭代速度快，MRCD/MDB价值量大幅提升</td></tr>
+        <tr><td>国信证券</td><td><span class="buy-tag">买入</span></td><td>190-210元</td><td>2026年是CKD芯片渗透主力年</td></tr>
+        <tr><td>花旗</td><td><span class="buy-tag">买入</span></td><td>170元（首次覆盖）</td><td>2024-2027利润CAGR 47%，极少数参与AI基建的中国半导体</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="winner" style="margin-top:10px">
+    <strong>✅ 操作建议（持有）：</strong><br>
+    • 当前182港元 = 合理区间（20日均线179港元，仅高+1.5%）<br>
+    • <strong>继续核心持有</strong>，止损155港元（60日低点156港元附近）<br>
+    • 中期目标：220-240港元（A股机构目标价折算，含H股折价修复）<br>
+    • 长期目标：260-280港元（CXL/Retimer订单放量）<br>
+    • 置信度：<span class="conf-h">高</span>（机构一致买入，业绩逻辑清晰，A+H双平台）
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ===== 佰维存储深度分析 ===== -->
+<h2>三、佰维存储 688525 — 遗漏标的，业绩爆炸</h2>
+
+<div class="alert alert-red">
+  <strong>⚠️ 注意：</strong>你提到的代码301293是<strong>聚赛龙</strong>（塑料母粒），不是佰维存储。佰维存储正确代码：<strong>688525.SS（科创板）</strong>。查询数据已基于正确代码。
+</div>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">佰维存储 688525.SS</span>
+    <div class="badges">
+      <span class="mkt-a">科创板</span>
+      <span class="tag-p1">P1 等回调</span>
+      <span class="tag-new">遗漏补充</span>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="val p-up">253.35元</div><div class="lbl">今日收盘（+9.44%！）</div></div>
+    <div class="kpi"><div class="val">52.0元</div><div class="lbl">52周低点</div></div>
+    <div class="kpi"><div class="val">261.60元</div><div class="lbl">52周高点（近历史高）</div></div>
+    <div class="kpi"><div class="val">1,184亿</div><div class="lbl">市值（人民币）</div></div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <strong>📊 技术面</strong><br>
+      今日收盘：253.35元（<span class="p-up">+9.44%</span>）<br>
+      20日均价：209.86元<br>
+      <strong>当前超买幅度：+20.7%</strong>（红色信号）<br>
+      60日涨幅：104元→253元，<strong>+143%</strong><br>
+      52周涨幅：52元→261元，<strong>+402%</strong><br>
+      PE：139.97x<br>
+      <strong>⚠️ 今日+9.4%是追高，短线明显超买</strong>
+    </div>
+    <div>
+      <strong>💥 2026年1-2月业绩（已发布）</strong><br>
+      营收：40-45亿元（<strong>同比+340%-395%</strong>）<br>
+      净利润：15-18亿元（<strong>同比+921%-1086%</strong>）<br>
+      对比：两个月利润已超2025年全年（8.67亿）<br>
+      核心驱动：存储超级周期 + AI端侧爆发<br>
+      刚签：<strong>15亿美元晶圆采购长单</strong>（锁定24个月）
+    </div>
+  </div>
+
+  <div style="margin-top:10px">
+    <strong>🔑 AI产业链价值链条：</strong>
+    <table style="margin-top:6px">
+      <thead><tr><th>业务线</th><th>AI关联度</th><th>2026预期</th></tr></thead>
+      <tbody>
+        <tr><td><strong>AI眼镜存储（ePOP）</strong></td><td>Meta/Google/小米/Rokid供应链</td><td>2025年9.6亿，2026年翻倍增长</td></tr>
+        <tr><td><strong>HBM封测</strong></td><td>已掌握HBM封装技术，东莞松山湖基地建设中</td><td>2026H2开始贡献，潜在最大增量</td></tr>
+        <tr><td><strong>LPDDR5/5X+uMCP</strong></td><td>AI手机/AI PC，12-16GB大容量</td><td>AI手机升级持续拉动</td></tr>
+        <tr><td><strong>存储模组（传统）</strong></td><td>DRAM/NAND价格超级周期受益</td><td>价格上行直接拉动利润率</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:10px">
+    <strong>🏦 机构目标价：</strong>
+    <table style="margin-top:6px">
+      <thead><tr><th>机构</th><th>评级</th><th>目标价</th><th>核心逻辑</th></tr></thead>
+      <tbody>
+        <tr><td>国投证券（2026-03-04）</td><td><span class="buy-tag">买入-A</span></td><td><strong>211.57元</strong></td><td>2026年净利润32.9亿，30倍PE，AI眼镜+先进封测</td></tr>
+        <tr><td>国信证券</td><td><span class="ow-tag">增持</span></td><td>未公布</td><td>存储价格上行 + 市场份额扩张</td></tr>
+      </tbody>
+    </table>
+    <div class="alert alert-orange" style="margin-top:6px">
+      <strong>⚠️ 目标价已被超越：</strong>国投211元目标价已被当前253元超越。说明：①市场已提前消化业绩；②或需要机构上调目标价至280-320元区间（对应2026年净利润33亿×30-35x PE）。当前估值透支约3-6个月业绩。
+    </div>
+  </div>
+
+  <div class="winner" style="margin-top:10px;background:linear-gradient(135deg,#fef9e7,#f9e79f);border-color:#f39c12">
+    <strong>🎯 操作建议（不追高，等回调）：</strong><br>
+    今日+9.4%后明显超买，回调概率高。<br>
+    • <strong>不在253元追高</strong><br>
+    • 等回调至 <strong>210-225元</strong> 建仓（对应20日均线支撑，国投目标价区间）<br>
+    • 中期目标：300-350元（存储超级周期持续 + HBM订单落地）<br>
+    • 止损：185元（跌破20日均线185元减仓50%，跌破175元全清）<br>
+    • 置信度：<span class="conf-h">高</span>（基本面极强）| 时机：<span class="conf-m">等回调</span>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ===== 兆易创新深度分析 ===== -->
+<h2>四、兆易创新 603986 — P2补充配置，AI逻辑间接</h2>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">兆易创新 603986.SS</span>
+    <div class="badges">
+      <span class="mkt-a">沪A</span>
+      <span class="tag-p2">P2关注</span>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">278.40元</div><div class="lbl">今日收盘（+1.71%）</div></div>
+    <div class="kpi"><div class="val">331.16元</div><div class="lbl">52周高点</div></div>
+    <div class="kpi"><div class="val">287.56元</div><div class="lbl">20日均价</div></div>
+    <div class="kpi"><div class="val">1,952亿</div><div class="lbl">市值（人民币）</div></div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <strong>📊 技术面</strong><br>
+      今日278元，低于20日均线-3.2%（轻微弱势）<br>
+      距52周高点331元，尚有-15.9%空间<br>
+      60日区间：213-331元，目前处于中位<br>
+      PE：135.80x<br>
+      <strong>技术结论：</strong>中性，无明显强势信号
+    </div>
+    <div>
+      <strong>🔑 核心产品与AI逻辑</strong><br>
+      <strong>NOR Flash：</strong>工业/汽车/AIoT代码存储<br>
+      <strong>NAND Flash：</strong>消费类/AI手机存储<br>
+      <strong>MCU：</strong>工业控制/IoT<br><br>
+      AI受益逻辑：AI手机/AI终端NOR Flash升级需求<br>
+      <strong>无DRAM/HBM产品线</strong>（核心差距）
+    </div>
+  </div>
+
+  <div class="alert alert-blue" style="margin-top:8px">
+    <strong>为什么AI逻辑弱于佰维存储？</strong><br>
+    ① NOR Flash主要服务工业/汽车/IoT，AI数据中心不使用NOR Flash<br>
+    ② DRAM/HBM是AI服务器的核心，兆易完全没有此产品线<br>
+    ③ AI端侧（手机/PC）需求确实增长，但增量不如存储模组厂商（佰维）的直接性<br>
+    ④ 从52元→331元后，高PE透支时间更长，当前278元性价比不突出
+  </div>
+
+  <div style="margin-top:10px">
+    <table>
+      <thead><tr><th>场景</th><th>兆易创新受益程度</th><th>对比佰维</th></tr></thead>
+      <tbody>
+        <tr><td>AI服务器/HBM</td><td>❌ 不参与</td><td>佰维有HBM封测业务</td></tr>
+        <tr><td>AI眼镜/AR</td><td>🔶 间接（MCU芯片）</td><td>佰维直接供应ePOP存储</td></tr>
+        <tr><td>AI手机/PC</td><td>🔶 NOR Flash小增量</td><td>佰维LPDDR5 uMCP大增量</td></tr>
+        <tr><td>汽车电子/工业</td><td>✅ 强（MCU+NOR国产替代）</td><td>佰维不参与</td></tr>
+        <tr><td>存储超级周期</td><td>🔶 间接受益</td><td>佰维直接受益（DRAM价格上涨）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="winner" style="margin-top:10px;background:linear-gradient(135deg,#e8f4fd,#bbdefb);border-color:#1976d2">
+    <strong>🎯 操作建议：</strong><br>
+    • 逻辑定位：AI辅助受益 + 汽车/工业MCU国产替代主逻辑<br>
+    • 可在 <strong>265-275元</strong> 建仓（低于20日均线，有支撑）<br>
+    • 目标价：310-320元（接近机构目标，52周高点下方）<br>
+    • 止损：240元<br>
+    • 置信度：<span class="conf-m">中</span>（AI逻辑间接，国产替代逻辑更强）<br>
+    • <strong>优先级低于佰维存储</strong>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ===== 四标的横向对比 ===== -->
+<h2>五、存储板块四标的横向对比 — 投资性价比排名</h2>
+
+<div class="compare-header">📊 存储板块四标的综合评分（基于AI受益直接性 × 业绩确定性 × 估值合理性）</div>
+<div class="compare-body">
+  <table>
+    <thead>
+      <tr>
+        <th>排名</th>
+        <th>标的</th>
+        <th>市场</th>
+        <th>今日价</th>
+        <th>PE</th>
+        <th>AI逻辑</th>
+        <th>业绩确定性</th>
+        <th>技术位置</th>
+        <th>建议</th>
+        <th>买入区间</th>
+        <th>目标价</th>
+        <th>止损</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="rank-1">
+        <td><strong>🥇 #1</strong></td>
+        <td><strong>澜起科技 06809</strong></td>
+        <td><span class="mkt-hk">港股</span></td>
+        <td>182.00港</td>
+        <td>88.78x</td>
+        <td>极强（CXL/DDR5 RCD）</td>
+        <td>✅ 机构一致预期+35-45%</td>
+        <td>✅ 均线上方+1.5%</td>
+        <td><span class="tag-hold">核心持有</span></td>
+        <td>已持有</td>
+        <td>220-240港</td>
+        <td>155港</td>
+      </tr>
+      <tr class="rank-2">
+        <td><strong>🥈 #2</strong></td>
+        <td><strong>佰维存储 688525</strong></td>
+        <td><span class="mkt-a">科创板</span></td>
+        <td>253.35元</td>
+        <td>139.97x</td>
+        <td>强（存储模组/HBM/AI眼镜）</td>
+        <td>✅ 净利润+1000%，业绩已兑现</td>
+        <td>⚠️ 超买+20.7%</td>
+        <td><span class="tag-p1">P1 等回调</span></td>
+        <td>210-225元</td>
+        <td>300-350元</td>
+        <td>185元</td>
+      </tr>
+      <tr class="rank-3">
+        <td><strong>🥉 #3</strong></td>
+        <td><strong>MU 美光</strong></td>
+        <td><span class="mkt-us">美股</span></td>
+        <td>$395.53</td>
+        <td>18.66x</td>
+        <td>极强（HBM/DRAM直接）</td>
+        <td>✅ 估值最合理（18x PE）</td>
+        <td>⚠️ 低于20日均线-4.6%</td>
+        <td><span class="tag-p2">P2 等回调</span></td>
+        <td>$340-370</td>
+        <td>$480-520</td>
+        <td>$310</td>
+      </tr>
+      <tr>
+        <td><strong>#4</strong></td>
+        <td>兆易创新 603986</td>
+        <td><span class="mkt-a">沪A</span></td>
+        <td>278.40元</td>
+        <td>135.80x</td>
+        <td>中（NOR Flash/MCU间接）</td>
+        <td>🔶 待验证（无预告）</td>
+        <td>🔶 低于均线-3.2%</td>
+        <td><span class="tag-p2">P2辅助</span></td>
+        <td>265-275元</td>
+        <td>310-320元</td>
+        <td>240元</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider">
+
+<!-- ===== 核心差异分析 ===== -->
+<h2>六、三者核心差异 — 为什么澜起是最优选？</h2>
+
+<div class="three-col">
+  <div class="col-box col-yellow">
+    <strong>🥇 澜起科技 — 最优</strong><br><br>
+    ✅ AI逻辑最直接（AI服务器内存接口唯一中国厂商）<br>
+    ✅ 高毛利（61-65%）远超存储模组厂（20-25%）<br>
+    ✅ 国际机构高密度覆盖（高盛/花旗/中泰/国信）<br>
+    ✅ CXL全球首发，存算分离核心受益<br>
+    ✅ 估值88x PE最合理（相对存储行业）<br>
+    ✅ 港股今日+4.6%，走势健康<br><br>
+    <strong>你已持有：核心持有不动</strong>
+  </div>
+  <div class="col-box col-green">
+    <strong>🥈 佰维存储 — 基本面最强</strong><br><br>
+    ✅ 业绩最确定（+1000%净利润已实现）<br>
+    ✅ AI端侧存储市场占有率高<br>
+    ✅ HBM封测布局（潜在最大增量）<br>
+    ✅ 15亿美元采购长单锁定产能<br><br>
+    ⚠️ 今日+9.4%严重超买<br>
+    ⚠️ 机构目标价211元已被超越<br>
+    ⚠️ 当前253元透支3-6个月业绩<br><br>
+    <strong>结论：好公司，但当前价不是好时机</strong>
+  </div>
+  <div class="col-box">
+    <strong>🥉 兆易创新 — AI逻辑最间接</strong><br><br>
+    ✅ NOR Flash/MCU国产替代逻辑硬<br>
+    ✅ 汽车电子/工业市场壁垒高<br>
+    ✅ 市值1952亿，规模流动性好<br><br>
+    ❌ 无DRAM/HBM产品线<br>
+    ❌ AI服务器场景完全不参与<br>
+    ❌ AI手机受益量小<br>
+    ⚠️ 当前278元，低于20日均线<br><br>
+    <strong>结论：补充配置，非核心</strong>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ===== 更新后的存储板块推荐总表 ===== -->
+<h2>七、更新后的AI存储板块完整推荐表（含本次补充）</h2>
+
+<div class="alert alert-green">
+  <strong>本表替代原报告存储板块推荐表，已纳入佰维存储和兆易创新。</strong>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>优先级</th>
+      <th>标的</th>
+      <th>代码</th>
+      <th>市场</th>
+      <th>今日价</th>
+      <th>细分赛道</th>
+      <th>买入区间</th>
+      <th>目标价</th>
+      <th>止损</th>
+      <th>是否持有</th>
+      <th>置信度</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background:#fff9c4">
+      <td><span class="tag-hold">核心持有</span></td>
+      <td><strong>澜起科技</strong></td>
+      <td>06809.HK</td>
+      <td><span class="mkt-hk">港股</span></td>
+      <td>182港(+4.6%)</td>
+      <td>DDR5 RCD接口芯片 + CXL</td>
+      <td>已持有</td>
+      <td>220-240港</td>
+      <td>155港</td>
+      <td>✅ 持有中</td>
+      <td><span class="conf-h">高</span></td>
+    </tr>
+    <tr style="background:#e8f5e9">
+      <td><span class="tag-p1">P1 等回调</span></td>
+      <td><strong>佰维存储</strong></td>
+      <td>688525.SS</td>
+      <td><span class="mkt-a">科创板</span></td>
+      <td>253元(+9.4%)</td>
+      <td>存储模组/封测/AI眼镜/HBM</td>
+      <td><strong>210-225元</strong></td>
+      <td>300-350元</td>
+      <td>185元</td>
+      <td>否（新增）</td>
+      <td><span class="conf-h">高</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag-p2">P2</span></td>
+      <td>MU 美光</td>
+      <td>MU</td>
+      <td><span class="mkt-us">美股</span></td>
+      <td>$395(-2.2%)</td>
+      <td>DRAM/HBM晶圆制造</td>
+      <td>$340-370</td>
+      <td>$480-520</td>
+      <td>$310</td>
+      <td>否</td>
+      <td><span class="conf-h">高</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag-p2">P2</span></td>
+      <td>兆易创新</td>
+      <td>603986.SS</td>
+      <td><span class="mkt-a">沪A</span></td>
+      <td>278元(+1.7%)</td>
+      <td>NOR Flash + MCU</td>
+      <td>265-275元</td>
+      <td>310-320元</td>
+      <td>240元</td>
+      <td>否</td>
+      <td><span class="conf-m">中</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag-p2">P2</span></td>
+      <td>SNDK SanDisk</td>
+      <td>SNDK</td>
+      <td><span class="mkt-us">美股</span></td>
+      <td>$702</td>
+      <td>NAND Flash独立厂商</td>
+      <td>$620-680</td>
+      <td>$900-1000</td>
+      <td>$550</td>
+      <td>否</td>
+      <td><span class="conf-m">中高</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  <span>芒格投资研究 · AI存储板块补充报告 · 2026-03-25</span>
+  <span>数据来源：yfinance实时 | 国投证券/国信证券/高盛/中泰证券/花旗(2026Q1研报) | 证券时报/东方财富</span>
+  <span>⚠️ 佰维代码纠正：301293(聚赛龙)→688525(佰维存储) | 投资有风险，仅供参考</span>
+</div>
+
+</div>
+</body>
+</html>
