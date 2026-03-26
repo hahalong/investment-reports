@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', sans-serif;
+    font-size: 10.5pt;
+    color: #1a1a2e;
+    background: #fff;
+    line-height: 1.7;
+  }
+
+  /* 封面 */
+  .cover {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 60%, #0d1b2a 100%);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center; padding: 60px 40px;
+    color: #fff;
+    page-break-after: always;
+  }
+  .cover .badge { background: rgba(255,200,50,0.15); border: 1px solid rgba(255,200,50,0.4); border-radius: 20px; padding: 7px 24px; font-size: 10pt; color: #ffc832; margin-bottom: 28px; letter-spacing: 2px; font-weight: 600; }
+  .cover h1 { font-size: 24pt; font-weight: 700; color: #ffc832; margin-bottom: 10px; line-height: 1.35; }
+  .cover h2 { font-size: 12pt; font-weight: 300; color: #a8c6fa; margin-bottom: 36px; }
+  .cover .divider { width: 60px; height: 3px; background: #ffc832; border-radius: 2px; margin: 20px auto; }
+  .cover .meta-box { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 20px 40px; min-width: 340px; }
+  .cover .meta-box p { font-size: 10.5pt; color: #d0e8ff; margin: 6px 0; }
+  .cover .meta-box .hl { color: #ffc832; font-weight: 600; }
+  .cover .disc { margin-top: 40px; font-size: 8.5pt; color: rgba(255,255,255,0.3); }
+
+  /* 页面 */
+  .page { padding: 36px 48px; max-width: 860px; margin: 0 auto; }
+  .page-break { page-break-before: always; }
+
+  /* 标题 */
+  h1.rt { font-size: 17pt; font-weight: 700; color: #0f3460; border-bottom: 3px solid #ffc832; padding-bottom: 7px; margin-bottom: 4px; }
+  .rmeta { font-size: 9pt; color: #999; margin-bottom: 22px; }
+  h2.sec { font-size: 12pt; font-weight: 700; color: #0f3460; border-left: 5px solid #ffc832; padding: 3px 0 3px 12px; margin: 22px 0 10px; }
+  h3.sub { font-size: 10.5pt; font-weight: 700; color: #16213e; margin: 14px 0 6px; border-bottom: 1px dashed #ddd; padding-bottom: 3px; }
+
+  /* 总览卡片 */
+  .overview-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin: 14px 0; }
+  .ov-card { border-radius: 8px; padding: 10px 8px; text-align: center; border: 1px solid rgba(0,0,0,0.07); }
+  .ov-card .ov-num { font-size: 16pt; font-weight: 700; }
+  .ov-card .ov-label { font-size: 8pt; color: #888; margin-top: 2px; }
+  .c-red { background:#fff0f0; } .c-green { background:#f0fff4; } .c-yellow { background:#fffbf0; } .c-blue { background:#f0f6ff; }
+  .red { color:#c0392b; } .green { color:#1a7a4a; } .yellow { color:#b8860b; } .blue { color:#1a5a9a; }
+
+  /* 股票卡片 */
+  .stock-card {
+    border: 1px solid #e0e8f0;
+    border-radius: 10px;
+    margin: 12px 0;
+    overflow: hidden;
+  }
+  .stock-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid #e8f0f8;
+  }
+  .stock-header.bg-red    { background: #fff0f0; }
+  .stock-header.bg-green  { background: #f0fff4; }
+  .stock-header.bg-yellow { background: #fffbf0; }
+  .stock-header.bg-blue   { background: #f0f6ff; }
+  .stock-header.bg-gray   { background: #f7f7f7; }
+
+  .sh-left .name { font-size: 12pt; font-weight: 700; color: #0f3460; }
+  .sh-left .code { font-size: 9pt; color: #888; margin-top: 1px; }
+  .sh-mid .pnl { font-size: 14pt; font-weight: 700; }
+  .sh-mid .pnl-label { font-size: 8pt; color: #888; text-align: center; }
+  .sh-right { text-align: right; }
+  .sh-right .action-tag {
+    display: inline-block; border-radius: 6px; padding: 4px 14px;
+    font-size: 10pt; font-weight: 700; letter-spacing: 1px;
+  }
+  .tag-sell    { background: #c0392b; color: #fff; }
+  .tag-reduce  { background: #e67e22; color: #fff; }
+  .tag-hold    { background: #27ae60; color: #fff; }
+  .tag-add     { background: #1a5a9a; color: #fff; }
+  .tag-watch   { background: #888; color: #fff; }
+  .tag-lock    { background: #b8860b; color: #fff; }
+
+  .stock-body { padding: 12px 16px; }
+  .stock-body table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+  .stock-body td { padding: 4px 8px; border-bottom: 1px solid #f0f4f8; }
+  .stock-body tr:last-child td { border-bottom: none; }
+  .stock-body td:first-child { color: #666; width: 22%; }
+  .stock-body td:nth-child(2) { font-weight: 600; width: 20%; }
+  .stock-body td:nth-child(3) { color: #666; width: 16%; }
+  .stock-body td:nth-child(4) { font-weight: 600; }
+
+  .logic-box { background: #f7f9fc; border-radius: 6px; padding: 8px 12px; margin-top: 8px; font-size: 9.5pt; color: #444; border-left: 3px solid #a8c6fa; }
+  .warn-box  { background: #fff5f5; border-radius: 6px; padding: 8px 12px; margin-top: 8px; font-size: 9.5pt; color: #c0392b; border-left: 3px solid #e74c3c; }
+  .good-box  { background: #f0faf4; border-radius: 6px; padding: 8px 12px; margin-top: 8px; font-size: 9.5pt; color: #1a7a4a; border-left: 3px solid #27ae60; }
+
+  /* 标签 */
+  .tag { display:inline-block; border-radius: 4px; padding: 2px 7px; font-size: 8.5pt; font-weight: 700; line-height: 1.6; }
+  .tag-r { background:#fde8e8; color:#c0392b; }
+  .tag-g { background:#e8f8ee; color:#1a7a4a; }
+  .tag-y { background:#fff8e1; color:#b8860b; }
+  .tag-b { background:#e8f0ff; color:#1a5a9a; }
+  .tag-gr { background:#f0f0f0; color:#555; }
+
+  /* 信号 */
+  .sig-bull { background:#1a7a4a; color:#fff; padding:2px 8px; border-radius:4px; font-size:9pt; font-weight:700; }
+  .sig-bear { background:#c0392b; color:#fff; padding:2px 8px; border-radius:4px; font-size:9pt; font-weight:700; }
+  .sig-neu  { background:#b8860b; color:#fff; padding:2px 8px; border-radius:4px; font-size:9pt; font-weight:700; }
+
+  /* 表格通用 */
+  table.gen { width:100%; border-collapse:collapse; margin:10px 0; font-size:9.5pt; }
+  table.gen th { background:#0f3460; color:#fff; padding:7px 10px; font-weight:600; text-align:left; }
+  table.gen td { padding:6px 10px; border-bottom:1px solid #eaeff5; }
+  table.gen tr:nth-child(even) td { background:#f7f9fc; }
+
+  /* 底部 */
+  .footer { background:#f7f9fc; border-radius:8px; padding:12px 16px; font-size:8.5pt; color:#999; margin-top:20px; border:1px solid #e0e8f0; }
+
+  .up { color:#c0392b; font-weight:700; }
+  .dn { color:#1a7a4a; font-weight:700; }
+
+  .section-title {
+    font-size: 13pt; font-weight: 700; color: #fff;
+    background: linear-gradient(90deg, #0f3460, #1a5a9a);
+    padding: 8px 16px; border-radius: 8px; margin: 20px 0 12px;
+  }
+
+  .priority-badge {
+    display: inline-block;
+    border-radius: 12px; padding: 3px 12px;
+    font-size: 9pt; font-weight: 700;
+    margin-left: 8px;
+  }
+  .p1 { background:#c0392b; color:#fff; }
+  .p2 { background:#e67e22; color:#fff; }
+  .p3 { background:#27ae60; color:#fff; }
+</style>
+</head>
+<body>
+
+<!-- 封面 -->
+<div class="cover">
+  <div class="badge">投资官 · 持仓操作手册</div>
+  <h1>三账户全持仓<br>下周操作建议</h1>
+  <div class="divider"></div>
+  <h2>港股主账户 · 港美混合账户 · 国金A股账户</h2>
+  <div class="meta-box">
+    <p>持仓截图时间：<span class="hl">2026-03-14 09:32 GMT+8</span></p>
+    <p>操作建议适用：<span class="hl">2026-03-16（周一）开盘起</span></p>
+    <p>持仓总数：<span class="hl">三账户共 40+ 只标的</span></p>
+    <p>关键事件：<span class="hl">3月19日 阿里财报 + FOMC</span></p>
+  </div>
+  <p class="disc">本报告仅供参考，不构成投资建议。市场有风险，投资须谨慎。</p>
+</div>
+
+<!-- 总览 -->
+<div class="page">
+  <h1 class="rt">持仓总览与优先级分类</h1>
+  <p class="rmeta">所有标的操作优先级一览 · 数据截至 2026-03-14 09:32</p>
+
+  <div class="overview-grid">
+    <div class="ov-card c-red">
+      <div class="ov-num red">5</div>
+      <div class="ov-label">优先级一<br>本周必操作</div>
+    </div>
+    <div class="ov-card c-yellow">
+      <div class="ov-num yellow">6</div>
+      <div class="ov-label">优先级二<br>锁利/减仓</div>
+    </div>
+    <div class="ov-card c-green">
+      <div class="ov-num green">15</div>
+      <div class="ov-label">优先级三<br>持有/观望</div>
+    </div>
+    <div class="ov-card c-blue">
+      <div class="ov-num blue">3.19</div>
+      <div class="ov-label">关键催化日<br>财报+FOMC</div>
+    </div>
+  </div>
+
+  <table class="gen">
+    <tr><th>优先级</th><th>标的</th><th>账户</th><th>当前盈亏</th><th>操作方向</th><th>核心逻辑</th></tr>
+    <tr><td><span class="p1">P1 紧急</span></td><td><strong>中国中免 01880</strong></td><td>港股一</td><td class="dn">-80.50%</td><td><span class="sig-bear">清仓止损</span></td><td>逻辑彻底破坏，继续持有无意义</td></tr>
+    <tr><td><span class="p1">P1 紧急</span></td><td><strong>南方2倍做多恒科 07226</strong></td><td>港股一</td><td class="dn">-20.29%</td><td><span class="sig-bear">清仓/大减</span></td><td>杠杆ETF持续损耗，无反弹空间</td></tr>
+    <tr><td><span class="p1">P1 紧急</span></td><td><strong>万华化学</strong></td><td>国金A股</td><td class="dn">-15.47%</td><td><span class="sig-bear">清仓</span></td><td>化工偏空，宏观无支撑</td></tr>
+    <tr><td><span class="p1">P1 紧急</span></td><td><strong>西部超导 688122</strong></td><td>国金A股</td><td class="dn">-15.78%</td><td><span class="sig-bear">止损减仓</span></td><td>已跌破-15%，执行止损</td></tr>
+    <tr><td><span class="p1">P1 紧急</span></td><td><strong>特锐德</strong></td><td>国金A股</td><td class="dn">-13.92%</td><td><span class="sig-bear">减仓</span></td><td>逻辑弱，亏损扩大中</td></tr>
+    <tr><td><span class="p2">P2 锁利</span></td><td><strong>北京科锐</strong></td><td>国金A股</td><td class="up">+703.60%</td><td><span class="sig-neu">减仓2/3</span></td><td>浮盈极高，防止回吐</td></tr>
+    <tr><td><span class="p2">P2 锁利</span></td><td><strong>云南铜业</strong></td><td>国金A股</td><td class="up">+196.71%</td><td><span class="sig-neu">已部分减仓，持有底仓</span></td><td>已减仓，底仓继续持有</td></tr>
+    <tr><td><span class="p2">P2 锁利</span></td><td><strong>中国海洋石油 00883</strong></td><td>港股一</td><td class="up">+28.94%</td><td><span class="sig-neu">减仓1/3</span></td><td>油价不稳，锁定部分利润</td></tr>
+    <tr><td><span class="p2">P2 锁利</span></td><td><strong>剑桥科技 06166</strong></td><td>港股一</td><td class="up">+22.49%</td><td><span class="sig-neu">持有/小减</span></td><td>CPO主线，可适当锁利</td></tr>
+    <tr><td><span class="p2">P2 注意</span></td><td><strong>东方电气 01072</strong></td><td>港股一</td><td class="dn">-7.95%</td><td><span class="sig-neu">持有/逢低加仓</span></td><td>主线逻辑强，回调是机会</td></tr>
+    <tr><td><span class="p2">P2 注意</span></td><td><strong>龙佰集团</strong></td><td>国金A股</td><td class="dn">-7.54%</td><td><span class="sig-bear">减仓</span></td><td>化工偏空，与主线背离</td></tr>
+    <tr><td><span class="p3">P3 持有</span></td><td>阿里巴巴（三账户）</td><td>全部</td><td>—</td><td><span class="sig-bull">持有不动</span></td><td>3.19财报催化，不提前动</td></tr>
+    <tr><td><span class="p3">P3 持有</span></td><td>PLTR / OKLO / SMR / HOOD</td><td>账户二美股</td><td class="dn">各-13%~-98%</td><td><span class="sig-neu">底仓持有</span></td><td>仅1股，持有等待；SMR/HOOD成本疑似反向拆股</td></tr>
+    <tr><td><span class="p3">P3 持有</span></td><td>UGL / TSLA / SCCO / ORCL / BRK.B</td><td>账户二美股</td><td>—</td><td><span class="sig-bull">持有</span></td><td>UGL黄金杠杆看多；TSLA机器人主线；其余底仓</td></tr>
+  </table>
+</div>
+
+<!-- 港股主账户 -->
+<div class="page page-break">
+  <h1 class="rt">账户一：港股主账户</h1>
+  <p class="rmeta">老虎/富途 港股 · 总市值约 182.9万 HKD</p>
+
+  <!-- 阿里巴巴 -->
+  <div class="stock-card">
+    <div class="stock-header bg-blue">
+      <div class="sh-left"><div class="name">阿里巴巴-W</div><div class="code">09988.HK &nbsp;·&nbsp; 4,600股</div></div>
+      <div class="sh-mid"><div class="pnl dn">-9.57%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-hold">持有不动</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>132.50 / 146.53</td><td>市值</td><td>609,500 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">120.00</td><td>目标价</td><td class="green">195.00</td></tr>
+        <tr><td>下周策略</td><td colspan="3"><strong>3月19日Q3财报前坚决不动</strong>，云收入预期+35%，财报后视结果决定是否加仓</td></tr>
+        <tr><td>关键节点</td><td colspan="3">3月19日财报 · 若云收入>350亿且超预期 → 持有至195；若不及预期 → 财报次日减仓至半仓</td></tr>
+      </table>
+      <div class="good-box">3月19日是本账户最重要的催化日。持仓浮亏-9.57%是可接受范围，财报前任何波动都无需操作。</div>
+    </div>
+  </div>
+
+  <!-- 三花智控 -->
+  <div class="stock-card">
+    <div class="stock-header bg-yellow">
+      <div class="sh-left"><div class="name">三花智控</div><div class="code">02050.HK &nbsp;·&nbsp; 9,100股</div></div>
+      <div class="sh-mid"><div class="pnl dn">-5.30%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-hold">持有观望</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>30.86 / 32.587</td><td>市值</td><td>280,826 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">27.00</td><td>目标价</td><td class="green">38.00</td></tr>
+        <tr><td>下周策略</td><td colspan="3">3月24日年报是关键催化，年报前持有。若年报Optimus供应链数据强劲 → 加仓至11,000股；若业绩不及预期 → 止损27.00执行</td></tr>
+        <tr><td>加仓位</td><td>29.50-30.00</td><td>关键日期</td><td>3月24日年报</td></tr>
+      </table>
+      <div class="logic-box">Optimus机器人供应链核心受益，特斯拉机器人量产节点临近，中长期逻辑极强。当前-5%回调是正常震荡。</div>
+    </div>
+  </div>
+
+  <!-- 南方两倍做多恒科 -->
+  <div class="stock-card">
+    <div class="stock-header bg-red">
+      <div class="sh-left"><div class="name">南方两倍做多恒科</div><div class="code">07226.HK &nbsp;·&nbsp; 67,000股 <span class="tag tag-r">杠杆ETF</span></div></div>
+      <div class="sh-mid"><div class="pnl dn">-20.29%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-sell">清仓建议</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>4.014 / 5.036</td><td>市值</td><td>268,938 HKD</td></tr>
+        <tr><td>当前亏损</td><td class="red">-68,493 HKD</td><td>操作时机</td><td>周一开盘即执行</td></tr>
+        <tr><td>操作建议</td><td colspan="3"><strong>建议清仓或减仓至1/3以内</strong>。若坚持持有，设硬性止损 3.60（再跌10%清仓）</td></tr>
+      </table>
+      <div class="warn-box">杠杆ETF存在「每日复利损耗」——即使恒科横盘，每天也在损耗。已亏20%，继续持有的机会成本极高。资金转入正股（如阿里、中芯等）效率更高。</div>
+    </div>
+  </div>
+
+  <!-- 中国铝业 -->
+  <div class="stock-card">
+    <div class="stock-header bg-green">
+      <div class="sh-left"><div class="name">中国铝业</div><div class="code">02600.HK &nbsp;·&nbsp; 14,000股</div></div>
+      <div class="sh-mid"><div class="pnl up">+6.25%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-hold">持有</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>13.61 / 12.809</td><td>市值</td><td>190,540 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">11.80</td><td>目标价</td><td class="green">16.00</td></tr>
+        <tr><td>下周策略</td><td colspan="3">铝价随铜价联动，中美贸易摩擦下铝出口关税预期利多。持有，关注LME铝价走势</td></tr>
+      </table>
+      <div class="logic-box">有色金属受益于基建+新能源双需求，中长期逻辑稳健。+6.25%浮盈不急于锁利。</div>
+    </div>
+  </div>
+
+  <!-- 剑桥科技 -->
+  <div class="stock-card">
+    <div class="stock-header bg-green">
+      <div class="sh-left"><div class="name">剑桥科技</div><div class="code">06166.HK &nbsp;·&nbsp; 1,550股 <span class="tag tag-g">CPO主线</span></div></div>
+      <div class="sh-mid"><div class="pnl up">+22.49%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-lock">锁利/持有</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>80.40 / 65.637</td><td>市值</td><td>124,620 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">70.00（移动止损）</td><td>目标价</td><td class="green">95-100</td></tr>
+        <tr><td>下周策略</td><td colspan="3">CPO光纤主线持有，可减仓200股锁利约2.9万HKD。剩余1,350股止损上移至70，保住大部分利润</td></tr>
+      </table>
+      <div class="good-box">CPO赛道两会政策持续催化，主线未破。建议移动止损，不全部清仓。</div>
+    </div>
+  </div>
+
+  <!-- 澜起科技 -->
+  <div class="stock-card">
+    <div class="stock-header bg-yellow">
+      <div class="sh-left"><div class="name">澜起科技</div><div class="code">06809.HK &nbsp;·&nbsp; 700股 <span class="tag tag-b">存储芯片</span></div></div>
+      <div class="sh-mid"><div class="pnl dn">-1.99%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-hold">持有</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>175.50 / 179.071</td><td>市值</td><td>122,850 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">160.00</td><td>目标价</td><td class="green">210.00</td></tr>
+        <tr><td>下周策略</td><td colspan="3">AI服务器内存接口芯片龙头，DDR5需求爆发逻辑成立。小幅浮亏-2%无需操作，若跌破165考虑减仓</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 东方电气 -->
+  <div class="stock-card">
+    <div class="stock-header bg-yellow">
+      <div class="sh-left"><div class="name">东方电气</div><div class="code">01072.HK &nbsp;·&nbsp; 2,600股 <span class="tag tag-b">算电协同</span></div></div>
+      <div class="sh-mid"><div class="pnl dn">-7.95%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-add">逢低加仓</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>39.30 / 42.695</td><td>市值</td><td>102,180 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">36.00（破则减半）</td><td>目标价</td><td class="green">55.00</td></tr>
+        <tr><td>加仓位</td><td class="blue">38.00-39.50</td><td>加仓量</td><td>建议+500股</td></tr>
+        <tr><td>下周策略</td><td colspan="3">当前价格38-40区间是极佳买点。两会算电协同主线最强标的，短期-8%是洗盘，不是主线破坏。逢低加仓至3,100股</td></tr>
+      </table>
+      <div class="good-box">目标价55，现价39，上涨空间约40%。两会后政策兑现期，继续持有并加仓。</div>
+    </div>
+  </div>
+
+  <!-- 兆易创新 -->
+  <div class="stock-card">
+    <div class="stock-header bg-yellow">
+      <div class="sh-left"><div class="name">兆易创新</div><div class="code">03986.HK &nbsp;·&nbsp; 200股</div></div>
+      <div class="sh-mid"><div class="pnl dn">-2.47%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-hold">持有</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>364.00 / 373.20</td><td>市值</td><td>72,800 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">330.00</td><td>目标价</td><td class="green">430.00</td></tr>
+        <tr><td>下周策略</td><td colspan="3">Flash存储国产龙头，国产替代主线。-2.5%正常波动，持有。若跌破345考虑加仓</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 中国海洋石油 -->
+  <div class="stock-card">
+    <div class="stock-header bg-green">
+      <div class="sh-left"><div class="name">中国海洋石油</div><div class="code">00883.HK &nbsp;·&nbsp; 1,000股</div></div>
+      <div class="sh-mid"><div class="pnl up">+28.94%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-lock">减仓1/3锁利</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>29.76 / 23.08</td><td>市值</td><td>29,760 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">26.00（移动止损）</td><td>目标价</td><td class="green">32.00（短期）</td></tr>
+        <tr><td>减仓建议</td><td>卖出300股锁利</td><td>保留底仓</td><td>700股继续持有</td></tr>
+        <tr><td>下周策略</td><td colspan="3">油价$103.86高位不稳，中东局势若缓和油价将回落。减仓1/3锁定约+2,000 HKD利润，剩余仓位止损上移至26</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- MINIMAX -->
+  <div class="stock-card">
+    <div class="stock-header bg-yellow">
+      <div class="sh-left"><div class="name">MINIMAX-WP</div><div class="code">00100.HK &nbsp;·&nbsp; 20股</div></div>
+      <div class="sh-mid"><div class="pnl dn">-22.07%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-watch">观望</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>1,010 / 1,296</td><td>市值</td><td>20,200 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">850（不再下跌则持有）</td><td>目标价</td><td class="green">1,500（长期）</td></tr>
+        <tr><td>下周策略</td><td colspan="3">国内大模型AI龙头，长期逻辑有效但短期流动性差。仓位较小（2万），持有等待。若跌破900考虑止损</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 中国中免 -->
+  <div class="stock-card">
+    <div class="stock-header bg-red">
+      <div class="sh-left"><div class="name">中国中免</div><div class="code">01880.HK &nbsp;·&nbsp; 100股 <span class="tag tag-r">极度危险</span></div></div>
+      <div class="sh-mid"><div class="pnl dn">-80.50%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-sell">清仓止损</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>69.00 / 353.85</td><td>当前亏损</td><td class="red">-28,485 HKD</td></tr>
+        <tr><td>操作时机</td><td colspan="3"><strong>周一开盘即清仓，不再等待反弹</strong></td></tr>
+      </table>
+      <div class="warn-box">成本353元，现价69元，跌幅-80%。免税业务受多重打压：海南免税政策收紧、出境游未完全恢复、电商竞争。若等待反弹至353，几乎不可能在近年内实现。亏损28,485 HKD已是事实，清仓可释放资金投入主线机会，每月持有都在承担机会成本。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 港美混合账户 -->
+<div class="page page-break">
+  <h1 class="rt">账户二：港美混合账户</h1>
+  <p class="rmeta">老虎 港股+美股 · 港股部分约 62.4万 HKD + 美股部分</p>
+
+  <div class="section-title">港股部分</div>
+
+  <!-- 心动公司 -->
+  <div class="stock-card">
+    <div class="stock-header bg-yellow">
+      <div class="sh-left"><div class="name">心动公司</div><div class="code">02400.HK &nbsp;·&nbsp; 2,200股 <span class="tag tag-b">游戏/AI</span></div></div>
+      <div class="sh-mid"><div class="pnl dn">-1.40%</div><div class="pnl-label">当日盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-hold">持有观望</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>70.30 / 75.191</td><td>市值</td><td>154,660 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">62.00</td><td>目标价</td><td class="green">88.00</td></tr>
+        <tr><td>下周策略</td><td colspan="3">游戏+AI应用方向，3月下旬财报季注意业绩验证。持有，跌破65减仓1/3</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 携程集团 -->
+  <div class="stock-card">
+    <div class="stock-header bg-yellow">
+      <div class="sh-left"><div class="name">携程集团-S</div><div class="code">09961.HK &nbsp;·&nbsp; 350股</div></div>
+      <div class="sh-mid"><div class="pnl dn">-1.37%</div><div class="pnl-label">当日盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-hold">持有</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>401.60 / 427.743</td><td>市值</td><td>140,560 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">370.00</td><td>目标价</td><td class="green">480.00</td></tr>
+        <tr><td>下周策略</td><td colspan="3">出境游复苏逻辑有效，AI旅行服务升级催化。持有，关注3月出行数据</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 金风科技 -->
+  <div class="stock-card">
+    <div class="stock-header bg-green">
+      <div class="sh-left"><div class="name">金风科技</div><div class="code">02208.HK &nbsp;·&nbsp; 4,800股 <span class="tag tag-g">新能源</span></div></div>
+      <div class="sh-mid"><div class="pnl up">+2.62%</div><div class="pnl-label">当日盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-hold">持有</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>16.70 / 12.966</td><td>市值</td><td>80,160 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">13.50</td><td>目标价</td><td class="green">20.00</td></tr>
+        <tr><td>下周策略</td><td colspan="3">风电装机量持续增长，浮盈+28.7%（现价vs成本）。新能源主线持有。可考虑减少200股锁利</td></tr>
+      </table>
+      <div class="good-box">成本12.966 vs 现价16.70，浮盈约+28%，是持仓中表现较好的标的。继续持有。</div>
+    </div>
+  </div>
+
+  <!-- 长飞光纤 -->
+  <div class="stock-card">
+    <div class="stock-header bg-green">
+      <div class="sh-left"><div class="name">长飞光纤光缆</div><div class="code">06869.HK &nbsp;·&nbsp; 500股 <span class="tag tag-g">CPO光纤</span></div></div>
+      <div class="sh-mid"><div class="pnl up">+0.50%</div><div class="pnl-label">当日盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-hold">持有</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>159.00 / 158.00</td><td>市值</td><td>79,500 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">148.00</td><td>目标价</td><td class="green">185.00</td></tr>
+        <tr><td>下周策略</td><td colspan="3">光纤/CPO需求受益于AI算力基础设施建设，持有。若突破165可考虑加仓</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 智谱 -->
+  <div class="stock-card">
+    <div class="stock-header bg-yellow">
+      <div class="sh-left"><div class="name">智谱</div><div class="code">02513.HK &nbsp;·&nbsp; 100股 <span class="tag tag-b">国产大模型</span></div></div>
+      <div class="sh-mid"><div class="pnl dn">-4.59%</div><div class="pnl-label">当日盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-hold">持有</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>530 / 531</td><td>市值</td><td>53,000 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">480</td><td>目标价</td><td class="green">650</td></tr>
+        <tr><td>下周策略</td><td colspan="3">GLM-4大模型商业化落地加速，成本531 vs 现价530接近盈亏平衡，持有。若跌破500考虑减仓</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 耀才证券 -->
+  <div class="stock-card">
+    <div class="stock-header bg-green">
+      <div class="sh-left"><div class="name">耀才证券金融</div><div class="code">01428.HK &nbsp;·&nbsp; 6,000股 <span class="tag tag-g">港股券商</span></div></div>
+      <div class="sh-mid"><div class="pnl up">+9.20%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-hold">持有</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>9.270 / 7.150</td><td>市值</td><td>55,620 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">7.80（跌破减仓）</td><td>目标价</td><td class="green">11.00</td></tr>
+        <tr><td>浮盈</td><td class="green">+12,720 HKD (+29.7%)</td><td>操作时机</td><td>持有观望</td></tr>
+        <tr><td>下周策略</td><td colspan="3">港股成交额持续放大，南向资金净流入历史新高，券商直接受益。<strong>浮盈+29.7%，建议移动止损至7.80保护利润</strong>。若恒指突破26,500，可持有至11.00目标价；若大盘转弱跌破7.80止损</td></tr>
+      </table>
+      <div class="good-box">港股交投活跃是耀才业绩的直接驱动力。阿里3.19财报若超预期带动港股热度，耀才有望继续上涨。止损上移保住+29%利润是关键操作。</div>
+    </div>
+  </div>
+
+  <!-- 账户二 MINIMAX（60股）-->
+  <div class="stock-card">
+    <div class="stock-header bg-yellow">
+      <div class="sh-left"><div class="name">MINIMAX-WP（账户二）</div><div class="code">00100.HK &nbsp;·&nbsp; 60股</div></div>
+      <div class="sh-mid"><div class="pnl dn">-4.56%</div><div class="pnl-label">当日盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-watch">观望</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>1,010 / 1,100.333</td><td>市值</td><td>60,600 HKD</td></tr>
+        <tr><td>止损线</td><td class="red">850</td><td>目标价</td><td class="green">1,500（长期）</td></tr>
+        <tr><td>两账户合计</td><td colspan="3">账户一20股 + 账户二60股 = 合计80股，合计市值约80,800 HKD，合计浮亏约-17,000 HKD</td></tr>
+        <tr><td>下周策略</td><td colspan="3">国内大模型独角兽，AI主线长期逻辑有效，流动性较差。合计80股底仓持有，不加仓。若跌破900考虑两账户同步减仓</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">美股部分</div>
+
+  <!-- DOW -->
+  <div class="stock-card">
+    <div class="stock-header bg-red">
+      <div class="sh-left"><div class="name">陶氏化学 DOW</div><div class="code">DOW.US &nbsp;·&nbsp; 478股 <span class="tag tag-r">化工偏空</span></div></div>
+      <div class="sh-mid"><div class="pnl dn">-2.18%</div><div class="pnl-label">当日盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-reduce">逐步减仓</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>36.76 / 33.766</td><td>市值</td><td>$17,571</td></tr>
+        <tr><td>止损线</td><td class="red">34.00（跌破清仓）</td><td>目标</td><td>维持现价，不追加</td></tr>
+        <tr><td>下周策略</td><td colspan="3">关税推高原料成本，全球需求放缓，化工逻辑偏空。当前小幅盈利（成本33.77 vs 现价36.76），建议减仓1/3在36-37区间卖出锁利</td></tr>
+      </table>
+      <div class="warn-box">与宏观策略化工偏空方向一致，建议逐步清仓，释放资金至AI主线。</div>
+    </div>
+  </div>
+
+  <!-- MSTZ -->
+  <div class="stock-card">
+    <div class="stock-header bg-yellow">
+      <div class="sh-left"><div class="name">2倍做空MSTR ETF · MSTZ</div><div class="code">MSTZ.US &nbsp;·&nbsp; 600股 <span class="tag tag-y">对冲工具</span></div></div>
+      <div class="sh-mid"><div class="pnl up">+1.61%</div><div class="pnl-label">当日盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-watch">观望</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>10.58 / 10.412</td><td>市值</td><td>$6,348</td></tr>
+        <tr><td>下周策略</td><td colspan="3">比特币若维持$70,000上方，MSTR下行空间有限，MSTZ上行空间也有限。若BTC跌破65,000可加仓MSTZ；若BTC涨破75,000则清仓MSTZ</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- CRCL/OXY/GLW/GOOG/MSFT 合并简版 -->
+  <table class="gen" style="margin-top:16px;">
+    <tr><th>标的</th><th>现价/成本</th><th>当日盈亏</th><th>下周操作</th><th>止损/目标</th></tr>
+    <tr><td><strong>CRCL</strong> Circle<br><span class="tag tag-g">加密合规</span></td><td>114.91 / 108.56</td><td class="up">+0.36%</td><td>持有，加密监管政策受益</td><td>止损100 / 目标140</td></tr>
+    <tr><td><strong>OXY</strong> 西方石油</td><td>58.06 / 53.34</td><td class="dn">-0.27%</td><td>油价不稳，持有观望，减仓1/3锁利</td><td>止损54 / 目标65</td></tr>
+    <tr><td><strong>GLW</strong> 康宁</td><td>128.75 / 141.27</td><td class="dn">-1.85%</td><td>光纤需求逻辑有效但短期承压，持有</td><td>止损115 / 目标150</td></tr>
+    <tr><td><strong>GOOG</strong> 谷歌-C</td><td>300.69 / 346.29</td><td class="dn">-0.83%</td><td>持仓量小(12股)，继续持有，关注AI搜索进展</td><td>止损270 / 目标360</td></tr>
+    <tr><td><strong>MSFT</strong> 微软</td><td>395.10 / 467.54</td><td class="dn">-0.94%</td><td>持仓量小(7股)，持有，Copilot商业化持续</td><td>止损370 / 目标450</td></tr>
+    <tr><td><strong>LYB</strong> 利安德巴塞尔</td><td>72.30 / 67.53</td><td class="dn">-2.19%</td><td>化工偏空，小幅浮盈，逐步减仓</td><td>止损65 / 锁利为主</td></tr>
+    <tr><td><strong>HIMZ</strong> 2倍做多HIMS ETF</td><td>2.42 / 2.933</td><td class="up">+4.88%</td><td>杠杆ETF，反弹时止盈，设止损2.10</td><td>止损2.10 / 目标3.20</td></tr>
+    <tr><td><strong>LITE/LITX</strong> Lumentum</td><td>619.99 / 661.81</td><td class="dn">-0.28%</td><td>光模块CPO方向持有，止损580</td><td>止损580 / 目标720</td></tr>
+  </table>
+
+  <div class="section-title">美股小仓位标的（各1股）— 补充操作建议</div>
+  <p style="font-size:9pt;color:#888;margin-bottom:10px;">以下9只标的持仓均为1股，市值较小，但需明确操作策略。</p>
+
+  <table class="gen">
+    <tr><th>标的</th><th>现价/成本</th><th>浮盈亏</th><th>下周操作</th><th>止损位</th><th>目标价</th><th>操作逻辑</th></tr>
+    <tr>
+      <td><strong>PLTR</strong><br>Palantir<br><span class="tag tag-b">AI+国防</span></td>
+      <td>150.89 / 197.93</td>
+      <td class="dn">-23.8%</td>
+      <td><span class="sig-bull">持有</span></td>
+      <td>130.00</td>
+      <td>200.00</td>
+      <td>AI+政府数据分析双主线，仅1股，持有等待修复。跌破130止损</td>
+    </tr>
+    <tr>
+      <td><strong>OKLO</strong><br>Oklo核能<br><span class="tag tag-b">核能+AI算力</span></td>
+      <td>58.33 / 268.05</td>
+      <td class="dn">-78.2%</td>
+      <td><span class="sig-neu">持有底仓</span></td>
+      <td>45.00</td>
+      <td>80.00（短期）</td>
+      <td>AI数据中心电力需求+小型核反应堆，仅1股，持有。政策若支持SMR则反弹</td>
+    </tr>
+    <tr>
+      <td><strong>SMR</strong><br>NuScale Power<br><span class="tag tag-b">小型核反应堆</span></td>
+      <td>11.80 / 774.43</td>
+      <td class="dn">-98.5%</td>
+      <td><span class="sig-neu">⚠️ 持有底仓</span></td>
+      <td>—</td>
+      <td>—</td>
+      <td>成本774.43为历史高位（可能经历拆股），仅1股市值$11.8，持有不动意义大于止损</td>
+    </tr>
+    <tr>
+      <td><strong>HOOD</strong><br>Robinhood<br><span class="tag tag-y">加密+零售券商</span></td>
+      <td>73.10 / 617.77</td>
+      <td class="dn">-88.2%</td>
+      <td><span class="sig-neu">持有底仓</span></td>
+      <td>60.00</td>
+      <td>95.00</td>
+      <td>加密合规化受益，BTC机构化趋势下业务增长，仅1股，持有等待</td>
+    </tr>
+    <tr>
+      <td><strong>UGL</strong><br>2倍做多黄金<br><span class="tag tag-g">黄金杠杆</span></td>
+      <td>71.50 / 负成本</td>
+      <td class="up">+极高</td>
+      <td><span class="sig-bull">持有/加仓</span></td>
+      <td>62.00</td>
+      <td>95.00</td>
+      <td>黄金中长期看多，2倍杠杆放大收益。黄金回调是加仓机会，止损62（布林下轨附近）</td>
+    </tr>
+    <tr>
+      <td><strong>TSLA</strong><br>特斯拉<br><span class="tag tag-y">机器人/EV</span></td>
+      <td>389.80 / 449.70</td>
+      <td class="dn">-13.3%</td>
+      <td><span class="sig-neu">持有观望</span></td>
+      <td>350.00</td>
+      <td>480.00</td>
+      <td>Optimus机器人量产预期+自动驾驶FSD商业化。仅4股，持有。跌破350止损</td>
+    </tr>
+    <tr>
+      <td><strong>SCCO</strong><br>南方铜业<br><span class="tag tag-y">铜矿</span></td>
+      <td>171.57 / 1020.63</td>
+      <td class="dn">-83.2%</td>
+      <td><span class="sig-neu">持有底仓</span></td>
+      <td>150.00</td>
+      <td>—</td>
+      <td>成本1020可能含有历史高点或拆股因素，仅1股市值$171，持有不动。铜价强势时受益</td>
+    </tr>
+    <tr>
+      <td><strong>ORCL</strong><br>甲骨文<br><span class="tag tag-b">AI云数据库</span></td>
+      <td>154.31 / 722.51</td>
+      <td class="dn">-78.6%</td>
+      <td><span class="sig-neu">持有底仓</span></td>
+      <td>135.00</td>
+      <td>180.00</td>
+      <td>AI云数据库需求增长，与微软/AWS竞争。仅1股，持有，关注季报云收入数据</td>
+    </tr>
+    <tr>
+      <td><strong>BRK.B</strong><br>伯克希尔哈撒韦B<br><span class="tag tag-gr">防御价值</span></td>
+      <td>490.00 / 592.75</td>
+      <td class="dn">-17.3%</td>
+      <td><span class="sig-bull">持有</span></td>
+      <td>460.00</td>
+      <td>540.00</td>
+      <td>巴菲特价值投资防御资产，市场动荡时表现相对稳健。仅1股，持有</td>
+    </tr>
+  </table>
+
+  <div class="logic-box" style="margin-top:12px;">
+    <strong>关于上述9只1股标的的说明：</strong>部分标的成本价异常高（如SMR成本774、HOOD成本617、SCCO成本1020），可能是账户历史上经历过<strong>反向拆股（Reverse Split）</strong>导致成本被大幅摊高，实际买入成本应远低于此。建议核查原始交易记录确认真实成本。持仓量极小（各1股），即使止损对总账户影响微乎其微，建议保留底仓观望即可。
+  </div>
+</div>
+
+<!-- 国金A股账户 -->
+<div class="page page-break">
+  <h1 class="rt">账户三：国金证券 A股账户</h1>
+  <p class="rmeta">同花顺 · 截图一+二 · 合计约 76万人民币</p>
+
+  <div class="section-title">紧急处理（P1）</div>
+
+  <!-- 中国中免-A（阿里）-->
+  <div class="stock-card">
+    <div class="stock-header bg-green">
+      <div class="sh-left"><div class="name">阿里巴巴-W（国金）</div><div class="code">HK9988 &nbsp;·&nbsp; 700股</div></div>
+      <div class="sh-mid"><div class="pnl up">极高浮盈</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-hold">持有不动</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>HK$132.50 / 负值（已盈利极多）</td><td>市值</td><td>81,480 元</td></tr>
+        <tr><td>下周策略</td><td colspan="3">与港股账户逻辑相同，3.19财报前坚决不动。财报后视云收入数据决定操作</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 西部超导 -->
+  <div class="stock-card">
+    <div class="stock-header bg-red">
+      <div class="sh-left"><div class="name">西部超导</div><div class="code">688122.SH &nbsp;·&nbsp; 863股 <span class="tag tag-r">P1紧急</span></div></div>
+      <div class="sh-mid"><div class="pnl dn">-15.78%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-sell">止损减仓</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>78.00 / 92.617</td><td>浮亏</td><td class="red">-12,605 元</td></tr>
+        <tr><td>止损执行价</td><td class="red">75.00（破则清仓）</td><td>操作时机</td><td>周一开盘评估</td></tr>
+        <tr><td>下周策略</td><td colspan="3">已跌破-15%止损线。无止损计划的情况下，建议设75为硬性止损，跌破75即清仓。若反弹至82以上可减仓一半锁定风险</td></tr>
+      </table>
+      <div class="warn-box">科创板高估值航空材料，宏观不支持。继续持有等反弹的机会成本很高，建议止损释放资金。</div>
+    </div>
+  </div>
+
+  <!-- 万华化学 -->
+  <div class="stock-card">
+    <div class="stock-header bg-red">
+      <div class="sh-left"><div class="name">万华化学</div><div class="code">600309.SH &nbsp;·&nbsp; 100股 <span class="tag tag-r">P1紧急</span></div></div>
+      <div class="sh-mid"><div class="pnl dn">-15.47%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-sell">清仓</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>84.50 / 99.969</td><td>浮亏</td><td class="red">-1,546 元</td></tr>
+        <tr><td>下周策略</td><td colspan="3"><strong>周一开盘清仓</strong>。化工偏空，100股市值仅8,450元，释放资金意义大于继续持有</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 特锐德 -->
+  <div class="stock-card">
+    <div class="stock-header bg-red">
+      <div class="sh-left"><div class="name">特锐德</div><div class="code">300250 &nbsp;·&nbsp; 300股 <span class="tag tag-r">P1紧急</span></div></div>
+      <div class="sh-mid"><div class="pnl dn">-13.92%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-reduce">减仓</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>30.85 / 35.838</td><td>浮亏</td><td class="red">-1,496 元</td></tr>
+        <tr><td>止损线</td><td class="red">29.00（破则清仓）</td><td>下周策略</td><td>减仓150股，保留150股观望至年报</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 龙佰集团 -->
+  <div class="stock-card">
+    <div class="stock-header bg-red">
+      <div class="sh-left"><div class="name">龙佰集团</div><div class="code">002601 &nbsp;·&nbsp; 6,600股</div></div>
+      <div class="sh-mid"><div class="pnl dn">-7.54%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-reduce">减仓</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>19.54 / 21.133</td><td>浮亏</td><td class="red">-10,506 元</td></tr>
+        <tr><td>止损线</td><td class="red">18.50</td><td>下周策略</td><td>减仓3,000股，保留3,600观望</td></tr>
+        <tr><td>逻辑</td><td colspan="3">钛白粉化工，全球需求疲软，与宏观策略方向背离，减仓控制风险</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">锁利操作（P2）</div>
+
+  <!-- 北京科锐 -->
+  <div class="stock-card">
+    <div class="stock-header bg-green">
+      <div class="sh-left"><div class="name">北京科锐</div><div class="code">002350 &nbsp;·&nbsp; 200股 <span class="tag tag-g">浮盈极高</span></div></div>
+      <div class="sh-mid"><div class="pnl up">+703.60%</div><div class="pnl-label">持仓盈亏</div></div>
+      <div class="sh-right"><span class="action-tag tag-lock">减仓2/3锁利</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>13.830 / 1.721</td><td>浮盈</td><td class="green">+2,421 元</td></tr>
+        <tr><td>减仓建议</td><td>卖出130股（保留70股底仓）</td><td>预计锁利</td><td>约+1,600元</td></tr>
+        <tr><td>保留底仓</td><td>70股（市值约970元）</td><td>止损</td><td>底仓10.00止损</td></tr>
+        <tr><td>下周策略</td><td colspan="3">浮盈703%，大概率是历史低价买入后公司送股/配股摊薄成本。无论如何，+703%的利润必须锁定大部分，减仓130股</td></tr>
+      </table>
+      <div class="good-box">这是少见的超级收益标的。建议卖出2/3锁定利润，保留底仓万一继续涨。</div>
+    </div>
+  </div>
+
+  <!-- 云南铜业 -->
+  <div class="stock-card">
+    <div class="stock-header bg-green">
+      <div class="sh-left"><div class="name">云南铜业</div><div class="code">000878.SZ &nbsp;·&nbsp; 2,800股</div></div>
+      <div class="sh-mid"><div class="pnl up">+196.71%</div><div class="pnl-label">已部分减仓</div></div>
+      <div class="sh-right"><span class="action-tag tag-hold">底仓持有</span></div>
+    </div>
+    <div class="stock-body">
+      <table>
+        <tr><td>现价/成本</td><td>22.45 / 7.566</td><td>浮盈</td><td class="green">+41,644 元</td></tr>
+        <tr><td>止损线（移动）</td><td class="red">20.00</td><td>目标价</td><td class="green">25.00-28.00</td></tr>
+        <tr><td>下周策略</td><td colspan="3">已经历过减仓，剩余底仓继续持有。铜价维持强势，持仓止损上移至20.00。若铜价涨破25可再减仓1,000股</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">主线持有（P3）</div>
+
+  <table class="gen">
+    <tr><th>股票</th><th>代码</th><th>盈亏%</th><th>下周操作</th><th>止损位</th><th>目标价</th><th>核心逻辑</th></tr>
+    <tr><td><strong>特变电工</strong></td><td>600089</td><td class="up">+15.02%</td><td><span class="sig-bull">持有</span></td><td>27.00</td><td>36.00</td><td>算电协同龙头，两会政策最直接受益</td></tr>
+    <tr><td><strong>中国核建</strong></td><td>601611</td><td class="up">+10.87%</td><td><span class="sig-bull">持有</span></td><td>17.00</td><td>23.00</td><td>核电政策受益，十五五核电装机加速</td></tr>
+    <tr><td><strong>西昌电力</strong></td><td>600505</td><td class="up">+6.20%</td><td><span class="sig-bull">持有</span></td><td>13.00</td><td>17.00</td><td>水电稳定收益，算力电力补充</td></tr>
+    <tr><td><strong>阳光电源</strong></td><td>300274</td><td class="up">+1.54%</td><td><span class="sig-bull">持有</span></td><td>165.00</td><td>200.00</td><td>储能逆变器龙头，新能源主线</td></tr>
+    <tr><td><strong>汇川技术</strong></td><td>300124</td><td class="up">+1.92%</td><td><span class="sig-bull">持有</span></td><td>68.00</td><td>85.00</td><td>工业自动化+机器人，主线受益</td></tr>
+    <tr><td><strong>电网ETF</strong></td><td>159320</td><td class="up">+1.06%</td><td><span class="sig-bull">持有</span></td><td>2.05</td><td>2.40</td><td>算电协同ETF，分散持仓</td></tr>
+    <tr><td><strong>芯片基金</strong></td><td>516920</td><td class="dn">-2.95%</td><td><span class="sig-bull">持有</span></td><td>1.00</td><td>1.30</td><td>半导体国产化主线，正常回调</td></tr>
+    <tr><td><strong>大秦铁路</strong></td><td>601006</td><td class="up">+1.38%</td><td><span class="sig-bull">持有（防御）</span></td><td>5.00</td><td>5.80</td><td>高股息防御资产，弱市护盘</td></tr>
+    <tr><td><strong>华建集团</strong></td><td>600629</td><td class="dn">-1.27%</td><td><span class="sig-neu">观望，减仓考虑</span></td><td>20.50</td><td>—</td><td>建筑央企，与主线方向背离</td></tr>
+    <tr><td><strong>多氟多</strong></td><td>002407</td><td class="dn">-1.01%</td><td><span class="sig-neu">观望</span></td><td>29.00</td><td>34.00</td><td>氟化工/锂电材料，逻辑一般</td></tr>
+    <tr><td><strong>创新医疗</strong></td><td>002173</td><td class="dn">-0.86%</td><td><span class="sig-neu">观望</span></td><td>29.00</td><td>36.00</td><td>医疗器械，新支柱产业方向</td></tr>
+    <tr><td><strong>新洋丰</strong></td><td>000902</td><td class="dn">-1.17%</td><td><span class="sig-neu">观望/减仓</span></td><td>17.50</td><td>—</td><td>磷肥，与主线无关，考虑减仓</td></tr>
+    <tr><td><strong>融发核电</strong></td><td>—</td><td class="dn">-2.36%</td><td><span class="sig-bull">持有</span></td><td>8.20</td><td>10.50</td><td>核电政策受益，持有</td></tr>
+    <tr><td><strong>乐普医疗</strong></td><td>300003</td><td class="dn">-0.74%</td><td><span class="sig-neu">观望</span></td><td>16.00</td><td>20.00</td><td>医疗器械，逻辑一般</td></tr>
+    <tr><td><strong>化工基金</strong></td><td>ETF</td><td class="dn">-0.52%</td><td><span class="sig-bear">减仓考虑</span></td><td>1.20</td><td>—</td><td>化工偏空，建议减仓</td></tr>
+    <tr><td><strong>农业ETF</strong></td><td>ETF</td><td class="dn">-8.27%</td><td><span class="sig-bear">减仓</span></td><td>—</td><td>—</td><td>与主线无关，亏损较大</td></tr>
+    <tr><td><strong>豆粕ETF</strong></td><td>ETF</td><td class="up">+0.19%</td><td><span class="sig-neu">持有观望</span></td><td>2.20</td><td>2.50</td><td>大宗商品对冲，小仓位</td></tr>
+  </table>
+</div>
+
+<!-- 下周执行清单 -->
+<div class="page page-break">
+  <h1 class="rt">下周执行清单</h1>
+  <p class="rmeta">按优先级排序 · 周一09:30开盘按序执行</p>
+
+  <h2 class="sec" style="color:#c0392b;border-color:#e74c3c;">第一优先级：开盘前30分钟内执行</h2>
+  <table class="gen">
+    <tr><th>序号</th><th>账户</th><th>操作</th><th>标的</th><th>数量</th><th>参考价</th><th>预期影响</th></tr>
+    <tr><td>1</td><td>港股一</td><td><span class="sig-bear">清仓</span></td><td>中国中免 01880</td><td>100股全部卖出</td><td>市价</td><td>释放约6,900 HKD，止血-80%亏损</td></tr>
+    <tr><td>2</td><td>港股一</td><td><span class="sig-bear">大减/清仓</span></td><td>南方2倍做多恒科 07226</td><td>50,000-67,000股</td><td>市价</td><td>释放约20万HKD，停止杠杆损耗</td></tr>
+    <tr><td>3</td><td>国金A股</td><td><span class="sig-bear">清仓</span></td><td>万华化学 600309</td><td>100股全部</td><td>市价</td><td>释放8,450元</td></tr>
+    <tr><td>4</td><td>国金A股</td><td><span class="sig-bear">减仓</span></td><td>农业ETF</td><td>5,000-10,500份</td><td>市价</td><td>减少-8.27%亏损继续扩大</td></tr>
+  </table>
+
+  <h2 class="sec" style="color:#e67e22;border-color:#f39c12;">第二优先级：当天内完成</h2>
+  <table class="gen">
+    <tr><th>序号</th><th>账户</th><th>操作</th><th>标的</th><th>数量</th><th>参考价</th><th>备注</th></tr>
+    <tr><td>5</td><td>国金A股</td><td><span class="sig-neu">减仓2/3</span></td><td>北京科锐</td><td>卖出130股</td><td>13.00-14.00</td><td>保留70股底仓</td></tr>
+    <tr><td>6</td><td>国金A股</td><td><span class="sig-neu">减仓</span></td><td>龙佰集团</td><td>卖出3,000股</td><td>19.00-20.00</td><td>保留3,600股观望</td></tr>
+    <tr><td>7</td><td>港股一</td><td><span class="sig-neu">减仓锁利</span></td><td>中国海洋石油 00883</td><td>卖出300股</td><td>29.00-30.00</td><td>保留700股底仓</td></tr>
+    <tr><td>8</td><td>港股一</td><td><span class="sig-neu">移动止损</span></td><td>剑桥科技 06166</td><td>止损上移至70.00</td><td>—</td><td>可选：卖出200股锁利</td></tr>
+  </table>
+
+  <h2 class="sec" style="color:#27ae60;border-color:#2ecc71;">第三优先级：本周内完成（灵活操作）</h2>
+  <table class="gen">
+    <tr><th>序号</th><th>账户</th><th>操作</th><th>标的</th><th>条件/价位</th><th>备注</th></tr>
+    <tr><td>9</td><td>港股一</td><td><span class="sig-bull">逢低加仓</span></td><td>东方电气 01072</td><td>38.00-39.50区间买入</td><td>+500股，算电协同主线</td></tr>
+    <tr><td>10</td><td>国金A股</td><td><span class="sig-bear">止损观察</span></td><td>西部超导 688122</td><td>跌破75.00即清仓</td><td>设置条件单</td></tr>
+    <tr><td>11</td><td>国金A股</td><td><span class="sig-bear">减仓</span></td><td>特锐德</td><td>反弹至31.50减仓150股</td><td>保留150股至年报</td></tr>
+    <tr><td>12</td><td>美股</td><td><span class="sig-neu">减仓</span></td><td>DOW 陶氏化学</td><td>36-37区间卖出200股</td><td>化工偏空，逐步清仓</td></tr>
+  </table>
+
+  <h2 class="sec">3月19日（周四）特别操作预案</h2>
+  <table class="gen">
+    <tr><th>事件</th><th>情景</th><th>操作</th></tr>
+    <tr><td rowspan="2"><strong>阿里Q3财报</strong><br>（三账户均持有）</td><td>云收入>350亿 且 同比>35%<br><span class="tag tag-g">超预期</span></td><td>财报次日不动，继续持有至195目标</td></tr>
+    <tr><td>云收入不及预期 或 利润下滑<br><span class="tag tag-r">不及预期</span></td><td>财报次日减仓至半仓，止损120执行</td></tr>
+    <tr><td rowspan="2"><strong>美联储FOMC</strong></td><td>维持利率+偏鸽派措辞<br><span class="tag tag-g">偏鸽</span></td><td>美股仓位可适当加仓AI主线(PLTR/OKLO)</td></tr>
+    <tr><td>鹰派信号+强调通胀风险<br><span class="tag tag-r">偏鹰</span></td><td>减持美股高估值标的，增持黄金(UGL)</td></tr>
+  </table>
+
+  <div class="footer">
+    <strong>报告说明：</strong>本操作建议基于2026-03-14 09:32持仓截图+宏观分析综合判断。止损位和目标价仅供参考，需结合当日盘面情况执行。所有"清仓"建议均为风险控制目的，不构成对个股的长期看法。<br><br>
+    <strong>关键提醒：</strong>3月19日阿里财报+FOMC是本周最重要的催化事件，两个事件前后须特别关注持仓变化。<br>
+    <strong>生成时间：</strong>2026-03-14 09:40 GMT+8
+  </div>
+</div>
+
+</body>
+</html>

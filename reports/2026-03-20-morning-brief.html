@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans CJK SC', 'WenQuanYi Zen Hei', 'PingFang SC', sans-serif;
+         font-size: 10.5pt; color: #1a1a2e; line-height: 1.75; background: #f5f6fa; }
+  .page { max-width: 960px; margin: 0 auto; padding: 36px 48px; background: #fff; }
+
+  .report-header { background: linear-gradient(135deg, #0d3a6b 0%, #1565c0 60%, #1976d2 100%);
+                   color: #fff; padding: 32px 40px; border-radius: 14px; margin-bottom: 32px; }
+  .report-header h1 { font-size: 19pt; font-weight: 700; letter-spacing: 1px; }
+  .report-header .subtitle { font-size: 11pt; color: #bbdefb; margin-top: 8px; }
+  .report-header .meta { font-size: 9pt; color: #90caf9; margin-top: 10px; }
+  .report-header .tags { margin-top: 14px; }
+  .report-header .tag-chip { display: inline-block; background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3); border-radius: 20px;
+    padding: 3px 12px; font-size: 8.5pt; color: #e3f2fd; margin-right: 8px; margin-top: 4px; }
+
+  h2 { font-size: 14pt; font-weight: 700; color: #0d3a6b; border-left: 5px solid #1976d2;
+       padding-left: 12px; margin: 28px 0 14px; }
+  h3 { font-size: 11.5pt; font-weight: 600; color: #1565c0; margin: 18px 0 10px;
+       padding-bottom: 4px; border-bottom: 1px solid #bbdefb; }
+
+  .alert-box { border-radius: 8px; padding: 12px 18px; margin: 12px 0; font-size: 9.5pt; }
+  .alert-green  { background: #e8f8ee; border-left: 4px solid #1a7a4a; color: #0e4d2b; }
+  .alert-yellow { background: #fff8e1; border-left: 4px solid #f39c12; color: #7d5a00; }
+  .alert-blue   { background: #e8f0fe; border-left: 4px solid #1565c0; color: #0d3a6b; }
+  .alert-red    { background: #fde8e8; border-left: 4px solid #c0392b; color: #7b1c1c; }
+  .alert-orange { background: #fff3e0; border-left: 4px solid #e65100; color: #7a3500; }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 20px; font-size: 9.5pt; }
+  th { background: #0d3a6b; color: #fff; padding: 9px 11px; font-weight: 600; text-align: left; }
+  td { padding: 8px 11px; border-bottom: 1px solid #eaeff5; vertical-align: top; }
+  tr:nth-child(even) td { background: #f5f8ff; }
+
+  .up   { color: #c0392b; font-weight: 600; }
+  .dn   { color: #1a7a4a; font-weight: 600; }
+  .warn { color: #b8860b; font-weight: 600; }
+  .ok   { color: #1565c0; font-weight: 600; }
+
+  .verdict { display: inline-block; border-radius: 4px; padding: 2px 8px; font-size: 8.5pt; font-weight: 700; }
+  .verdict-right { background: #e8f8ee; color: #1a7a4a; }
+  .verdict-wrong { background: #fde8e8; color: #c0392b; }
+  .verdict-partial { background: #fff8e1; color: #b8860b; }
+
+  .op-scenario { border: 1px solid #e0e0e0; border-radius: 8px; padding: 14px 18px; margin: 10px 0; }
+  .op-down   { border-color: #fca5a5; background: #fff5f5; }
+  .op-flat   { border-color: #fde68a; background: #fffbeb; }
+  .op-up     { border-color: #86efac; background: #f0fdf4; }
+  .op-scenario-title { font-size: 10.5pt; font-weight: 700; margin-bottom: 6px; }
+  .op-down .op-scenario-title   { color: #c0392b; }
+  .op-flat .op-scenario-title   { color: #b8860b; }
+  .op-up .op-scenario-title     { color: #1a7a4a; }
+
+  .watchpoint { background: #f0f7ff; border-radius: 8px; padding: 14px 18px; margin: 12px 0;
+                border: 1px solid #bbdefb; }
+  .watchpoint-title { font-size: 10pt; font-weight: 700; color: #0d3a6b; margin-bottom: 8px; }
+
+  .data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 14px 0; }
+  .data-card { background: #f5f8ff; border-radius: 8px; padding: 14px 16px; border-top: 3px solid #1976d2; }
+  .data-label { font-size: 8pt; color: #666; margin-bottom: 4px; }
+  .data-value { font-size: 14pt; font-weight: 700; color: #0d3a6b; }
+  .data-change { font-size: 9pt; font-weight: 600; margin-top: 3px; }
+  .data-change.up { color: #c0392b; }
+  .data-change.dn { color: #1a7a4a; }
+
+  hr { border: none; border-top: 1px solid #e0e8ff; margin: 24px 0; }
+
+  .footer { font-size: 8pt; color: #aaa; margin-top: 32px; padding-top: 14px;
+            border-top: 1px solid #eee; text-align: center; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- 标题 -->
+<div class="report-header">
+  <h1>📊 3月20日 早盘简报</h1>
+  <div class="subtitle">昨夜分析复盘 · 贵金属最新动态 · 阿里巴巴财报追踪 · 今日操作计划</div>
+  <div class="meta">报告时间：2026年3月20日 08:44 GMT+8 &nbsp;·&nbsp; 港股9:30开盘前</div>
+  <div class="tags">
+    <span class="tag-chip">09988 阿里巴巴</span>
+    <span class="tag-chip">黄金/白银</span>
+    <span class="tag-chip">02600 中国铝业</span>
+    <span class="tag-chip">昨夜分析复盘</span>
+    <span class="tag-chip">今日操作计划</span>
+  </div>
+</div>
+
+<!-- 关键数据速览 -->
+<h2>⚡ 一、今晨关键数据（港股开盘前）</h2>
+
+<div class="data-grid">
+  <div class="data-card">
+    <div class="data-label">黄金 GLD ETF</div>
+    <div class="data-value">$426.41</div>
+    <div class="data-change up">昨日 -4.12%</div>
+    <div style="font-size:8.5pt;color:#555;margin-top:4px">今晨约$4,646，已从低点$4,550反弹</div>
+  </div>
+  <div class="data-card">
+    <div class="data-label">白银 SLV ETF</div>
+    <div class="data-value">$65.68</div>
+    <div class="data-change up">昨日 -4.40%</div>
+    <div style="font-size:8.5pt;color:#555;margin-top:4px">昨夜低点$66.90，今晨回升至~$72</div>
+  </div>
+  <div class="data-card">
+    <div class="data-label">标普500</div>
+    <div class="data-value">6,606</div>
+    <div class="data-change up">昨日 -0.27%</div>
+    <div style="font-size:8.5pt;color:#555;margin-top:4px">美股整体稳定，小幅回落</div>
+  </div>
+  <div class="data-card">
+    <div class="data-label">美元指数</div>
+    <div class="data-value">99.31</div>
+    <div class="data-change dn">今晨 -0.78% ✅</div>
+    <div style="font-size:8.5pt;color:#1a7a4a;margin-top:4px">美元走弱 → 贵金属喘息机会</div>
+  </div>
+  <div class="data-card">
+    <div class="data-label">恒生指数（昨收）</div>
+    <div class="data-value">25,500</div>
+    <div class="data-change up">昨日 -2.02%</div>
+    <div style="font-size:8.5pt;color:#555;margin-top:4px">今日开盘预计仍有压力</div>
+  </div>
+  <div class="data-card">
+    <div class="data-label">阿里巴巴 09988（昨收）</div>
+    <div class="data-value">132.00</div>
+    <div class="data-change up">昨日 -4.14%</div>
+    <div style="font-size:8.5pt;color:#555;margin-top:4px">ADR指引今日低开128-130区间</div>
+  </div>
+</div>
+
+<div class="alert-box alert-blue">
+  <b>🔑 今晨最重要变化：</b>美元指数从高位回落至99.31（-0.78%），这是贵金属超卖反弹的核心支撑。昨夜"黄金将出现技术性反弹"的预判已兑现——黄金从低点$4,550反弹至$4,646。
+</div>
+
+<!-- 昨夜预判复盘 -->
+<h2>🔍 二、昨夜预判 vs 实际结果复盘</h2>
+
+<table>
+  <tr><th>昨夜判断</th><th>实际结果</th><th>评价</th></tr>
+  <tr>
+    <td>黄金第一支撑$4,650，大概率出现技术反弹</td>
+    <td>黄金继续跌穿至$4,550，今晨回升至~$4,646</td>
+    <td><span class="verdict verdict-partial">⚠️ 方向对，低估深度</span></td>
+  </tr>
+  <tr>
+    <td>白银$70是关键防线</td>
+    <td>直接跌穿，最低触及$66.90，今晨回升</td>
+    <td><span class="verdict verdict-wrong">❌ 支撑位判断偏高</span></td>
+  </tr>
+  <tr>
+    <td>RSI严重超卖，有技术性反弹</td>
+    <td>今晨已发生（空头回补+超卖修复）</td>
+    <td><span class="verdict verdict-right">✅ 准确</span></td>
+  </tr>
+  <tr>
+    <td>黄金9999仓位小，不急于止损</td>
+    <td>今晨回升，暂未触发清仓条件</td>
+    <td><span class="verdict verdict-right">✅ 准确</span></td>
+  </tr>
+  <tr>
+    <td>美联储鹰派是主驱动，贵金属短期承压</td>
+    <td>持续有效，美元走强是核心逻辑</td>
+    <td><span class="verdict verdict-right">✅ 准确</span></td>
+  </tr>
+  <tr>
+    <td>反弹性质：空头回补，非趋势反转</td>
+    <td>今晨反弹符合此特征，MACD仍看跌</td>
+    <td><span class="verdict verdict-right">✅ 准确</span></td>
+  </tr>
+</table>
+
+<div class="alert-box alert-yellow">
+  <b>⚠️ 复盘教训：</b>在"流动性踩踏"极端行情下，支撑位预测会系统性偏高。昨晚白银$70的判断是基于正常市场逻辑，但昨日是机构强制平仓+算法止损触发的双重踩踏，支撑位失效。改进方案：极端行情下支撑位下移一档判断。
+</div>
+
+<!-- 阿里巴巴财报追踪 -->
+<h2>📦 三、阿里巴巴09988 财报后追踪</h2>
+
+<h3>3.1 财报数据（3月19日发布）</h3>
+
+<table>
+  <tr><th>指标</th><th>实际数据</th><th>市场预期</th><th>vs预期</th></tr>
+  <tr><td>总营收</td><td>2,848亿元</td><td>2,893亿元</td><td class="up">❌ 未达预期 (-1.5%)</td></tr>
+  <tr><td>云智能收入增速</td><td>+36%</td><td>~+30%</td><td class="dn">✅ 大幅超预期</td></tr>
+  <tr><td>Non-GAAP净利润</td><td>-67.3%</td><td>-30%左右</td><td class="up">❌ 大幅不及预期</td></tr>
+  <tr><td>Qwen MAU</td><td>3亿用户</td><td>未发布预期</td><td class="dn">✅ 强劲</td></tr>
+  <tr><td>AI收入增速</td><td>连续10季三位数增长</td><td>—</td><td class="dn">✅ 超预期</td></tr>
+</table>
+
+<h3>3.2 昨日分析判断追踪</h3>
+
+<table>
+  <tr><th>昨日我的判断</th><th>今天来看</th><th>评价</th></tr>
+  <tr>
+    <td>云+36%是硬催化剂，市场会正面消化</td>
+    <td>昨日仍跌-4.14%，市场对利润-67%反应更负面</td>
+    <td><span class="verdict verdict-partial">⚠️ 逻辑对，但被利润数据压制</span></td>
+  </tr>
+  <tr>
+    <td>营收+2%是会计失真，真实增长+9%</td>
+    <td>分析逻辑正确，但市场短期以报表数字定价</td>
+    <td><span class="verdict verdict-right">✅ 逻辑准确，短期失效</span></td>
+  </tr>
+  <tr>
+    <td>持有，止损120港元，目标148-155</td>
+    <td>目前132港元，止损线以上10%+，方向不变</td>
+    <td><span class="verdict verdict-right">✅ 方向正确</span></td>
+  </tr>
+  <tr>
+    <td>财报整体中性偏正面，不触发止损</td>
+    <td>今日预计低开128-130，仍高于120止损线</td>
+    <td><span class="verdict verdict-right">✅ 准确</span></td>
+  </tr>
+</table>
+
+<h3>3.3 今日09988操作建议</h3>
+
+<div class="alert-box alert-yellow">
+  <b>ADR指引：</b>美股BABA昨夜盘前跌约-4.58%至$128.27，预计09988今日低开在128–130港元区间。不满足"+3%减仓"条件，维持持有。
+</div>
+
+<div class="op-scenario op-down">
+  <div class="op-scenario-title">🔴 开盘跌破130港元</div>
+  <b>操作：不动，观察是否跌破125港元</b>
+  <br>125港元是下一个技术支撑，若跌破且放量，重新评估是否提前止损
+  <br>止损线：120港元（不变）
+</div>
+
+<div class="op-scenario op-flat">
+  <div class="op-scenario-title">🟡 开盘130–133港元（平盘区间）</div>
+  <b>操作：继续持有，不操作</b>
+  <br>等待云业务逻辑进一步验证，6月Q4财报是下一个决策点
+</div>
+
+<div class="op-scenario op-up">
+  <div class="op-scenario-title">🟢 开盘反弹超过135港元（+2.3%以上）</div>
+  <b>操作：减仓20%锁定部分收益</b>
+  <br>这是昨晚既定计划（+3%减仓，今日条件略调低因开盘价预计偏低）
+</div>
+
+<!-- 中国铝业操作提醒 -->
+<h2>🏭 四、中国铝业02600 今日必须执行！</h2>
+
+<div class="alert-box alert-red">
+  <b>⚠️ 这是昨晚的操作建议，今日必须落地执行，不可拖延！</b>
+  <br>持仓状态：成本12.739港元 | 昨收11.49港元 | 浮亏-9.8% | 止损线11.00港元
+</div>
+
+<table>
+  <tr><th>情景</th><th>开盘价</th><th>操作</th></tr>
+  <tr>
+    <td><span style="color:#c0392b;font-weight:600">跌超1%</span></td>
+    <td>&lt; 11.40港元</td>
+    <td>直接市价减仓50%，不等反弹，不设限价</td>
+  </tr>
+  <tr>
+    <td><span style="color:#b8860b;font-weight:600">平盘至微跌</span></td>
+    <td>11.40–11.60港元</td>
+    <td>挂限价11.55卖出，减仓50%，当日完成</td>
+  </tr>
+  <tr>
+    <td><span style="color:#1a7a4a;font-weight:600">反弹超2%</span></td>
+    <td>&gt; 11.70港元</td>
+    <td>珍惜机会，减仓70%，分批出货，不追涨</td>
+  </tr>
+</table>
+
+<!-- 今日三大观察点 -->
+<h2>👁 五、今日三大关键观察点</h2>
+
+<div class="watchpoint">
+  <div class="watchpoint-title">1️⃣ 09988开盘价：130港元是分水岭</div>
+  130以上 = 情绪稳定，市场消化财报中性偏正面逻辑<br>
+  130以下 = 继续承压，关注125港元支撑能否守住
+</div>
+
+<div class="watchpoint">
+  <div class="watchpoint-title">2️⃣ 黄金能否站稳$4,700</div>
+  今晨已从$4,550反弹至$4,646，若今日收盘能站上$4,700：超卖修复成立，黄金9999不动<br>
+  若$4,700站不住 → 趋势仍空，考虑明日清仓黄金9999
+</div>
+
+<div class="watchpoint">
+  <div class="watchpoint-title">3️⃣ 美元指数走向</div>
+  今晨99.31已回落，若继续走弱至98.5以下：有色金属/贵金属同步反弹<br>
+  中国铝业减仓可以等开盘后15分钟确认方向再执行（但不能不执行！）
+</div>
+
+<hr>
+
+<!-- 总结 -->
+<div style="background:#e8f0fe;border-radius:12px;padding:20px 24px;margin:20px 0;">
+  <h3 style="color:#0d3a6b;border:none;padding:0;margin-bottom:12px">📋 今日操作清单</h3>
+  <p style="font-size:9.5pt;color:#0d3a6b;margin-bottom:6px">✅ 09988阿里巴巴：<b>持有不动</b>（止损120港元不变，预计低开130以下不满足减仓条件）</p>
+  <p style="font-size:9.5pt;color:#c0392b;margin-bottom:6px">🔴 02600中国铝业：<b>必须减仓50%+</b>（三情景应对，上方已列明）</p>
+  <p style="font-size:9.5pt;color:#b8860b;margin-bottom:6px">⚠️ 黄金9999：<b>观察$4,700能否站稳</b>，站稳则不动；若午间仍破$4,700则明日清仓</p>
+  <p style="font-size:9.5pt;color:#555">📌 核心主题：贵金属超卖反弹已发生，但趋势未逆转；美元走弱是今日唯一正面变量</p>
+</div>
+
+<div class="footer">
+  本报告含个人持仓信息，请勿外传 &nbsp;·&nbsp; 仅供参考，不构成投资建议<br>
+  数据来源：yfinance、investing.com、moomoo、AASTOCKS<br>
+  报告生成时间：2026年3月20日 08:46 GMT+8
+</div>
+
+</div>
+</body>
+</html>

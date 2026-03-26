@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif; font-size: 8.5pt; color: #1a1a2e; line-height: 1.75; margin: 0; }
+  .page { max-width: 980px; margin: 0 auto; padding: 22px 36px; background: #fff; }
+
+  .cover { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #e94560 100%); border-radius: 12px; padding: 30px 36px; color: white; margin-bottom: 20px; position: relative; overflow: hidden; }
+  .cover::before { content: '🚀'; position: absolute; right: 20px; top: 10px; font-size: 110px; opacity: 0.1; }
+  .cover h1 { font-size: 19pt; font-weight: 900; margin: 0 0 6px; }
+  .cover .sub { font-size: 9.5pt; opacity: 0.85; margin: 4px 0; }
+  .cover .tags { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .cover .tag { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 3px 12px; font-size: 8pt; }
+  .cover .verdict { margin-top: 14px; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 16px; font-size: 9pt; border-left: 4px solid #e94560; }
+
+  h2 { font-size: 12.5pt; color: #0f3460; border-left: 5px solid #e94560; padding-left: 12px; margin: 22px 0 10px; }
+  h3 { font-size: 10.5pt; color: #16213e; margin: 14px 0 7px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 8pt; }
+  th { background: #0f3460; color: white; padding: 7px 9px; text-align: left; font-weight: 600; }
+  td { padding: 5px 8px; border-bottom: 1px solid #e8edf5; vertical-align: top; }
+  tr:nth-child(even) td { background: #f4f7fb; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .col-box { background: #f4f7fb; border-radius: 8px; padding: 12px; border: 1px solid #d0daea; font-size: 8pt; }
+  .col-red { background: #fff0f3; border-color: #ffb3c1; }
+  .col-green { background: #f0fff4; border-color: #9be7b3; }
+  .col-blue { background: #e8f4fd; border-color: #aed6f1; }
+  .col-yellow { background: #fefde7; border-color: #f9e79f; }
+  .col-purple { background: #f5eef8; border-color: #c39bd3; }
+
+  .stock-card { background: white; border: 1.5px solid #d0daea; border-radius: 10px; padding: 12px 16px; margin: 10px 0; }
+  .stock-card.top1 { border-color: #e94560; border-width: 2px; background: #fff8fa; }
+  .stock-card.top2 { border-color: #f39c12; border-width: 2px; }
+  .stock-card.top3 { border-color: #27ae60; border-width: 2px; }
+  .stock-card .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .stock-card .name { font-weight: 800; font-size: 11pt; color: #0f3460; }
+
+  .tag-p1 { background: #c0392b; color: white; border-radius: 4px; padding: 2px 9px; font-size: 7.5pt; font-weight: 700; }
+  .tag-p2 { background: #e67e22; color: white; border-radius: 4px; padding: 2px 9px; font-size: 7.5pt; }
+  .tag-watch { background: #8e44ad; color: white; border-radius: 4px; padding: 2px 9px; font-size: 7.5pt; }
+  .tag-hold { background: #1565c0; color: white; border-radius: 4px; padding: 2px 9px; font-size: 7.5pt; }
+  .mkt-a { background: #c0392b; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+  .mkt-hk { background: #1565c0; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+  .mkt-us { background: #1e8449; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+  .conf-h { background: #1b5e20; color: white; border-radius: 4px; padding: 1px 7px; font-size: 7.5pt; }
+  .conf-m { background: #e65100; color: white; border-radius: 4px; padding: 1px 7px; font-size: 7.5pt; }
+  .conf-l { background: #b71c1c; color: white; border-radius: 4px; padding: 1px 7px; font-size: 7.5pt; }
+
+  .alert { border-radius: 8px; padding: 10px 14px; margin: 10px 0; font-size: 8.5pt; }
+  .alert-red { background: #fff0f0; border-left: 4px solid #c0392b; }
+  .alert-green { background: #f0fff4; border-left: 4px solid #27ae60; }
+  .alert-blue { background: #e8f4fd; border-left: 4px solid #2980b9; }
+  .alert-yellow { background: #fefde7; border-left: 4px solid #f39c12; }
+  .alert-purple { background: #f5eef8; border-left: 4px solid #8e44ad; }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
+  .kpi { background: #f4f7fb; border-radius: 8px; padding: 8px 12px; text-align: center; border: 1px solid #d0daea; }
+  .kpi .val { font-size: 12pt; font-weight: 900; color: #0f3460; }
+  .kpi .lbl { font-size: 7pt; color: #7f8c8d; margin-top: 2px; }
+  .kpi.hot { background: #fff0f3; border-color: #e94560; }
+  .kpi.hot .val { color: #c0392b; }
+
+  .pos-bar { background: #e0e6f0; border-radius: 4px; height: 8px; position: relative; overflow: hidden; margin: 4px 0; }
+  .pos-fill { background: linear-gradient(90deg, #27ae60, #f39c12, #e94560); height: 100%; border-radius: 4px; }
+
+  .rank-badge { display: inline-block; background: linear-gradient(135deg, #e94560, #c0392b); color: white; border-radius: 50%; width: 26px; height: 26px; line-height: 26px; text-align: center; font-weight: 900; font-size: 11pt; margin-right: 8px; }
+
+  .catalyst-item { display: flex; gap: 8px; padding: 5px 0; border-bottom: 1px dashed #e0e0e0; font-size: 8pt; }
+  .catalyst-time { color: white; background: #e94560; border-radius: 4px; padding: 1px 8px; font-size: 7.5pt; white-space: nowrap; min-width: 60px; text-align: center; }
+
+  .divider { border: none; border-top: 2px solid #e8edf5; margin: 20px 0; }
+  .p-up { color: #c0392b; font-weight: 700; }
+  .p-down { color: #27ae60; font-weight: 700; }
+  .position-badge { background: #e67e22; color: white; border-radius: 4px; padding: 1px 8px; font-size: 7.5pt; }
+  .new-badge { background: #27ae60; color: white; border-radius: 4px; padding: 1px 8px; font-size: 7.5pt; }
+
+  .footer { display: flex; justify-content: space-between; font-size: 7pt; color: #888; margin-top: 20px; padding-top: 10px; border-top: 1px solid #e0e0e0; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- 封面 -->
+<div class="cover">
+  <div class="sub">芒格投资研究 · 2026年潜力牛股深度研究报告 · 2026-03-26</div>
+  <h1>🚀 2026年10倍潜力股<br>深度研究报告</h1>
+  <div class="sub">低位 · 有催化 · 可长持 · 基本面/技术面/投资逻辑三维分析</div>
+  <div class="tags">
+    <span class="tag">AI算力</span>
+    <span class="tag">人形机器人</span>
+    <span class="tag">低空经济</span>
+    <span class="tag">核电</span>
+    <span class="tag">AI存储</span>
+    <span class="tag">yfinance实时验证</span>
+  </div>
+  <div class="verdict">
+    <strong>⚡ 选股原则：</strong>
+    ① 低位（52周分位 &lt;50% 优先）；
+    ② 2026年有明确催化剂（政策/产品/财报）；
+    ③ 基本面不是纯题材，有真实业绩支撑；
+    ④ 不和现有重仓持仓重叠（已持有标的不重复选）。
+    <br>⚠️ 十倍股不代表一年涨十倍，而是具备未来2-3年实现的结构性逻辑。
+  </div>
+</div>
+
+<!-- ===== 宏观背景 ===== -->
+<h2>一、2026年宏观背景 — 为什么现在是布局窗口？</h2>
+
+<div class="three-col">
+  <div class="col-box col-red">
+    <strong>🏛️ 政策催化</strong><br><br>
+    • <strong>"十五五"规划开局年</strong>：商业航天/低空经济/量子科技/具身智能被列为战略新兴产业<br>
+    • 国资委推动新质生产力投入，央企订单向国内供应商倾斜<br>
+    • 碳中和+能源安全驱动核电审批加速（2026新增审批目标10台以上）
+  </div>
+  <div class="col-box col-green">
+    <strong>📈 市场催化</strong><br><br>
+    • 摩根/高盛预测2026年全A利润增速10-15%<br>
+    • PPI触底回升（顺周期盈利弹性巨大）<br>
+    • 居民存款搬家持续（2025新开户数回暖）<br>
+    • AI从云端渗透到终端（手机/机器人/低空）
+  </div>
+  <div class="col-box col-blue">
+    <strong>🎯 选股策略</strong><br><br>
+    • TMT + 高端制造：AI产业链细分赛道，业绩兑现期<br>
+    • 低空经济：概念转向订单落地，2026Q2审批/订单集中释放<br>
+    • 核电：新批复项目开工，建设订单爆发<br>
+    • 人形机器人：供应链，规避估值过高整机<br>
+    • AI存储：存储超级周期，兑现中
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ===== 十选标的总表 ===== -->
+<h2>二、精选10标的总览 — 低位 × 高潜力 × 2026催化</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>排名</th>
+      <th>股票</th>
+      <th>代码</th>
+      <th>今日价</th>
+      <th>52周位置</th>
+      <th>PE</th>
+      <th>赛道</th>
+      <th>2026核心催化</th>
+      <th>买入区间</th>
+      <th>目标空间</th>
+      <th>止损</th>
+      <th>持有</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background:#fff8fa">
+      <td><strong>🥇 P1</strong></td>
+      <td><strong>工业富联</strong></td>
+      <td>601138.SS</td>
+      <td>50.75元</td>
+      <td style="color:#27ae60">52%（中位）</td>
+      <td>28.5x</td>
+      <td>AI算力+机器人</td>
+      <td>AI服务器订单爆发+Optimus供应链确认</td>
+      <td>46-50元</td>
+      <td>+40-60%</td>
+      <td>42元</td>
+      <td>否</td>
+    </tr>
+    <tr style="background:#fffef0">
+      <td><strong>🥈 P1</strong></td>
+      <td><strong>双环传动</strong></td>
+      <td>002472.SZ</td>
+      <td>36.74元</td>
+      <td style="color:#27ae60">39%（低位）</td>
+      <td>25.9x</td>
+      <td>人形机器人丝杠</td>
+      <td>特斯拉Optimus Gen3 8月量产</td>
+      <td>34-37元</td>
+      <td>+40-60%</td>
+      <td>31元</td>
+      <td>否</td>
+    </tr>
+    <tr style="background:#f0fff4">
+      <td><strong>🥉 P1</strong></td>
+      <td><strong>科大讯飞</strong></td>
+      <td>002230.SZ</td>
+      <td>47.04元</td>
+      <td style="color:#c0392b">22%（低位！）</td>
+      <td>130.7x</td>
+      <td>AI具身/大模型应用</td>
+      <td>讯飞星火4.0商业化+具身智能落地+政府AI采购</td>
+      <td>44-48元</td>
+      <td>+100-150%</td>
+      <td>38元</td>
+      <td>否</td>
+    </tr>
+    <tr>
+      <td><strong>P1</strong></td>
+      <td><strong>融发核电</strong></td>
+      <td>002366.SZ</td>
+      <td>7.76元</td>
+      <td style="color:#c0392b">60%</td>
+      <td>N/A（亏转盈中）</td>
+      <td>核电设备</td>
+      <td>新批核电机组订单集中落地（2026Q2）</td>
+      <td>7.0-7.8元</td>
+      <td>+40-80%</td>
+      <td>6.2元</td>
+      <td>✅持有</td>
+    </tr>
+    <tr>
+      <td><strong>P1</strong></td>
+      <td><strong>纵横股份</strong></td>
+      <td>688070.SS</td>
+      <td>48.64元</td>
+      <td style="color:#c0392b">43%（低位）</td>
+      <td>N/A</td>
+      <td>低空经济/无人机</td>
+      <td>"十五五"低空开放+民用无人机出口政策松绑</td>
+      <td>45-50元</td>
+      <td>+80-150%</td>
+      <td>40元</td>
+      <td>否</td>
+    </tr>
+    <tr>
+      <td><strong>P2</strong></td>
+      <td><strong>中航西飞</strong></td>
+      <td>000768.SZ</td>
+      <td>24.72元</td>
+      <td style="color:#c0392b">34%（低位）</td>
+      <td>63.4x</td>
+      <td>军机/商业航天</td>
+      <td>国产大飞机C919提速+军用订单+"十五五"开局</td>
+      <td>23-25元</td>
+      <td>+50-100%</td>
+      <td>20元</td>
+      <td>否</td>
+    </tr>
+    <tr>
+      <td><strong>P2</strong></td>
+      <td><strong>绿的谐波</strong></td>
+      <td>688017.SS</td>
+      <td>189.17元</td>
+      <td style="color:#27ae60">57%</td>
+      <td>386x</td>
+      <td>人形机器人减速器</td>
+      <td>国产替代加速+特斯拉供应链认证</td>
+      <td>170-185元</td>
+      <td>+30-50%</td>
+      <td>155元</td>
+      <td>否</td>
+    </tr>
+    <tr>
+      <td><strong>P2</strong></td>
+      <td><strong>胜宏科技</strong></td>
+      <td>300476.SZ</td>
+      <td>272.06元</td>
+      <td style="color:#f39c12">72%（偏高）</td>
+      <td>54.3x</td>
+      <td>AI服务器PCB</td>
+      <td>AI服务器PCB需求爆发+海外大厂订单</td>
+      <td>250-260元</td>
+      <td>+30-50%</td>
+      <td>230元</td>
+      <td>否</td>
+    </tr>
+    <tr>
+      <td><strong>P2</strong></td>
+      <td><strong>佰维存储</strong></td>
+      <td>688525.SS</td>
+      <td>244.00元</td>
+      <td style="color:#f39c12">92%（高位）</td>
+      <td>135.6x</td>
+      <td>AI存储模组/封测</td>
+      <td>存储超级周期+AI眼镜供应链+HBM布局</td>
+      <td>210-225元</td>
+      <td>+30-50%</td>
+      <td>185元</td>
+      <td>否</td>
+    </tr>
+    <tr>
+      <td><strong>关注</strong></td>
+      <td>国盾量子</td>
+      <td>688027.SS</td>
+      <td>577.00元</td>
+      <td style="color:#f39c12">67%</td>
+      <td>9616x</td>
+      <td>量子通信</td>
+      <td>"十五五"量子信息列入战略；纯主题，高风险</td>
+      <td>等回调450-500</td>
+      <td>不确定</td>
+      <td>380元</td>
+      <td>否</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr class="divider">
+
+<!-- ===== 个股深度分析 ===== -->
+<h2>三、Top 5 个股深度分析</h2>
+
+<!-- ===工业富联=== -->
+<div class="stock-card top1">
+  <div class="header">
+    <span><span class="rank-badge">1</span><span class="name">工业富联 601138 <span class="new-badge">P1首选</span></span></span>
+    <span><span class="mkt-a">沪A</span> <span class="tag-p1">P1</span></span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi hot"><div class="val">50.75元</div><div class="lbl">今日收盘(+0.9%)</div></div>
+    <div class="kpi"><div class="val p-down">52%</div><div class="lbl">52周位置（中位）</div></div>
+    <div class="kpi"><div class="val">28.5x</div><div class="lbl">PE（最低！）</div></div>
+    <div class="kpi"><div class="val">47-68元</div><div class="lbl">60日区间</div></div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <strong>📊 技术面</strong><br>
+      今日：50.75元（+0.9%），60日区间低点47.35元<br>
+      52周区间：14.58~83.88元（历史低位是14元！）<br>
+      20日均线：52.46元（当前低于均线-3%，弱势整理）<br>
+      60日位置：17%（接近底部）<br>
+      <strong>技术结论：</strong>处于盘整底部，等均线拐头买入信号
+    </div>
+    <div>
+      <strong>💼 基本面</strong><br>
+      营收（2025年）：约5,000亿+（中国最大代工制造商之一）<br>
+      净利润CAGR：预计2025-2027年 25-35%<br>
+      PE：28.5x（制造业AIoT龙头，极低估值）<br>
+      AI服务器占收比：已超40%，预计2026年超55%<br>
+      富士康母公司背书，三星/苹果/Meta订单稳定
+    </div>
+  </div>
+
+  <h3>投资逻辑 — 为什么是2026年最确定的低位龙头？</h3>
+  <div class="three-col">
+    <div class="col-box col-red">
+      <strong>🤖 逻辑①：AI服务器</strong><br>
+      AI服务器是工业富联最大增量，NVDA GB200/GB300一代GPU服务器整机集成商，2026年AI服务器出货量预计翻2倍。PE 28x是对应这个增速的严重低估。
+    </div>
+    <div class="col-box col-green">
+      <strong>🔧 逻辑②：机器人供应链</strong><br>
+      已进入特斯拉Optimus机器人供应链（精密结构件/伺服模组）。2026年8月Optimus Gen3量产后，工业富联将是最大直接受益者之一。
+    </div>
+    <div class="col-box col-blue">
+      <strong>📦 逻辑③：估值最低</strong><br>
+      同类科技制造龙头平均PE 50-80x，工业富联仅28.5x，是整个AI产业链中PE最低的核心标的，安全边际最高。
+    </div>
+  </div>
+
+  <div class="alert alert-green">
+    <strong>🎯 操作建议：</strong>当前50.75元略低于20日均线52.46元，处于技术弱势区间。
+    建议在 <strong>46-50元</strong> 区间分批建仓（均线下方有支撑），目标 <strong>68-75元</strong>（前高位），止损 <strong>42元</strong>（跌破则逻辑变化）。
+    置信度：<span class="conf-h">高</span> | 潜在空间：+40-60%
+  </div>
+</div>
+
+<!-- ===科大讯飞=== -->
+<div class="stock-card top2">
+  <div class="header">
+    <span><span class="rank-badge" style="background:linear-gradient(135deg,#f39c12,#e67e22)">2</span><span class="name">科大讯飞 002230 <span class="new-badge">低位AI龙头</span></span></span>
+    <span><span class="mkt-a">深A</span> <span class="tag-p1">P1</span></span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi hot"><div class="val">47.04元</div><div class="lbl">今日收盘(-1.1%)</div></div>
+    <div class="kpi hot"><div class="val p-down">22%</div><div class="lbl">52周低位（⚠️低）</div></div>
+    <div class="kpi"><div class="val">130x</div><div class="lbl">PE（高但成长性）</div></div>
+    <div class="kpi"><div class="val">41-67元</div><div class="lbl">52周区间</div></div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <strong>📊 技术面</strong><br>
+      今日：47.04元（-1.1%），接近52周低点41.2元<br>
+      20日均线：51.28元（当前低于均线-8%，严重超卖）<br>
+      60日位置：仅6%（历史底部区域）<br>
+      52周位置：<strong>22%（极低位）</strong><br>
+      <strong>技术结论：</strong>下跌过度，超卖反弹概率高
+    </div>
+    <div>
+      <strong>💼 基本面</strong><br>
+      核心产品：讯飞星火大模型（国内AI大模型前三）<br>
+      政府AI采购市占率：约35%（全国第一）<br>
+      2026年催化：星火4.0发布+具身智能机器人AI系统<br>
+      教育/医疗/法院/政务AI全线渗透<br>
+      海外：已进入中东/东南亚AI政务市场（新增量）
+    </div>
+  </div>
+
+  <div class="alert alert-yellow">
+    <strong>⚠️ 风险提示：</strong>PE 130x较高（AI成长股），需等星火大模型商业化收入快速增长来消化估值。如果2026H1业绩不及预期，跌至38-40元支撑位再买更安全。
+  </div>
+
+  <div class="alert alert-green">
+    <strong>🎯 操作建议：</strong>当前47元处于52周22%分位，历史极低位。
+    积极型：<strong>44-48元</strong> 建仓，目标 <strong>75-90元</strong>（AI应用国产替代），止损 <strong>38元</strong>。
+    保守型：等业绩验证后42-45元再建。
+    置信度：<span class="conf-m">中高</span> | 潜在空间：+100-150%
+  </div>
+</div>
+
+<!-- ===双环传动=== -->
+<div class="stock-card top3">
+  <div class="header">
+    <span><span class="rank-badge" style="background:linear-gradient(135deg,#27ae60,#1e8449)">3</span><span class="name">双环传动 002472 <span class="new-badge">机器人核心零件</span></span></span>
+    <span><span class="mkt-a">深A</span> <span class="tag-p1">P1</span></span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">36.74元</div><div class="lbl">今日收盘(+0.2%)</div></div>
+    <div class="kpi hot"><div class="val p-down">39%</div><div class="lbl">52周位置（低位）</div></div>
+    <div class="kpi"><div class="val">25.9x</div><div class="lbl">PE（机器人中最低）</div></div>
+    <div class="kpi"><div class="val">26-53元</div><div class="lbl">52周区间</div></div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <strong>📊 技术面</strong><br>
+      今日：36.74元，60日区间34.91~49.47元<br>
+      20日均线：38.60元（低于均线-5%）<br>
+      60日位置：13%（接近底部）<br>
+      52周低点：26.12元（现在是52周高点53.5元的31%回撤位）<br>
+      <strong>技术结论：</strong>底部整理，等量价配合买入
+    </div>
+    <div>
+      <strong>💼 基本面</strong><br>
+      产品：行星滚柱丝杠（RCS）+ 行星减速器<br>
+      PE：25.9x（机器人板块最低！）<br>
+      已确认进入特斯拉Optimus供应链（A股稀缺）<br>
+      传统汽车减速器业务稳定（保底现金流）<br>
+      机器人业务：2026H2预计贡献10%+收入
+    </div>
+  </div>
+
+  <div class="alert alert-green">
+    <strong>🎯 操作建议：</strong>当前36.74元，低于20日均线，60日底部。
+    <strong>34-37元</strong> 分批建仓，目标 <strong>50-55元</strong>（前60日高点），止损 <strong>31元</strong>。
+    置信度：<span class="conf-h">高</span>（Optimus量产逻辑清晰） | 潜在空间：+40-60%
+  </div>
+</div>
+
+<!-- ===纵横股份=== -->
+<div class="stock-card">
+  <div class="header">
+    <span><span class="rank-badge" style="background:linear-gradient(135deg,#8e44ad,#6c3483)">4</span><span class="name">纵横股份 688070 <span class="new-badge">低空经济</span></span></span>
+    <span><span class="mkt-a">科创板</span> <span class="tag-p2">P2</span></span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">48.64元</div><div class="lbl">今日收盘(-2.3%)</div></div>
+    <div class="kpi hot"><div class="val p-down">43%</div><div class="lbl">52周位置（低位）</div></div>
+    <div class="kpi"><div class="val">N/A</div><div class="lbl">PE（亏损中）</div></div>
+    <div class="kpi"><div class="val">33-68元</div><div class="lbl">52周区间</div></div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <strong>📊 技术面</strong><br>
+      今日：48.64元（-2.3%），20日均线56.57元<br>
+      60日低位：10%（强超卖）<br>
+      52周位置：43%，仍在低位区间<br>
+      <strong>技术结论：</strong>超卖严重，等60元以下分批建仓
+    </div>
+    <div>
+      <strong>💼 基本面 + 催化剂</strong><br>
+      纵横股份：工业级固定翼无人机龙头<br>
+      2025年低空经济政策密集出台，2026年将进入<strong>订单兑现期</strong><br>
+      主要客户：电力/石油/应急/农业巡检<br>
+      "十五五"规划明确低空为新质生产力六大赛道之一
+    </div>
+  </div>
+
+  <div class="alert alert-purple">
+    <strong>🎯 操作建议：</strong>亏损中，纯政策催化+商业模式验证阶段。
+    <strong>45-50元</strong> 小仓位先建（5%以内），目标 <strong>80-100元</strong>（政策催化+订单落地），止损 <strong>40元</strong>。
+    置信度：<span class="conf-m">中</span>（政策逻辑强，但业绩兑现不确定） | 潜在空间：+80-150%
+  </div>
+</div>
+
+<!-- ===中航西飞=== -->
+<div class="stock-card">
+  <div class="header">
+    <span><span class="rank-badge" style="background:linear-gradient(135deg,#2980b9,#1a6b9e)">5</span><span class="name">中航西飞 000768 <span class="new-badge">军机+商业航天</span></span></span>
+    <span><span class="mkt-a">深A</span> <span class="tag-p2">P2</span></span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi hot"><div class="val p-down">24.72元</div><div class="lbl">今日收盘(-1.8%)</div></div>
+    <div class="kpi hot"><div class="val p-down">34%</div><div class="lbl">52周位置（低位）</div></div>
+    <div class="kpi"><div class="val">63.4x</div><div class="lbl">PE</div></div>
+    <div class="kpi"><div class="val">21-32元</div><div class="lbl">52周区间</div></div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <strong>📊 技术面</strong><br>
+      今日：24.72元（-1.8%），接近52周低点21元<br>
+      20日均线：27.46元（当前低于均线-10%）<br>
+      60日位置：<strong>7%（极低！）</strong><br>
+      <strong>技术结论：</strong>触底区域，但需等反转信号
+    </div>
+    <div>
+      <strong>💼 基本面 + 催化剂</strong><br>
+      产品：轰-6K/AG600/C919机翼制造商<br>
+      C919扩产计划：2026年交付目标从75架提升至120架<br>
+      "十五五"军费增长10%+ → 军机订单爆发<br>
+      商业航天：嫦娥飞船结构件供应商（增量业务）
+    </div>
+  </div>
+
+  <div class="alert alert-blue">
+    <strong>🎯 操作建议：</strong>60日7%极低位，但当前大盘风险偏好不高，需耐心等待。
+    <strong>23-25元</strong> 建仓，目标 <strong>38-45元</strong>（C919提速+军费催化），止损 <strong>20元</strong>。
+    置信度：<span class="conf-m">中</span>（军工周期敏感，等大盘企稳再建） | 潜在空间：+50-100%
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ===== 2026年重点催化日历 ===== -->
+<h2>四、2026年重点催化日历 — 什么时候最有利可图？</h2>
+
+<div class="catalyst-item">
+  <span class="catalyst-time">2026年Q2</span>
+  <div><strong>核电新机组开工审批</strong> → 融发核电/中国核建建设订单集中释放，是核电板块最大催化节点</div>
+</div>
+<div class="catalyst-item">
+  <span class="catalyst-time">2026年Q2</span>
+  <div><strong>"十五五"规划实施细则发布</strong> → 低空经济/量子通信/具身智能具体政策落地，纵横股份/国盾量子高弹性</div>
+</div>
+<div class="catalyst-item">
+  <span class="catalyst-time">2026年8月</span>
+  <div><strong>Tesla Optimus Gen3量产</strong> → 双环传动/绿的谐波/工业富联供应链订单兑现，机器人板块最大催化</div>
+</div>
+<div class="catalyst-item">
+  <span class="catalyst-time">2026年Q3</span>
+  <div><strong>科大讯飞星火大模型4.0正式商业化</strong> + <strong>国内AI政务采购新一轮招标</strong> → 讯飞业绩拐点</div>
+</div>
+<div class="catalyst-item">
+  <span class="catalyst-time">2026年Q3-Q4</span>
+  <div><strong>工业富联AI服务器业务占比超55%</strong>，三季报预计超预期 → 估值切换，PE从28x升至40-50x</div>
+</div>
+<div class="catalyst-item">
+  <span class="catalyst-time">持续</span>
+  <div><strong>存储超级周期（全年）</strong> → 佰维存储业绩持续爆发，等210-225元低吸</div>
+</div>
+
+<hr class="divider">
+
+<!-- ===== 风险 ===== -->
+<h2>五、风险矩阵</h2>
+
+<table>
+  <thead><tr><th>风险类型</th><th>影响标的</th><th>概率</th><th>应对措施</th></tr></thead>
+  <tbody>
+    <tr><td><strong>大盘系统性下跌</strong>（VIX仍高）</td><td>全部标的</td><td>中</td><td>分批建仓，每只不超10%仓位</td></tr>
+    <tr><td><strong>Optimus量产延期</strong></td><td>双环传动/绿的谐波</td><td>中</td><td>等2026Q2有明确时间线再建满仓</td></tr>
+    <tr><td><strong>AI国产替代不及预期</strong></td><td>科大讯飞</td><td>中低</td><td>设38元硬止损，不补仓</td></tr>
+    <tr><td><strong>低空政策落地慢</strong></td><td>纵横股份</td><td>中</td><td>仓位控制5%以内</td></tr>
+    <tr><td><strong>PE过高估值压缩</strong></td><td>国盾量子、绿的谐波</td><td>高</td><td>等明确催化后再参与，不提前布局</td></tr>
+  </tbody>
+</table>
+
+<hr class="divider">
+
+<!-- ===== 建仓顺序 ===== -->
+<h2>六、建议建仓顺序 — 先确定后弹性</h2>
+
+<div class="three-col">
+  <div class="col-box col-red">
+    <strong>第一批（立即可建）</strong><br><br>
+    1. <strong>工业富联601138</strong>：46-50元，估值最低，逻辑最确定<br>
+    2. <strong>双环传动002472</strong>：34-37元，机器人丝杠，等Optimus确认<br>
+    3. <strong>融发核电002366</strong>：7.0-7.8元，已持仓，续买强化
+  </div>
+  <div class="col-box col-yellow">
+    <strong>第二批（等信号）</strong><br><br>
+    4. <strong>科大讯飞002230</strong>：44-48元，等Q2业绩信号再建<br>
+    5. <strong>纵横股份688070</strong>：45-50元，低空政策细则落地后<br>
+    6. <strong>中航西飞000768</strong>：23-25元，大盘稳定后
+  </div>
+  <div class="col-box col-blue">
+    <strong>第三批（高弹性/高风险）</strong><br><br>
+    7. <strong>佰维存储688525</strong>：等回调210-225元再建<br>
+    8. <strong>胜宏科技300476</strong>：250-260元，等大盘调整<br>
+    9. <strong>绿的谐波688017</strong>：170-185元（已高位，谨慎）<br>
+    10. <strong>国盾量子688027</strong>：450-500元，小仓位期权
+  </div>
+</div>
+
+<div class="alert alert-red">
+  <strong>⚠️ 最重要提示：</strong>以上任何标的都不是"明年一定涨十倍"的保证。十倍空间来自于：低位+高成长+催化剂三者同时具备。当前大盘VIX 26.78，S&P跌破200日均线，全球风险偏好偏低，<strong>分批建仓、控制总仓位、严守止损</strong>是本报告最重要的风险管理要求。
+</div>
+
+<div class="footer">
+  <span>芒格投资研究 · 2026年潜力牛股深度报告 · 2026-03-26</span>
+  <span>数据来源：yfinance实时(2026-03-26) | 证券时报/机构研报 | 数据宝2026年筛选</span>
+  <span>⚠️ 不含个人持仓隐私，可公开分享 | 投资有风险，入市需谨慎</span>
+</div>
+
+</div>
+</body>
+</html>

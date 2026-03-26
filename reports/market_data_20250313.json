@@ -1,0 +1,123 @@
+{
+  "timestamp": "2026-03-13 11:35:33",
+  "a_share_indices": {
+    "\u4e0a\u8bc1\u6307\u6570": {
+      "symbol": "000001.SS",
+      "close": 4117.32,
+      "change": -0.29,
+      "volume": 1903957644,
+      "high": 4134.08,
+      "low": 4108.8
+    },
+    "\u6df1\u8bc1\u6210\u6307": {
+      "symbol": "399001.SZ",
+      "close": 14344.88,
+      "change": -0.21,
+      "volume": 3235239907,
+      "high": 14454.31,
+      "low": 14292.89
+    },
+    "\u521b\u4e1a\u677f\u6307": {
+      "symbol": "399006.SZ",
+      "close": 3316.54,
+      "change": 0.0,
+      "volume": 1886153534,
+      "high": 3342.76,
+      "low": 3296.11
+    },
+    "\u6caa\u6df1300": {
+      "symbol": "000300.SS",
+      "close": 4686.9,
+      "change": -0.01,
+      "volume": 1630850816,
+      "high": 4707.42,
+      "low": 4669.06
+    },
+    "\u4e2d\u8bc1500": {
+      "symbol": "000905.SS",
+      "close": 8293.4,
+      "change": 0.0,
+      "volume": 520739316,
+      "high": 8371.72,
+      "low": 8267.19
+    },
+    "300ETF": {
+      "symbol": "510300.SS",
+      "close": 4.69,
+      "change": -0.36,
+      "volume": 149437889,
+      "high": 4.72,
+      "low": 4.67
+    },
+    "50ETF": {
+      "symbol": "510050.SS",
+      "close": 3.04,
+      "change": -0.69,
+      "volume": 188238450,
+      "high": 3.06,
+      "low": 3.04
+    }
+  },
+  "hk_indices": {
+    "\u6052\u751f\u6307\u6570": {
+      "close": 25570.93,
+      "change": -0.57
+    },
+    "\u6052\u751f\u56fd\u4f01\u6307\u6570": {
+      "close": 8690.53,
+      "change": -0.1
+    }
+  },
+  "us_indices": {
+    "\u9053\u743c\u65af": {
+      "close": 46677.85,
+      "change": -1.56
+    },
+    "\u6807\u666e500": {
+      "close": 6672.62,
+      "change": -1.52
+    },
+    "\u7eb3\u65af\u8fbe\u514b": {
+      "close": 22311.98,
+      "change": -1.78
+    }
+  },
+  "stocks": {
+    "\u94a7\u8fbe\u80a1\u4efd": {
+      "symbol": "002865.SZ",
+      "close": 85.32,
+      "change": 0.52,
+      "volume": 6001156
+    },
+    "\u6bd4\u4e9a\u8fea": {
+      "symbol": "002594.SZ",
+      "close": 100.1,
+      "change": 1.01,
+      "volume": 34393752
+    },
+    "\u6bd4\u4e9a\u8fea\u80a1\u4efd(\u6e2f)": {
+      "symbol": "1211.HK",
+      "close": 97.5,
+      "change": -0.71,
+      "volume": 7732372
+    },
+    "\u5c0f\u9e4f\u6c7d\u8f66": {
+      "symbol": "9868.HK",
+      "close": 78.35,
+      "change": -0.13,
+      "volume": 11118661
+    },
+    "\u817e\u8baf\u63a7\u80a1": {
+      "symbol": "0700.HK",
+      "close": 552.0,
+      "change": 1.01,
+      "volume": 9335638
+    },
+    "\u7f8e\u56e2": {
+      "symbol": "3690.HK",
+      "close": 76.35,
+      "change": -0.46,
+      "volume": 7347400
+    }
+  }
+}

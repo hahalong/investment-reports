@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif; font-size: 8.5pt; color: #1a1a2e; line-height: 1.7; margin: 0; }
+  .page { max-width: 980px; margin: 0 auto; padding: 22px 36px; background: #fff; }
+
+  .cover { background: linear-gradient(135deg, #1a0533 0%, #3a0a6b 35%, #6a1b9a 65%, #8e24aa 100%); border-radius: 12px; padding: 28px 36px; color: white; margin-bottom: 20px; position: relative; overflow: hidden; }
+  .cover::before { content: '🤖'; position: absolute; right: 10px; top: -10px; font-size: 130px; opacity: 0.08; }
+  .cover h1 { font-size: 20pt; font-weight: 900; margin: 0 0 6px; }
+  .cover .sub { font-size: 10pt; opacity: 0.85; margin: 4px 0; }
+  .cover .tags { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .cover .tag { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 3px 12px; font-size: 8pt; }
+  .cover .verdict { margin-top: 14px; background: rgba(255,255,255,0.12); border-radius: 8px; padding: 10px 16px; font-size: 9pt; border-left: 4px solid #ffeb3b; }
+
+  h2 { font-size: 13pt; color: #4a148c; border-left: 5px solid #7b1fa2; padding-left: 12px; margin: 22px 0 10px; }
+  h3 { font-size: 10.5pt; color: #6a1b9a; margin: 16px 0 8px; }
+  h4 { font-size: 9.5pt; color: #7b1fa2; margin: 12px 0 6px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 8pt; }
+  th { background: #6a1b9a; color: white; padding: 6px 8px; text-align: left; font-weight: 600; }
+  td { padding: 5px 8px; border-bottom: 1px solid #f3e5f5; vertical-align: top; }
+  tr:nth-child(even) td { background: #fdf3ff; }
+  tr:hover td { background: #f8e8ff; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .col-box { background: #f9f0ff; border-radius: 8px; padding: 14px; border: 1px solid #e1bee7; font-size: 8pt; }
+  .col-green { background: #f0fff4; border-color: #c8e6c9; }
+  .col-yellow { background: #fffde7; border-color: #fff59d; }
+  .col-red { background: #fff0f0; border-color: #ffcdd2; }
+  .col-blue { background: #e8f4fd; border-color: #bbdefb; }
+
+  .alert { border-radius: 8px; padding: 10px 14px; margin: 10px 0; font-size: 8.5pt; }
+  .alert-purple { background: #f3e5f5; border-left: 4px solid #7b1fa2; }
+  .alert-green { background: #e8f5e9; border-left: 4px solid #388e3c; }
+  .alert-red { background: #ffebee; border-left: 4px solid #c62828; }
+  .alert-yellow { background: #fffde7; border-left: 4px solid #f9a825; }
+  .alert-blue { background: #e3f2fd; border-left: 4px solid #1976d2; }
+
+  .chain-layer { border-radius: 10px; padding: 12px 16px; margin: 8px 0; display: flex; align-items: flex-start; gap: 12px; }
+  .chain-num { background: #6a1b9a; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 11pt; flex-shrink: 0; margin-top: 2px; }
+  .chain-content { flex: 1; }
+  .chain-content h4 { margin: 0 0 4px; color: #4a148c; font-size: 10pt; }
+
+  .stock-card { background: white; border: 1.5px solid #e1bee7; border-radius: 8px; padding: 10px 14px; margin: 8px 0; }
+  .stock-card .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .stock-card .name { font-weight: 800; font-size: 10pt; color: #4a148c; }
+  .stock-card .price { font-size: 11pt; font-weight: 900; }
+
+  .tag-p1 { background: #c62828; color: white; border-radius: 4px; padding: 2px 8px; font-size: 7.5pt; font-weight: 700; }
+  .tag-p2 { background: #e65100; color: white; border-radius: 4px; padding: 2px 8px; font-size: 7.5pt; }
+  .tag-hold { background: #1565c0; color: white; border-radius: 4px; padding: 2px 8px; font-size: 7.5pt; }
+  .tag-watch { background: #6a1b9a; color: white; border-radius: 4px; padding: 2px 8px; font-size: 7.5pt; }
+  .tag-avoid { background: #37474f; color: white; border-radius: 4px; padding: 2px 8px; font-size: 7.5pt; }
+  .tag-new { background: #2e7d32; color: white; border-radius: 4px; padding: 2px 8px; font-size: 7.5pt; }
+
+  .mkt-a { background: #c62828; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+  .mkt-hk { background: #1565c0; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+  .mkt-us { background: #2e7d32; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+
+  .conf-h { background: #1b5e20; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+  .conf-m { background: #e65100; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+  .conf-l { background: #b71c1c; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+
+  .p-up { color: #c62828; font-weight: 700; }
+  .p-down { color: #1b5e20; font-weight: 700; }
+
+  .verdict-box { border-radius: 10px; padding: 14px 18px; margin: 12px 0; }
+  .verdict-buy { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border: 2px solid #4caf50; }
+  .verdict-hold { background: linear-gradient(135deg, #e3f2fd, #bbdefb); border: 2px solid #1976d2; }
+  .verdict-wait { background: linear-gradient(135deg, #fffde7, #fff59d); border: 2px solid #f9a825; }
+
+  .divider { border: none; border-top: 2px solid #f3e5f5; margin: 20px 0; }
+
+  .timeline { border-left: 3px solid #7b1fa2; padding-left: 16px; margin: 12px 0; }
+  .timeline-item { margin-bottom: 12px; position: relative; }
+  .timeline-item::before { content: '●'; position: absolute; left: -21px; color: #7b1fa2; font-size: 10pt; }
+  .timeline-item .date { color: #7b1fa2; font-weight: 700; font-size: 8pt; }
+
+  .risk-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px dashed #e0e0e0; }
+  .risk-label { color: white; border-radius: 4px; padding: 1px 8px; font-size: 7.5pt; white-space: nowrap; min-width: 30px; text-align: center; }
+  .risk-label.hi { background: #c62828; }
+  .risk-label.med { background: #e65100; }
+  .risk-label.low { background: #388e3c; }
+
+  .footer { display: flex; justify-content: space-between; font-size: 7pt; color: #888; margin-top: 20px; padding-top: 10px; border-top: 1px solid #e0e0e0; }
+
+  .highlight { background: #fce4ff; padding: 1px 4px; border-radius: 3px; }
+  .bold-purple { color: #4a148c; font-weight: 800; }
+
+  .summary-row { background: linear-gradient(135deg, #4a148c, #6a1b9a); color: white; font-weight: 700; }
+  .summary-row td { color: white !important; }
+
+  .portfolio-badge { background: #ff6f00; color: white; border-radius: 4px; padding: 1px 6px; font-size: 7.5pt; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- 封面 -->
+<div class="cover">
+  <div class="sub">芒格投资研究 · 赛道深度报告 · 2026-03-25</div>
+  <h1>🤖 人形机器人全产业链<br>深度投资研究报告</h1>
+  <div class="sub">宏观 × 微观 × 基本面 × 技术面 — A股 · 港股 · 美股三市场全覆盖</div>
+  <div class="tags">
+    <span class="tag">🔧 执行器/减速器</span>
+    <span class="tag">⚡ 电机/驱动</span>
+    <span class="tag">👁 感知/传感</span>
+    <span class="tag">🧠 AI具身智能</span>
+    <span class="tag">🏭 整机厂商</span>
+    <span class="tag">📊 yfinance实时</span>
+  </div>
+  <div class="verdict">
+    <strong>⚡ 核心结论：</strong>2026年是人形机器人从"概念炒作"转向"订单兑现"的元年。
+    Optimus Gen3预计2026年8月量产，宇树科技提交科创板IPO，行业进入加速商业化阶段。
+    <strong>重点布局执行器（减速器/丝杠）和感知传感器两个子赛道的A股龙头。</strong>
+    美股以TSLA为核心，港股以优必选、小米为代表。
+  </div>
+</div>
+
+<!-- ===== 第一章：宏观视角 ===== -->
+<h2>一、宏观视角 — 为什么2026年是关键年？</h2>
+
+<div class="three-col">
+  <div class="col-box">
+    <strong>🌍 全球产业化进程</strong><br><br>
+    2025年：验证阶段（实验室→工厂试用）<br>
+    <strong>2026年：商业化元年</strong><br>
+    • 特斯拉Optimus Gen3预计8月量产<br>
+    • 优必选年底交付1万台<br>
+    • 宇树科技提交科创板IPO<br>
+    2027年：百万台级规模化量产<br><br>
+    中国预计2026年产量10-20万台
+  </div>
+  <div class="col-box col-green">
+    <strong>🇨🇳 政策催化</strong><br><br>
+    • 工信部将人形机器人列入"十四五"战略新兴产业<br>
+    • 北京/上海/深圳/成都设立专项产业基金<br>
+    • 国资委推动央企采购国产机器人<br>
+    • 2025年研报：49家A股公司获机构密集调研<br><br>
+    政策红利叠加产业催化，确定性最高的新兴赛道之一
+  </div>
+  <div class="col-box col-yellow">
+    <strong>💰 市场规模预测</strong><br><br>
+    Goldman Sachs：2035年全球市场$1,540亿<br>
+    Morgan Stanley：2030年中国市场$120亿<br>
+    中信建投：2026年A股机器人产业市值有望突破万亿<br><br>
+    当前渗透率：制造业&lt;1%<br>
+    可替代劳动力规模（中国）：约1.6亿人
+  </div>
+</div>
+
+<div class="alert alert-purple">
+  <strong>宏观风险：</strong>中美贸易摩擦可能限制核心零部件（芯片/传感器）跨境流通；全球资金风险偏好下降（VIX 26.78，S&P跌破200日均线）将压制高PE成长赛道估值。人形机器人是高Beta行业，大盘调整时跌幅放大。
+</div>
+
+<!-- ===== 第二章：产业链全景 ===== -->
+<h2>二、产业链全景 — 七层架构解析</h2>
+
+<div class="chain-layer" style="background:#f9f0ff;border:1.5px solid #ce93d8">
+  <div class="chain-num">1</div>
+  <div class="chain-content">
+    <h4>🧠 AI具身智能层（大脑）</h4>
+    核心：VLA大模型（视觉-语言-动作）、运动规划、具身感知。决定机器人的"智商"。
+    <br>2026年关键进展：小米开源Xiaomi-Robotics-0，特斯拉Dojo超算驱动Optimus训练。
+    <br>A股可投资：科大讯飞688008（语音AI）、寒武纪688256（专用芯片）；港股：商汤02020（具身AI框架）
+  </div>
+</div>
+<div class="chain-layer" style="background:#fce4ec;border:1.5px solid #f48fb1">
+  <div class="chain-num">2</div>
+  <div class="chain-content">
+    <h4>⚡ 驱动与电机层（心脏）</h4>
+    核心：无框力矩电机、伺服电机、GaN电控芯片。决定机器人的"力量"。
+    <br>A股：汇川技术300124（最强伺服电机，国内绝对龙头）、三花智控002050（热管理+执行器模组）
+    <br>美股：ON Semiconductor ON（GaN/SiC驱动芯片）、TI（模拟IC/电控）
+  </div>
+</div>
+<div class="chain-layer" style="background:#e8f5e9;border:1.5px solid #a5d6a7">
+  <div class="chain-num">3</div>
+  <div class="chain-content">
+    <h4>🔧 执行器/传动层（关节）— 最核心投资环节</h4>
+    核心：行星滚柱丝杠（RCS）、谐波减速器、RV减速器。这是人形机器人成本占比最高（25-35%）、技术壁垒最强的环节。
+    <br>A股：绿的谐波688017（谐波减速器全国第一）、双环传动002472（行星减速器）、北特科技603068（丝杠）、五洲新春605151（丝杠）
+    <br>日股（A/H无直接标的）：THK、HIWIN（丝杠全球龙头，需关注供应商替代逻辑）
+  </div>
+</div>
+<div class="chain-layer" style="background:#e3f2fd;border:1.5px solid #90caf9">
+  <div class="chain-num">4</div>
+  <div class="chain-content">
+    <h4>👁 感知与传感层（感官）</h4>
+    核心：六维力/力矩传感器、深度摄像头（ToF/结构光）、IMU惯导、皮肤触觉传感器。
+    <br>2026年：灵巧手升级（自由度11→22），驱动六维力传感器需求翻倍。
+    <br>A股：柯力传感603662（力传感器龙头）、鸣志电器603728（步进电机+传感）；港股：奥比中光9069（深度摄像头）
+  </div>
+</div>
+<div class="chain-layer" style="background:#fff3e0;border:1.5px solid #ffcc80">
+  <div class="chain-num">5</div>
+  <div class="chain-content">
+    <h4>🦴 结构件与材料层（骨架）</h4>
+    核心：铝合金/碳纤维精密铸造、轻量化结构件、散热系统。
+    <br>A股：拓普集团601689（汽车+机器人结构件，已进入特斯拉供应链）、三花智控002050（热管理模组复用）
+    <br>美股：Teradyne TER（自动化测试设备，机器人产线必需）
+  </div>
+</div>
+<div class="chain-layer" style="background:#f3e5f5;border:1.5px solid #ce93d8">
+  <div class="chain-num">6</div>
+  <div class="chain-content">
+    <h4>🎛 控制与计算层（神经系统）</h4>
+    核心：实时控制器（RTOS）、边缘AI芯片、工业以太网。
+    <br>A股：汇川技术300124（工业控制龙头）、埃斯顿002747（控制系统+整机）
+    <br>美股：NVDA（Jetson系列机器人AI计算）、ROK Rockwell（工业控制）
+  </div>
+</div>
+<div class="chain-layer" style="background:#e8f5e9;border:1.5px solid #a5d6a7">
+  <div class="chain-num">7</div>
+  <div class="chain-content">
+    <h4>🏭 整机集成层（整机厂商）</h4>
+    核心：整机设计、供应链整合、场景应用落地。
+    <br>美股：TSLA（Optimus，最大Alpha来源）、ISRG（手术机器人，已商业化）
+    <br>港股：优必选09880（工业人形机器人Walker，已有订单）、小米01810（CyberOne，2026Q1量产）
+    <br>A股：埃斯顿002747（工业机器人整机）
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ===== 第三章：行业进展 ===== -->
+<h2>三、2026年最新进展 — 从概念到订单</h2>
+
+<h3>全球四大整机厂商动态（最新）</h3>
+<table>
+  <thead><tr><th>厂商</th><th>最新进展（2026年3月）</th><th>量产时间线</th><th>投资路径</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>🔴 特斯拉 Optimus</strong></td>
+      <td>Gen3已进入研发最后阶段，马斯克3月"富足峰会"宣布<br>灵巧手自由度11→<strong>22个</strong>，全身触觉传感器<br>自研高功率逆变器，关节精准定位</td>
+      <td><strong>2026年8月</strong>小批量量产<br>2027年百万台级</td>
+      <td>直接买TSLA<br>（已持有）</td>
+    </tr>
+    <tr>
+      <td><strong>🟡 宇树科技 Unitree</strong></td>
+      <td>2026年3月<strong>提交科创板IPO</strong>，拟融资42亿元<br>2025年营收17.08亿元，出货5,500台（行业第一）<br>H2机器人：飞踢、空翻等高难度动作<br>整机价格下探至10万级人民币</td>
+      <td>已量产<br>IPO后扩产</td>
+      <td>IPO后申购<br>等上市</td>
+    </tr>
+    <tr>
+      <td><strong>🔵 小米 CyberOne</strong></td>
+      <td>第三代已在亦庄汽车工厂"实习"<br>3小时成功率<strong>90.2%</strong><br>开源VLA大模型Xiaomi-Robotics-0</td>
+      <td><strong>2026年Q1</strong>规模量产（B端）</td>
+      <td>买小米01810.HK<br>（含机器人期权）</td>
+    </tr>
+    <tr>
+      <td><strong>🟢 优必选 UBTECH</strong></td>
+      <td>与<strong>西门子达成战略合作</strong><br>2026年底交付能力：<strong>1万台</strong><br>Walker S2在多家汽车总装车间实训<br>2025年订单金额：接近14亿元</td>
+      <td><strong>2026年</strong>万台交付</td>
+      <td>买优必选09880.HK</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr class="divider">
+
+<!-- ===== 第四章：A股投资机会 ===== -->
+<h2>四、A股投资机会 — 重点标的深度分析</h2>
+
+<div class="alert alert-purple">
+  <strong>机构策略（万联/中信建投/华源证券2026Q1研报）：</strong>2026年行业分化加剧，<strong>避开纯题材炒作</strong>，重点布局<strong>已进入特斯拉/宇树供应体系</strong>且具备量产能力的硬件标的。核心三条线：执行器丝杠/减速器 > 感知传感器 > 驱动电机。
+</div>
+
+<h3>① 执行器/减速器板块 — 核心配置</h3>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">绿的谐波 688017</span>
+    <span><span class="mkt-a">科创板</span> <span class="tag-p1">P1核心</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:8pt">
+    <div><strong>今日收盘</strong><br><span class="p-up">187.97元（+3.3%）</span></div>
+    <div><strong>PE</strong><br>暂不可用（高成长）</div>
+    <div><strong>核心壁垒</strong><br>国内谐波减速器龙头，精度0.4角秒</div>
+  </div>
+  <div style="margin-top:8px;font-size:8pt">
+    <strong>投资逻辑：</strong>谐波减速器是机器人关节成本最高的单一零件（每台需6-10个），绿的谐波占国内市场约30%。特斯拉供应链国产化是核心逻辑——日本Harmonic Drive垄断正被打破。<br>
+    <strong>操作建议：</strong>当前187.97元已处于高位，等回调170-180元建仓；中期目标220-250元；止损160元。置信度：<span class="conf-h">高</span>
+  </div>
+</div>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">双环传动 002472</span>
+    <span><span class="mkt-a">深A</span> <span class="tag-p2">P2重点关注</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:8pt">
+    <div><strong>今日收盘</strong><br>36.67元（+0.6%）</div>
+    <div><strong>核心产品</strong><br>行星减速器、精密齿轮</div>
+    <div><strong>客户</strong><br>已进入特斯拉Optimus供应链</div>
+  </div>
+  <div style="margin-top:8px;font-size:8pt">
+    <strong>投资逻辑：</strong>行星滚柱丝杠（RCS）是人形机器人线性关节的核心，双环传动已实现国产突破。2026年Optimus订单放量将直接拉动出货。<br>
+    <strong>操作建议：</strong>当前36.67元位置合理，可分批建仓，目标45-50元，止损32元。置信度：<span class="conf-m">中高</span>
+  </div>
+</div>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">北特科技 603068</span>
+    <span><span class="mkt-a">沪A</span> <span class="tag-watch">关注</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:8pt">
+    <div><strong>今日收盘</strong><br>31.93元（+2.1%）</div>
+    <div><strong>PE</strong><br>245x（业绩兑现前高估值）</div>
+    <div><strong>产品</strong><br>精密丝杠（行星滚柱）</div>
+  </div>
+  <div style="margin-top:8px;font-size:8pt">
+    <strong>注意：</strong>PE 245x纯题材推高，需等待业绩实质兑现（丝杠交付）再建仓。当前估值透支严重，高风险标的。关注位：等回调至PE 80x以下（约22-25元）。
+  </div>
+</div>
+
+<h3>② 驱动与电机板块 — 核心配置</h3>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">汇川技术 300124 <span class="portfolio-badge">已持仓</span></span>
+    <span><span class="mkt-a">创业板</span> <span class="tag-hold">已持有</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:8pt">
+    <div><strong>今日收盘</strong><br>68.01元（+2.9%）</div>
+    <div><strong>成本</strong><br>73.459元（已持有，浮亏7.4%）</div>
+    <div><strong>PE</strong><br>暂不可用</div>
+  </div>
+  <div style="margin-top:8px;font-size:8pt">
+    <strong>投资逻辑：</strong>国内工业控制+伺服电机绝对龙头。机器人驱动系统70%使用伺服电机，汇川是最大受益者。除机器人外，新能源汽车驱动、光伏储能等多业务共振。<br>
+    <strong>操作建议：</strong>持有，当前68元低于成本73元，不建议补仓（等技术信号）。目标80-90元（机器人订单兑现），止损60元。置信度：<span class="conf-h">高</span>
+  </div>
+</div>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">三花智控 002050 <span class="portfolio-badge">已持仓</span></span>
+    <span><span class="mkt-a">深A</span> <span class="tag-hold">已持有</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:8pt">
+    <div><strong>今日收盘</strong><br>43.49元（+2.2%）</div>
+    <div><strong>持仓成本</strong><br>记忆：stop-loss 26港（A股成本另查）</div>
+    <div><strong>PE</strong><br>合理区间</div>
+  </div>
+  <div style="margin-top:8px;font-size:8pt">
+    <strong>机器人逻辑：</strong>除汽车热管理外，三花已切入机器人执行器模组（微型电机+齿轮箱集成）。特斯拉Optimus热管理系统潜在供应商。持有逻辑不变，止损26港元（港股02050）。
+  </div>
+</div>
+
+<h3>③ 感知传感板块 — 高成长关注</h3>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">柯力传感 603662</span>
+    <span><span class="mkt-a">沪A</span> <span class="tag-new">新增关注</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:8pt">
+    <div><strong>今日收盘</strong><br>55.31元（+0.8%）</div>
+    <div><strong>产品</strong><br>称重/力传感器，六维力传感器</div>
+    <div><strong>逻辑</strong><br>灵巧手升级→六维力传感需求翻倍</div>
+  </div>
+  <div style="margin-top:8px;font-size:8pt">
+    <strong>投资逻辑：</strong>Optimus Gen3灵巧手自由度从11升至22，每增加一个自由度需要1-2个力传感器。2026年机器人量产后，六维力传感器需求爆发式增长。柯力传感是A股力传感器龙头，客户覆盖宇树/优必选。<br>
+    <strong>操作建议：</strong>可关注，等市场回调后在50-52元建仓，目标68-75元，止损45元。置信度：<span class="conf-m">中</span>（业绩兑现时间不确定）
+  </div>
+</div>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">鸣志电器 603728</span>
+    <span><span class="mkt-a">沪A</span> <span class="tag-watch">关注</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:8pt">
+    <div><strong>今日收盘</strong><br>57.38元（+1.2%）</div>
+    <div><strong>产品</strong><br>步进电机+传感器</div>
+    <div><strong>逻辑</strong><br>精密运动控制，已进入机器人供应链</div>
+  </div>
+  <div style="margin-top:8px;font-size:8pt">
+    <strong>操作建议：</strong>关注，等回调52-55元后建仓，目标70元，止损48元。
+  </div>
+</div>
+
+<h3>④ 整机/生态板块</h3>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">埃斯顿 002747</span>
+    <span><span class="mkt-a">深A</span> <span class="tag-p2">P2关注</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:8pt">
+    <div><strong>今日收盘</strong><br>20.28元（+1.4%）</div>
+    <div><strong>产品</strong><br>工业机器人整机+控制系统</div>
+    <div><strong>特点</strong><br>国内工业机器人前三，自研控制器</div>
+  </div>
+  <div style="margin-top:8px;font-size:8pt">
+    <strong>投资逻辑：</strong>A股工业机器人整机龙头，向人形机器人转型中。自研控制器是核心壁垒，汽车行业客户基础扎实。当前估值相对合理。<br>
+    <strong>操作建议：</strong>可在18-20元区间建仓，目标28-32元，止损16元。置信度：<span class="conf-m">中</span>
+  </div>
+</div>
+
+<h3>⑤ A股推荐标的汇总表</h3>
+<table>
+  <thead><tr><th>板块</th><th>股票</th><th>代码</th><th>今日价</th><th>推荐级别</th><th>买入区间</th><th>目标价</th><th>止损</th><th>是否持有</th></tr></thead>
+  <tbody>
+    <tr><td><strong>减速器</strong></td><td>绿的谐波</td><td>688017</td><td>187.97元</td><td><span class="tag-p1">P1</span></td><td>170-180元</td><td>220-250元</td><td>160元</td><td>否（新增）</td></tr>
+    <tr><td><strong>丝杠/减速器</strong></td><td>双环传动</td><td>002472</td><td>36.67元</td><td><span class="tag-p2">P2</span></td><td>34-37元</td><td>45-50元</td><td>32元</td><td>否（新增）</td></tr>
+    <tr><td><strong>丝杠</strong></td><td>五洲新春</td><td>605151</td><td>18.26元</td><td><span class="tag-watch">观察</span></td><td>16-17元</td><td>22-25元</td><td>14元</td><td>否</td></tr>
+    <tr><td><strong>伺服电机</strong></td><td>汇川技术</td><td>300124</td><td>68.01元</td><td><span class="tag-hold">持有</span></td><td>已持有</td><td>80-90元</td><td>60元</td><td>✅ 持有中</td></tr>
+    <tr><td><strong>热管理/执行器</strong></td><td>三花智控</td><td>002050</td><td>43.49元</td><td><span class="tag-hold">持有</span></td><td>已持有</td><td>55-65元</td><td>A股38元</td><td>✅ 持有中</td></tr>
+    <tr><td><strong>力传感器</strong></td><td>柯力传感</td><td>603662</td><td>55.31元</td><td><span class="tag-new">新增关注</span></td><td>50-52元</td><td>68-75元</td><td>45元</td><td>否（新增）</td></tr>
+    <tr><td><strong>电机/传感</strong></td><td>鸣志电器</td><td>603728</td><td>57.38元</td><td><span class="tag-watch">关注</span></td><td>52-55元</td><td>70元</td><td>48元</td><td>否</td></tr>
+    <tr><td><strong>工业机器人整机</strong></td><td>埃斯顿</td><td>002747</td><td>20.28元</td><td><span class="tag-p2">P2</span></td><td>18-20元</td><td>28-32元</td><td>16元</td><td>否（新增）</td></tr>
+    <tr><td><strong>结构件</strong></td><td>拓普集团</td><td>601689</td><td>57.80元</td><td><span class="tag-watch">关注</span></td><td>54-57元</td><td>70-75元</td><td>50元</td><td>否</td></tr>
+  </tbody>
+</table>
+
+<hr class="divider">
+
+<!-- ===== 第五章：港股 ===== -->
+<h2>五、港股投资机会</h2>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">优必选 09880.HK</span>
+    <span><span class="mkt-hk">港股</span> <span class="tag-p1">P1重点</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:8pt">
+    <div><strong>今日收盘</strong><br>94.30港元（+0.5%）</div>
+    <div><strong>PE</strong><br>亏损中（成长投资逻辑）</div>
+    <div><strong>市值</strong><br>~300亿港元</div>
+  </div>
+  <div style="margin-top:8px;font-size:8pt">
+    <strong>投资逻辑：</strong>港股唯一纯人形机器人整机上市公司。Walker S2工业版已进入汽车总装实训，2025年订单14亿元，2026年目标万台交付。与西门子合作背书，国际认可度高。<br>
+    <strong>操作建议：</strong>目前94港元处于历史相对低位（上市以来最高约230港元）。可在85-95港元建仓，目标130-150港元（量产兑现），止损75港元。<br>
+    置信度：<span class="conf-m">中高</span>（万台交付目标实现与否是关键）
+  </div>
+</div>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">小米集团 01810.HK</span>
+    <span><span class="mkt-hk">港股</span> <span class="tag-p2">P2关注</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:8pt">
+    <div><strong>今日收盘</strong><br>32.52港元（-0.5%）</div>
+    <div><strong>PE</strong><br>19.83x（合理）</div>
+    <div><strong>市值</strong><br>约8,000亿港元</div>
+  </div>
+  <div style="margin-top:8px;font-size:8pt">
+    <strong>投资逻辑：</strong>小米是手机+汽车+机器人三线协同的综合体，机器人是期权价值。2026年Q1量产CyberOne面向B端工厂，开源VLA大模型是软件壁垒。当前估值主要由手机/汽车支撑，机器人是免费期权。<br>
+    <strong>操作建议：</strong>可在28-32港元建仓，目标38-42港元，止损26港元。置信度：<span class="conf-m">中</span>（机器人逻辑是辅助，不是主逻辑）
+  </div>
+</div>
+
+<table>
+  <thead><tr><th>股票</th><th>代码</th><th>今日价</th><th>推荐级别</th><th>买入区间</th><th>目标价</th><th>止损</th><th>是否持有</th></tr></thead>
+  <tbody>
+    <tr><td><strong>优必选</strong></td><td>09880</td><td>94.30港</td><td><span class="tag-p1">P1</span></td><td>85-95港</td><td>130-150港</td><td>75港</td><td>否（新增）</td></tr>
+    <tr><td><strong>小米集团</strong></td><td>01810</td><td>32.52港</td><td><span class="tag-p2">P2</span></td><td>28-32港</td><td>38-42港</td><td>26港</td><td>✅ 已持有</td></tr>
+  </tbody>
+</table>
+
+<hr class="divider">
+
+<!-- ===== 第六章：美股 ===== -->
+<h2>六、美股投资机会</h2>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">Tesla TSLA</span>
+    <span><span class="mkt-us">NASDAQ</span> <span class="tag-hold">已持有</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:8pt">
+    <div><strong>今日收盘</strong><br>$383.03（+0.6%）</div>
+    <div><strong>PE</strong><br>357.97x（含Optimus期权）</div>
+    <div><strong>市值</strong><br>$1.44万亿</div>
+  </div>
+  <div style="margin-top:8px;font-size:8pt">
+    <strong>机器人逻辑：</strong>Optimus是TSLA股价的最大期权。Gen3 2026年8月量产，2027年百万台级。马斯克称Optimus将是特斯拉历史上最重要产品，长期目标销量超过汽车。<br>
+    当前PE 358x中，约50%估值来自Optimus前景定价。<br>
+    <strong>操作建议：</strong>已持有，维持持有。关注2026年8月Gen3量产进展。止损$320，目标$450-500（Optimus量产确认）。
+  </div>
+</div>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">Teradyne TER</span>
+    <span><span class="mkt-us">NASDAQ</span> <span class="tag-new">新增P1推荐</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:8pt">
+    <div><strong>今日收盘</strong><br><span class="p-up">$320.14（+5.3%今日）</span></div>
+    <div><strong>PE</strong><br>92.52x</div>
+    <div><strong>市值</strong><br>$501亿</div>
+  </div>
+  <div style="margin-top:8px;font-size:8pt">
+    <strong>投资逻辑：</strong>Teradyne是全球自动化测试设备（ATE）领导者，同时持有UR（协作机器人）和MiR（移动机器人）子公司。人形机器人量产需要大量自动化测试产线，TER是机器人产线建设的基础设施供应商。今日+5.3%，市场已开始定价机器人量产催化。<br>
+    <strong>操作建议：</strong>等回调$290-305建仓，目标$380-400，止损$265。置信度：<span class="conf-h">高</span>（机器人量产=测试设备订单激增）
+  </div>
+</div>
+
+<div class="stock-card">
+  <div class="header">
+    <span class="name">ON Semiconductor ON</span>
+    <span><span class="mkt-us">NASDAQ</span> <span class="tag-p2">P2关注</span></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:8pt">
+    <div><strong>今日收盘</strong><br><span class="p-up">$62.34（+4.1%）</span></div>
+    <div><strong>PE</strong><br>214.96x（暂时高PE）</div>
+    <div><strong>市值</strong><br>$251亿</div>
+  </div>
+  <div style="margin-top:8px;font-size:8pt">
+    <strong>投资逻辑：</strong>ON Semi是SiC/GaN功率半导体领先企业。机器人每个关节的驱动控制器需要GaN芯片，ON已进入多个机器人整机供应链。同时受益于电动汽车。<br>
+    <strong>操作建议：</strong>等回调$55-60建仓，目标$80-90，止损$50。置信度：<span class="conf-m">中</span>
+  </div>
+</div>
+
+<table>
+  <thead><tr><th>股票</th><th>代码</th><th>今日价</th><th>推荐级别</th><th>买入区间</th><th>目标价</th><th>止损</th><th>是否持有</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Tesla</strong></td><td>TSLA</td><td>$383.03</td><td><span class="tag-hold">持有</span></td><td>已持有</td><td>$450-500</td><td>$320</td><td>✅ 持有中</td></tr>
+    <tr><td><strong>Teradyne</strong></td><td>TER</td><td>$320.14</td><td><span class="tag-new">新增P1</span></td><td>$290-305</td><td>$380-400</td><td>$265</td><td>否（新增）</td></tr>
+    <tr><td><strong>ON Semi</strong></td><td>ON</td><td>$62.34</td><td><span class="tag-p2">P2</span></td><td>$55-60</td><td>$80-90</td><td>$50</td><td>否</td></tr>
+    <tr><td><strong>NVDA</strong></td><td>NVDA</td><td>$175.20</td><td><span class="tag-hold">持有逻辑</span></td><td>若持有继续持有</td><td>$220-240</td><td>$150</td><td>视持仓而定</td></tr>
+    <tr><td><strong>ISRG Intuitive</strong></td><td>ISRG</td><td>$471.91</td><td><span class="tag-watch">观察</span></td><td>$440-455</td><td>$550-600</td><td>$420</td><td>否</td></tr>
+  </tbody>
+</table>
+
+<hr class="divider">
+
+<!-- ===== 第七章：综合排行 ===== -->
+<h2>七、三市场最优标的综合排行（新增机会优先）</h2>
+
+<div class="alert alert-green">
+  <strong>给你的个性化建议：</strong>已持有TSLA、小米01810、汇川300124、三花002050，这些持有逻辑不变。本次重点关注<strong>你尚未持有的新增机会</strong>：绿的谐波、双环传动、优必选、Teradyne。
+</div>
+
+<table>
+  <thead><tr><th>优先级</th><th>股票</th><th>市场</th><th>今日价</th><th>买入区间</th><th>目标价</th><th>止损</th><th>核心理由</th><th>置信度</th></tr></thead>
+  <tbody>
+    <tr style="background:#fff9c4"><td><span class="tag-p1">P1</span></td><td><strong>绿的谐波 688017</strong></td><td><span class="mkt-a">A股</span></td><td>187.97元</td><td>170-180元</td><td>220-250元</td><td>160元</td><td>谐波减速器龙头，国产替代最确定受益</td><td><span class="conf-h">高</span></td></tr>
+    <tr style="background:#fff9c4"><td><span class="tag-p1">P1</span></td><td><strong>优必选 09880</strong></td><td><span class="mkt-hk">港股</span></td><td>94.30港</td><td>85-95港</td><td>130-150港</td><td>75港</td><td>港股唯一人形机器人整机上市公司，已有万台订单</td><td><span class="conf-m">中高</span></td></tr>
+    <tr style="background:#fff9c4"><td><span class="tag-p1">P1</span></td><td><strong>Teradyne TER</strong></td><td><span class="mkt-us">美股</span></td><td>$320.14</td><td>$290-305</td><td>$380-400</td><td>$265</td><td>机器人量产=测试设备订单激增，今日+5.3%</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td><span class="tag-p2">P2</span></td><td><strong>双环传动 002472</strong></td><td><span class="mkt-a">A股</span></td><td>36.67元</td><td>34-37元</td><td>45-50元</td><td>32元</td><td>已进入特斯拉供应链，丝杠国产化受益</td><td><span class="conf-m">中高</span></td></tr>
+    <tr><td><span class="tag-p2">P2</span></td><td><strong>柯力传感 603662</strong></td><td><span class="mkt-a">A股</span></td><td>55.31元</td><td>50-52元</td><td>68-75元</td><td>45元</td><td>灵巧手升级→六维力传感器需求翻倍</td><td><span class="conf-m">中</span></td></tr>
+    <tr><td><span class="tag-p2">P2</span></td><td><strong>埃斯顿 002747</strong></td><td><span class="mkt-a">A股</span></td><td>20.28元</td><td>18-20元</td><td>28-32元</td><td>16元</td><td>A股工业机器人整机龙头，向人形转型</td><td><span class="conf-m">中</span></td></tr>
+    <tr><td><span class="tag-hold">持有</span></td><td>汇川技术 300124</td><td><span class="mkt-a">A股</span></td><td>68.01元</td><td>已持有（成本73元）</td><td>80-90元</td><td>60元</td><td>伺服电机龙头，持有不动</td><td><span class="conf-h">高</span></td></tr>
+    <tr><td><span class="tag-hold">持有</span></td><td>Tesla TSLA</td><td><span class="mkt-us">美股</span></td><td>$383.03</td><td>已持有</td><td>$450-500</td><td>$320</td><td>Optimus Gen3 2026年8月量产确认</td><td><span class="conf-h">高</span></td></tr>
+  </tbody>
+</table>
+
+<hr class="divider">
+
+<!-- ===== 第八章：风险 ===== -->
+<h2>八、风险清单 — 不可忽视的下行因素</h2>
+
+<div class="risk-item"><span class="risk-label hi">高</span><div><strong>量产进度不及预期</strong>：Optimus Gen3若2026年8月无法如期量产，整个产业链估值将面临重估。历史上机器人产业多次"狼来了"。</div></div>
+<div class="risk-item"><span class="risk-label hi">高</span><div><strong>成本过高影响商业化</strong>：当前人形机器人单台成本约15-20万元，B端ROI不清晰，C端无法普及，商业模式仍不确定。</div></div>
+<div class="risk-item"><span class="risk-label hi">高</span><div><strong>宏观市场风险</strong>：VIX 26.78，S&P跌破200日均线，人形机器人是高Beta、高估值赛道，大盘若继续下跌将放大个股跌幅。</div></div>
+<div class="risk-item"><span class="risk-label med">中</span><div><strong>中美技术脱钩</strong>：传感器、AI芯片部分依赖进口，出口限制可能影响国内机器人厂商的技术路线。</div></div>
+<div class="risk-item"><span class="risk-label med">中</span><div><strong>A股高PE纯题材风险</strong>：北特科技等丝杠标的PE超200x，一旦订单兑现不如预期，跌幅可能超50%，需避开纯题材标的。</div></div>
+<div class="risk-item"><span class="risk-label low">低</span><div><strong>竞争加剧</strong>：2026年人形机器人厂商已超100家，价格战可能导致整机利润率薄，最终受益的是零部件供应商而非整机厂。</div></div>
+
+<h2>九、投资时间线与催化剂</h2>
+<div class="timeline">
+  <div class="timeline-item">
+    <div class="date">2026年3月（当前）</div>
+    宇树科技提交科创板IPO申请 → 机器人板块情绪催化剂<br>
+    小米CyberOne已进入量产 → B端工厂订单开始验证
+  </div>
+  <div class="timeline-item">
+    <div class="date">2026年Q2（4-6月）</div>
+    优必选Walker S2交付验证 → 关注实际交付数量<br>
+    中国各城市具身智能基地落地 → 政策继续催化
+  </div>
+  <div class="timeline-item">
+    <div class="date">2026年8月（关键节点）</div>
+    <strong>Tesla Optimus Gen3预计开始量产</strong> → 整个产业链最大催化剂<br>
+    A股供应链标的（绿的谐波/双环传动）订单确认，业绩开始兑现
+  </div>
+  <div class="timeline-item">
+    <div class="date">2026年底</div>
+    优必选目标交付1万台 → 是否实现决定港股优必选走向<br>
+    宇树科技若成功IPO → 科创板新增纯人形机器人标的
+  </div>
+  <div class="timeline-item">
+    <div class="date">2027年</div>
+    <strong>Optimus百万台级量产</strong> → 估值重估，A股供应链进入业绩爆发期<br>
+    人形机器人渗透率快速提升，整机价格下降至5-8万元区间
+  </div>
+</div>
+
+<div class="footer">
+  <span>芒格投资研究 · 人形机器人产业链深度报告 · 2026-03-25</span>
+  <span>数据来源：yfinance实时 | 万联证券/中信建投/华源证券(2026Q1) | 财联社/证券时报/东方财富</span>
+  <span>⚠️ 本报告不含全部个人持仓信息，可公开分享 | 投资有风险</span>
+</div>
+
+</div>
+</body>
+</html>

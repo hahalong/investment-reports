@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'PingFang SC','Noto Sans CJK SC','Microsoft YaHei',sans-serif; font-size: 10pt; color: #1a1a2e; line-height: 1.8; margin: 0; background: #f5f7fa; }
+  .page { max-width: 920px; margin: 0 auto; padding: 36px 48px; background: #fff; }
+
+  .cover { background: linear-gradient(135deg, #0d1b2a 0%, #1565c0 60%, #0d47a1 100%); border-radius: 12px; padding: 30px 38px; color: white; margin-bottom: 24px; position: relative; overflow: hidden; }
+  .cover::before { content: '📉'; position: absolute; right: 24px; top: 8px; font-size: 80px; opacity: 0.15; }
+  .cover .tag { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 20px; padding: 3px 14px; font-size: 8.5pt; display: inline-block; margin-bottom: 10px; }
+  .cover h1 { font-size: 16pt; font-weight: 700; margin: 8px 0 6px; line-height: 1.35; }
+  .cover .sub { font-size: 9.5pt; opacity: 0.85; }
+  .cover .meta { margin-top: 14px; font-size: 8.5pt; opacity: 0.7; display: flex; gap: 18px; flex-wrap: wrap; }
+
+  h2 { font-size: 12pt; font-weight: 700; color: #0d3a6b; border-bottom: 2.5px solid #1565c0; padding-bottom: 5px; margin-top: 28px; margin-bottom: 12px; }
+  h3 { font-size: 10.5pt; font-weight: 600; color: #1565c0; margin-top: 14px; margin-bottom: 6px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 9pt; }
+  thead tr { background: #0d3a6b; color: white; }
+  thead th { padding: 8px 10px; text-align: left; font-weight: 600; }
+  tbody tr:nth-child(even) { background: #f0f4ff; }
+  tbody td { padding: 7px 10px; border-bottom: 1px solid #e3f2fd; vertical-align: middle; }
+
+  .tag-clear { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; border-radius: 4px; padding: 2px 8px; font-size: 8pt; font-weight: 700; white-space: nowrap; }
+  .tag-trim  { background: #fff8e1; color: #856404; border: 1px solid #ffe082; border-radius: 4px; padding: 2px 8px; font-size: 8pt; font-weight: 700; white-space: nowrap; }
+  .tag-hold  { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; border-radius: 4px; padding: 2px 8px; font-size: 8pt; font-weight: 700; white-space: nowrap; }
+  .tag-p1    { background: #ffebee; color: #c62828; border-radius: 3px; padding: 1px 6px; font-size: 7.5pt; font-weight: 700; }
+  .tag-p2    { background: #fff3e0; color: #e65100; border-radius: 3px; padding: 1px 6px; font-size: 7.5pt; font-weight: 700; }
+  .tag-p3    { background: #e8f5e9; color: #1b5e20; border-radius: 3px; padding: 1px 6px; font-size: 7.5pt; font-weight: 700; }
+
+  .verdict { background: linear-gradient(135deg,#1a237e,#283593); color: white; border-radius: 10px; padding: 16px 22px; margin: 16px 0; font-size: 11pt; font-weight: 700; text-align: center; line-height: 1.7; }
+
+  .alert { border-radius: 8px; padding: 12px 16px; margin: 12px 0; font-size: 9.5pt; line-height: 1.7; }
+  .alert-red    { background: #ffebee; border-left: 4px solid #c62828; }
+  .alert-green  { background: #e8f5e9; border-left: 4px solid #2e7d32; }
+  .alert-blue   { background: #e3f2fd; border-left: 4px solid #1565c0; }
+  .alert-yellow { background: #fff8e1; border-left: 4px solid #f9a825; }
+
+  .timing-box { border-radius: 8px; padding: 14px 18px; margin: 12px 0; border: 1.5px solid; }
+  .timing-1 { background: #ffebee; border-color: #ef9a9a; }
+  .timing-2 { background: #fff8e1; border-color: #ffe082; }
+  .timing-3 { background: #e8f5e9; border-color: #a5d6a7; }
+  .timing-title { font-weight: 700; font-size: 10.5pt; margin-bottom: 6px; }
+  .timing-1 .timing-title { color: #c62828; }
+  .timing-2 .timing-title { color: #856404; }
+  .timing-3 .timing-title { color: #1b5e20; }
+
+  .pnl-pos { color: #c62828; font-weight: 600; }
+  .pnl-neg { color: #2e7d32; font-weight: 600; }
+  .warn { color: #e65100; font-weight: 700; }
+
+  hr.d { border: none; border-top: 1px solid #e3f2fd; margin: 20px 0; }
+  .footer { margin-top: 28px; padding-top: 12px; border-top: 2px solid #e3f2fd; font-size: 8pt; color: #6c757d; display: flex; justify-content: space-between; flex-wrap: wrap; }
+  .src { font-size: 7.5pt; color: #9e9e9e; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- 封面 -->
+<div class="cover">
+  <div class="tag">📊 持仓管理 | 减仓计划</div>
+  <h1>A股持仓减仓40-50%方案<br>时机选择与优先级排序</h1>
+  <div class="sub">基于3/20收盘+3/21早盘09:51实时数据 | 国金证券账户</div>
+  <div class="meta">
+    <span>📅 2026-03-21 09:53 GMT+8</span>
+    <span>📊 数据：yfinance实时查询</span>
+    <span>⚠️ 含个人持仓，请勿外传</span>
+  </div>
+</div>
+
+<!-- 持仓概览 -->
+<h2>📋 持仓全景（3/21早盘09:51，含最新价格）</h2>
+
+<table>
+  <thead><tr><th>标的</th><th>成本</th><th>现价(3/20收盘)</th><th>浮盈亏</th><th>仓位</th><th>建议</th></tr></thead>
+  <tbody>
+    <tr><td><strong>华建集团</strong> 600629</td><td>21.787</td><td>21.110</td><td class="pnl-neg">-3.1%</td><td>19.0%</td><td><span class="tag-trim">部分减</span></td></tr>
+    <tr><td><strong>龙佰集团</strong> 002601</td><td>20.922</td><td>17.870</td><td class="pnl-neg">-14.6%</td><td>14.7%</td><td><span class="tag-trim">部分减</span></td></tr>
+    <tr><td><strong>中国核建</strong> 601611</td><td>16.991</td><td>14.750</td><td class="pnl-neg">-13.2%</td><td>8.6%</td><td><span class="tag-hold">暂守止损</span></td></tr>
+    <tr><td><strong>阿里巴巴</strong> 9988（港股）</td><td>HK$1.215</td><td>HK$123.70</td><td>—</td><td>8.6%</td><td><span class="tag-hold">持有</span></td></tr>
+    <tr><td><strong>中国核电</strong> 601985</td><td>9.155</td><td>8.860</td><td class="pnl-neg">-3.2%</td><td>5.3%</td><td><span class="tag-hold">持有</span></td></tr>
+    <tr><td><strong>芯片基金</strong> 159995</td><td>1.112</td><td>1.746</td><td class="pnl-pos">+57%</td><td>4.2%</td><td><span class="tag-trim">减仓锁利</span></td></tr>
+    <tr><td><strong>博瑞医药</strong> 688166</td><td>52.523</td><td>47.780</td><td class="pnl-neg">-9.0%</td><td>4.0%</td><td><span class="tag-trim">减仓</span></td></tr>
+    <tr><td><strong>电网ETF</strong> 159793</td><td>2.133</td><td>0.928</td><td class="pnl-neg">-56.5%</td><td>4.0%</td><td><span class="tag-hold">核心持有</span></td></tr>
+    <tr><td><strong>阳光电源</strong> 300274</td><td>172.568</td><td>173.600</td><td class="pnl-pos">+0.6%</td><td>3.9%</td><td><span class="tag-hold">持有</span></td></tr>
+    <tr><td><strong>建投能源</strong> 000600</td><td>9.867</td><td>9.690</td><td class="pnl-neg">-1.8%</td><td>3.8%</td><td><span class="tag-trim">可减</span></td></tr>
+    <tr><td><strong>格林美</strong> 002340</td><td>8.418</td><td>7.950</td><td class="pnl-neg">-5.6%</td><td>3.7%</td><td><span class="tag-trim">减仓</span></td></tr>
+    <tr><td><strong>大秦铁路</strong> 601006</td><td>5.276</td><td>5.310</td><td class="pnl-pos">+0.6%</td><td>3.4%</td><td><span class="tag-trim">减仓</span></td></tr>
+    <tr><td><strong>迈为股份</strong> 300751</td><td>292.669</td><td>273.600</td><td class="pnl-neg">-6.5%</td><td>3.1%</td><td><span class="tag-trim">减仓</span></td></tr>
+    <tr><td><strong>东方新能</strong> 600611</td><td>3.436</td><td>5.060</td><td class="pnl-pos">+47%</td><td>2.4%</td><td><span class="tag-trim">减仓锁利</span></td></tr>
+    <tr><td><strong>化工基金</strong> 161725</td><td>1.253</td><td>0.650</td><td class="pnl-neg">-48%</td><td>2.3%</td><td><span class="tag-hold">持有等反转</span></td></tr>
+    <tr><td><strong>双良节能</strong> 600481</td><td>6.996</td><td>6.870</td><td class="pnl-neg">-1.8%</td><td>2.2%</td><td><span class="tag-trim">可减</span></td></tr>
+    <tr><td><strong>黄金9999</strong> 518880</td><td>10.656</td><td>9.896</td><td class="pnl-neg">-7.1%</td><td>1.6%</td><td><span class="tag-clear">清仓</span></td></tr>
+    <tr><td><strong>晶盛机电</strong> 300316</td><td>47.429</td><td>45.740</td><td class="pnl-neg">-3.6%</td><td>1.5%</td><td><span class="tag-trim">减仓</span></td></tr>
+    <tr><td><strong>捷佳伟创</strong> 300724</td><td>133.872</td><td>129.100</td><td class="pnl-neg">-3.6%</td><td>1.5%</td><td><span class="tag-trim">减仓</span></td></tr>
+    <tr><td><strong>融发核电</strong> 002366</td><td>10.426</td><td>7.770</td><td class="pnl-neg">-25.5%</td><td>1.1%</td><td><span class="tag-hold">持有等反转</span></td></tr>
+    <tr><td><strong>汇川技术</strong> 300124</td><td>73.459</td><td>68.750</td><td class="pnl-neg">-6.4%</td><td>2.3%</td><td><span class="tag-hold">持有</span></td></tr>
+    <tr><td><strong>协鑫能科</strong> 002015</td><td>20.551</td><td>20.160</td><td class="pnl-neg">-1.9%</td><td>2.2%</td><td><span class="tag-trim">可减</span></td></tr>
+    <tr><td><strong>特锐德</strong> 300001</td><td>34.538</td><td>28.690</td><td class="pnl-neg">-16.9%</td><td>1.3%</td><td><span class="tag-trim">减仓</span></td></tr>
+    <tr><td><strong>胜利精密</strong> 002426</td><td>4.545</td><td>3.960</td><td class="pnl-neg">-12.9%</td><td>2.5%</td><td><span class="tag-trim">减仓</span></td></tr>
+    <tr><td><strong>农业ETF</strong> 159825</td><td>1.461</td><td>0.854</td><td class="pnl-neg">-41.5%</td><td>0.2%</td><td><span class="tag-clear">清仓尾单</span></td></tr>
+  </tbody>
+</table>
+
+<hr class="d">
+
+<!-- 减仓总策略 -->
+<div class="verdict">
+  目标：释放40-50%仓位 ≈ 释放约40-50万元市值<br>
+  <span style="font-size:9.5pt;font-weight:400;opacity:0.9;">核心原则：先减高位盈利锁定收益 → 再减弱势超跌品种 → 保留核心逻辑仓位</span>
+</div>
+
+<h2>🎯 减仓优先级方案（三档执行）</h2>
+
+<div class="timing-box timing-1">
+  <div class="timing-title">🔴 第一档：立即执行（P1）— 不等时机，周一开盘就做</div>
+  <table>
+    <thead><tr><th>标的</th><th>操作</th><th>建议方式</th><th>释放仓位</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td><strong>黄金9999</strong></td><td>清仓</td><td>开盘直接市价卖出</td><td>-1.6%</td><td>金价$4,700未收复，之前计划清仓条件已触发</td></tr>
+      <tr><td><strong>农业ETF</strong></td><td>清仓尾单</td><td>开盘直接市价</td><td>-0.2%</td><td>0.2%尾仓，-41%，无意义持有</td></tr>
+      <tr><td><strong>芯片基金</strong></td><td>减仓50%</td><td>开盘集合竞价挂单</td><td>-2.1%</td><td>+57%浮盈，先锁定一半利润，留仓等AI后续</td></tr>
+      <tr><td><strong>东方新能</strong></td><td>减仓50%</td><td>开盘集合竞价</td><td>-1.2%</td><td>+47%浮盈，低流动性小盘，先锁利</td></tr>
+    </tbody>
+  </table>
+  <p style="margin:6px 0 0;font-size:9pt;">第一档合计释放约 <strong>5%</strong> 仓位，以锁利为主，无亏损代价</p>
+</div>
+
+<div class="timing-box timing-2">
+  <div class="timing-title">🟡 第二档：选择时机执行（P2）— 等反弹或下跌加速时操作</div>
+  <table>
+    <thead><tr><th>标的</th><th>操作</th><th>时机</th><th>释放仓位</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td><strong>华建集团</strong></td><td>减仓30-40%</td><td>反弹到21.5元以上挂单</td><td>-6~8%</td><td>最大仓位19%，集中度过高；-3%浮亏小，等小反弹减</td></tr>
+      <tr><td><strong>龙佰集团</strong></td><td>减仓30%</td><td>反弹到19元附近</td><td>-4.4%</td><td>-14.6%浮亏，化工周期逻辑仍在，不宜全清；减到10%以内</td></tr>
+      <tr><td><strong>大秦铁路</strong></td><td>减仓50-全清</td><td>开盘若平开/高开</td><td>-1.7~3.4%</td><td>微利（+0.6%），防御性资产但上行空间有限，减仓腾挪</td></tr>
+      <tr><td><strong>建投能源</strong></td><td>减仓50%</td><td>反弹到10元附近</td><td>-1.9%</td><td>小亏损，能源板块逻辑弱，减仓合理</td></tr>
+      <tr><td><strong>格林美</strong></td><td>减仓50%</td><td>反弹到8.2元以上</td><td>-1.9%</td><td>-5.6%，锂电回收赛道短期弱势</td></tr>
+      <tr><td><strong>迈为股份</strong></td><td>减仓50%</td><td>反弹到285元附近</td><td>-1.6%</td><td>特斯拉太阳能设备逻辑，出口许可证风险仍在</td></tr>
+      <tr><td><strong>胜利精密</strong></td><td>减仓50%</td><td>反弹到4.2元</td><td>-1.2%</td><td>-12.9%，苹果供应链弱势</td></tr>
+      <tr><td><strong>特锐德</strong></td><td>减仓50%</td><td>反弹到30元</td><td>-0.7%</td><td>-16.9%，充电桩赛道估值仍承压</td></tr>
+    </tbody>
+  </table>
+  <p style="margin:6px 0 0;font-size:9pt;">第二档合计释放约 <strong>17-22%</strong> 仓位，等小反弹执行减少损失</p>
+</div>
+
+<div class="timing-box timing-3">
+  <div class="timing-title">🟢 第三档：继续持有（P3）— 有逻辑支撑，不纳入本次减仓</div>
+  <table>
+    <thead><tr><th>标的</th><th>理由</th><th>止损线</th></tr></thead>
+    <tbody>
+      <tr><td><strong>电网ETF</strong></td><td>能源危机→电网投资加速，核心逻辑最强，虽深套但不减</td><td>0.85元</td></tr>
+      <tr><td><strong>阳光电源</strong></td><td>储能龙头，特斯拉100GW逻辑，+0.6%接近成本，稳守</td><td>155元</td></tr>
+      <tr><td><strong>中国核电</strong></td><td>7×24h稳定基荷，能源危机利好，+0.1%浮盈</td><td>8.2元</td></tr>
+      <tr><td><strong>汇川技术</strong></td><td>工业自动化龙头，基本面稳健，-6.4%在合理范围</td><td>62元</td></tr>
+      <tr><td><strong>融发核电</strong></td><td>2026交付高峰，1.1%小仓，逻辑未破，止损6.5元守住</td><td>6.5元（账面7.77元）</td></tr>
+      <tr><td><strong>化工基金</strong></td><td>2026化工周期反转年，-48%深套，等待逻辑兑现，不割</td><td>0.55元</td></tr>
+      <tr><td><strong>博瑞医药</strong></td><td>-9%，创新药逻辑，可考虑减30%降低单股集中度</td><td>43元</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="d">
+
+<!-- 时机选择 -->
+<h2>⏰ 减仓时机选择</h2>
+
+<div class="alert alert-blue">
+  <strong>核心原则：盈利仓位不等时机（直接减），亏损仓位等小反弹减（减少损失）</strong>
+</div>
+
+<h3>什么信号说明是好的减仓时机？</h3>
+
+<table>
+  <thead><tr><th>信号</th><th>含义</th><th>操作</th></tr></thead>
+  <tbody>
+    <tr><td>🟢 早盘集合竞价高开1%+</td><td>做多情绪短暂回升</td><td>P2批量挂单，趁机减仓</td></tr>
+    <tr><td>🟢 上证指数日内反弹至4,050点以上</td><td>短线情绪修复</td><td>P2个股按目标价挂限价单</td></tr>
+    <tr><td>🟡 大盘平开，个股高开2%+</td><td>个股独立行情</td><td>针对该个股单独减仓</td></tr>
+    <tr><td>🔴 大盘继续跌破3,900</td><td>弱势延续</td><td>放弃等反弹，执行P1（已盈利品种立即减），P2适当降低挂单价格</td></tr>
+    <tr><td>🔴 中东局势恶化/美股大跌3%+</td><td>风险事件</td><td>P1+P2合并执行，不等反弹</td></tr>
+  </tbody>
+</table>
+
+<div class="alert alert-yellow">
+  <strong>重要提醒</strong>：华建集团仓位19%过重，这是最核心的减仓目标。即使没有好时机，也要在下周内把华建降到10-12%以内。单只股票超过15%是过于集中的风险。
+</div>
+
+<hr class="d">
+
+<!-- 减仓后预期 -->
+<h2>📊 执行后预期状态</h2>
+
+<table>
+  <thead><tr><th>阶段</th><th>释放仓位</th><th>累计已减</th><th>现金比例提升</th></tr></thead>
+  <tbody>
+    <tr><td>P1执行后（周一）</td><td>~5%</td><td>5%</td><td>+5%现金</td></tr>
+    <tr><td>P2执行后（本周内）</td><td>~20%</td><td>25%</td><td>+25%现金</td></tr>
+    <tr><td>目标完成</td><td><strong>40-50%</strong></td><td>40-50%</td><td>现金占总资产20-30%</td></tr>
+  </tbody>
+</table>
+
+<div class="alert alert-green">
+  <strong>减仓完成后的现金用途建议</strong>：<br>
+  · 留20%现金作安全垫（不投资）<br>
+  · 等宁德时代到230-240元买入（强逻辑等回调）<br>
+  · 等工业富联到28-30元买入（算力赛道好标的）<br>
+  · 等中东地缘风险缓和再重新配置
+</div>
+
+<div class="footer">
+  <span>芒格投资研究 · 2026-03-21 09:53 GMT+8</span>
+  <span class="src">数据来源：yfinance实时查询 + 同花顺截图</span>
+  <span>⚠️ 含个人持仓，请勿外传</span>
+</div>
+
+</div>
+</body>
+</html>
