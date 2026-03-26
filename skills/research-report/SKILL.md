@@ -139,6 +139,50 @@ message(
 
 ---
 
+### 阶段四：推送GitHub（⚠️ 强制步骤，每次生成/更新报告后必须执行）
+
+**所有报告生成或更新后，必须默认推送到 GitHub 并更新 README。**
+
+```bash
+cd /home/ecs-user/.openclaw/workspace-investment-officer
+
+# 1. 加载 Token（禁止在代码/内存中明文写入 Token）
+source .openclaw/github.env
+
+# 2. 设置带 Token 的远程地址
+git remote set-url origin "https://${GITHUB_TOKEN}@github.com/hahalong/investment-reports.git"
+
+# 3. 暂存 & 拉取最新（避免冲突）
+git stash 2>/dev/null || true
+git pull origin main --rebase 2>/dev/null || true
+git stash pop 2>/dev/null || true
+
+# 4. 提交报告
+git add reports/YYYY-MM-DD-{topic}.pdf reports/YYYY-MM-DD-{topic}.html 2>/dev/null || true
+git add -A
+git commit -m "📊 报告：{报告标题} {YYYY-MM-DD}"
+
+# 5. 推送
+git push origin main
+```
+
+**README 更新规则（与上传同步执行）**：
+- 每次上传后在 README 表格顶部插入一行：`| YYYY-MM-DD | 文件链接 | 报告说明 |`
+- 可调用 `scripts/upload-to-github.sh` 脚本自动完成上传+README更新：
+  ```bash
+  ./scripts/upload-to-github.sh "文件名.pdf" "报告标题" "一句话说明"
+  ```
+
+**完成后通知用户 GitHub 链接**：
+```
+✅ 已推送GitHub：
+https://github.com/hahalong/investment-reports/blob/main/reports/YYYY-MM-DD-{topic}.pdf
+```
+
+> ⚠️ **安全规则**：Token 存于 `.openclaw/github.env`（已加入 .gitignore），禁止在任何代码、memory文件、提交内容中写入 Token 明文。
+
+---
+
 ## 报告文件命名规范
 
 | 类型 | 命名格式 | 示例 |
